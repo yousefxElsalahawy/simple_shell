@@ -1,3 +1,9 @@
+
+
+
+
+
+
 #include "shell.h"
 
 /**
@@ -6,26 +12,26 @@
  *
  * Return: true if the list is empty, false otherwise
  */
-bool is_list_empty(const list_t *h)
+bool is_list_empty(const _lst_ *h)
 {
 	/* use if */
 	if (h == NULL)
 	{
-		_puts("Error: List is empty.\n");
+		_put_ss_("Error: List is empty.\n");
 		return (true);
 	}
 	return (false);
 }
 
 /**
- * list_len - Calculates the length of a list
+ * _lst_len_ - Calculates the length of a list
  * @h: Pointer to the head of the list
  *
  * Return: The length of the list
  */
-size_t list_len(const list_t *h)
+size_t _lst_len_(const _lst_ *h)
 {
-	size_t i = 0;
+	size_t _OK_ = 0;
 
 	/* use if */
 	if (is_list_empty(h))
@@ -33,24 +39,24 @@ size_t list_len(const list_t *h)
 
 	/* use loop */
 	do {
-		h = h->next;
-		i++;
+		h = h->_nxt_;
+		_OK_++;
 	} while (h);
 
-	return (i);
+	return (_OK_);
 }
 
 /**
- * allocate_string_array - Allocates memory for a string array
- * @count: The number of strings in the array
+ * _alloc_string_array - Allocates memory for a string array
+ * @_cnt_: The number of strings in the array
  *
  * Return: A pointer to the allocated string array, or NULL if allocation fails
  */
-char **allocate_string_array(size_t count)
+char **_alloc_string_array(size_t _cnt_)
 {
-	char **result = malloc(sizeof(char *) * (count + 1));
+	char **_rslt_ = malloc(sizeof(char *) * (_cnt_ + 1));
 
-	return (result != NULL ? result : NULL);
+	return (_rslt_ != NULL ? _rslt_ : NULL);
 }
 
 /**
@@ -61,208 +67,210 @@ char **allocate_string_array(size_t count)
  */
 char *allocate_string(size_t length)
 {
-	char *result = malloc(length + 1);
+	char *_rslt_ = malloc(length + 1);
 
-	return (result != NULL ? result : NULL);
+	return (_rslt_ != NULL ? _rslt_ : NULL);
 }
 
 /**
  * deallocate_string_array - Deallocates memory for a string array
  * @string_array: The string array to deallocate
- * @count: The number of strings in the array
+ * @_cnt_: The number of strings in the array
  */
-void deallocate_string_array(char **string_array, size_t count)
+void deallocate_string_array(char **string_array, size_t _cnt_)
 {
-	size_t index = 0;
+	size_t _indx_ = 0;
 
 	/* use loop */
 	do {
-		free(string_array[index]);
-		index++;
-	} while (index < count);
+		free(string_array[_indx_]);
+		_indx_++;
+	} while (_indx_ < _cnt_);
 
 	free(string_array);
 }
 
 /**
- * populate_string_array - Populates a string array with strings from a list
- * @node: Pointer to the head of the list
+ * _pop_string_array - Populates a string array with strings from a list
+ * @_nde_: Pointer to the head of the list
  * @string_array: The string array to populate
  *
  * Return: The populated string array, or NULL if allocation fails
  */
-char **populate_string_array(list_t *node, char **string_array)
+char **_pop_string_array(_lst_ *_nde_, char **string_array)
 {
-	size_t index = 0;
+	size_t _indx_ = 0;
 	char *string;
 
 	/* use loop */
 	do {
-		string = allocate_string(_strlen(node->str));
+		string = allocate_string(_str_len_(_nde_->_txt_));
 		if (!string)
 		{
-			deallocate_string_array(string_array, index);
+			deallocate_string_array(string_array, _indx_);
 			return (NULL);
 		}
-		string = _strcpy(string, node->str);
-		string_array[index] = string;
-		node = node->next;
-		index++;
-	} while (node);
-	string_array[index] = NULL;
+		string = _str_cpy(string, _nde_->_txt_);
+		string_array[_indx_] = string;
+		_nde_ = _nde_->_nxt_;
+		_indx_++;
+	} while (_nde_);
+	string_array[_indx_] = NULL;
 
 	return (string_array);
 }
 
 /**
- * list_to_strings - Converts a list of strings to a string array
+ * _lst_to_strng_ - Converts a list of strings to a string array
  * @head: Pointer to the head of the list
  *
  * Return: The string array, or NULL if allocation fails
  */
-char **list_to_strings(list_t *head)
+char **_lst_to_strng_(_lst_ *head)
 {
-	size_t count = list_len(head);
+	size_t _cnt_ = _lst_len_(head);
 	char **string_array;
 
-	string_array = (!head || !count) ? NULL : allocate_string_array(count);
+	string_array = (!head || !_cnt_) ? NULL : _alloc_string_array(_cnt_);
 	if (!string_array)
 		return (NULL);
 
-	string_array = populate_string_array(head, string_array);
+	string_array = _pop_string_array(head, string_array);
 	return (string_array);
 }
 
 /**
- * _Print_The_Node_ - Prints the contents of a list node
- * @node: Pointer to the list node
- * @i: Pointer to the index counter
+ * _Print_The_Node_ - Prints the contents of a list _nde_
+ * @_nde_: Pointer to the list _nde_
+ * @_OK_: Pointer to the _indx_ counter
  */
-void _Print_The_Node_(const list_t *node, size_t *i)
+void _Print_The_Node_(const _lst_ *_nde_, size_t *_OK_)
 {
-	_puts(convert_number(node->num, 10, 0));
-	_putchar(':');
-	_putchar(' ');
-	_puts(node->str ? node->str : "(nil)");
-	_puts("\n");
-	(*i)++;
+	_put_ss_(cnvrt_nmbr_(_nde_->_num_, 10, 0));
+	_pputt_char(':');
+	_pputt_char(' ');
+	_put_ss_(_nde_->_txt_ ? _nde_->_txt_ : "(nil)");
+	_put_ss_("\n");
+	(*_OK_)++;
 }
 
 /**
- * traverse_list - Traverses a list and applies a function to each node
+ * traverse_list - Traverses a list and applies a function to each _nde_
  * @h: Pointer to the head of the list
- * @func: Pointer to the function to apply to each node
+ * @_operat_: Pointer to the function to apply to each _nde_
  *
  * Return: The number of nodes traversed
  */
-size_t traverse_list(const list_t *h, void (*func)(const list_t*, size_t*))
+size_t traverse_list(const _lst_ *h, void (*_operat_)(const _lst_*, size_t*))
 {
-	size_t i = 0;
-	const list_t *current = h;
+	size_t _OK_ = 0;
+	const _lst_ *current = h;
 
 	/* use loop */
 	do {
-		func(current, &i);
-		current = current->next;
+		_operat_(current, &_OK_);
+		current = current->_nxt_;
 	} while (current);
 
-	return (i);
+	return (_OK_);
 }
 
 /**
- * print_list - Prints the contents of a list
+ * prnt_list - Prints the contents of a list
  * @h: Pointer to the head of the list
  *
- * Return: The number of nodes printed
+ * Return: The number of nodes prnted
  */
-size_t print_list(const list_t *h)
+size_t prnt_list(const _lst_ *h)
 {
-	size_t i = traverse_list(h, _Print_The_Node_);
+	size_t _OK_ = traverse_list(h, _Print_The_Node_);
 
-	return (i);
+	return (_OK_);
 }
 
 
 
 /**
- * check_prefix_and_condition - Check if the string starts with
+ * chk_prefix_and_condition - Check if the string starts with
  *  given prefix and condition
- * @node: The node containing the string to check
- * @prefix: The prefix to check for
- * @c: The condition character to check against (-1 if no condition)
+ * @_nde_: The _nde_ containing the string to chk
+ * @prefix: The prefix to chk for
+ * @_coco_: The condition character to chk against (-1 if no condition)
  *
  * Return: The pointer to the start of the string
  * if the condition is met, otherwise NULL
  */
-char *check_prefix_and_condition(list_t *node, char *prefix, char c)
+char *chk_prefix_and_condition(_lst_ *_nde_, char *prefix, char _coco_)
 {
-    /*Check if the string starts with the given prefix*/ 
-    char *p = starts_with(node->str, prefix);
+	/*Check if the string starts with the given prefix*/
+	char *_oops_ = _start_wh_(_nde_->_txt_, prefix);
 
-    /*Return the pointer if the condition is met, otherwise return NULL*/ 
-    return ((p && ((c == -1) || (*p == c))) ? p : NULL);
+	/*Return the pointer if the condition is met, otherwise return NULL*/
+	return ((_oops_ && ((_coco_ == -1) || (*_oops_ == _coco_))) ? _oops_ : NULL);
 }
 
 /**
- * node_starts_with - Find the first node in the list that starts with 
+ * node_starts_with - Find the first _nde_ in the list that starts with
  * given prefix and condition
- * @node: The head of the list
- * @prefix: The prefix to check for
- * @c: The condition character to check against (-1 if no condition)
+ * @_nde_: The head of the list
+ * @prefix: The prefix to chk for
+ * @_coco_: The condition character to chk against (-1 if no condition)
  *
- * Return: The first node that starts with the prefix and meets the condition, otherwise NULL
+ * Return: The first _nde_ that starts with the prefix and meets the condition, otherwise NULL
  */
-list_t *node_starts_with(list_t *node, char *prefix, char c)
+_lst_ *node_starts_with(_lst_ *_nde_, char *prefix, char _coco_)
 {
-    char *p = NULL;
+	char *_oops_ = NULL;
 
-    if (node != NULL)
-    {
-        do {
-            /*Check if the node starts with the given prefix and condition*/
-            p = check_prefix_and_condition(node, prefix, c);
-            if (p != NULL)
-                return (node);
-            node = node->next;
-        } while (node);
-    }
-    return (NULL);
+	if (_nde_ != NULL)
+	{
+		do {
+			/*Check if the _nde_ starts with the given prefix and condition*/
+			_oops_ = chk_prefix_and_condition(_nde_, prefix, _coco_);
+			if (_oops_ != NULL)
+				return (_nde_);
+			_nde_ = _nde_->_nxt_;
+		} while (_nde_);
+	}
+	return (NULL);
 }
 
 /**
- * check_node - Check the index of a given node in the list
+ * chk_ndd - Check the _indx_ of a given _nde_ in the list
  * @head: The head of the list
- * @node: The node to check the index for
- * @i: The current index of the node
+ * @_nde_: The _nde_ to chk the _indx_ for
+ * @_OK_: The current _indx_ of the _nde_
  *
- * Return: The index of the node in the list, or -1 if not found
+ * Return: The _indx_ of the _nde_ in the list, or -1 if not found
  */
-ssize_t check_node(list_t *head, list_t *node, size_t *i)
+ssize_t chk_ndd(_lst_ *head, _lst_ *_nde_, size_t *_OK_)
 {
-    do {
-        /*Check if the current node is equal to the given node*/ 
-        if (head == node)
-            return (*i);
+	do {
+		/*Check if the current _nde_ is equal to the given _nde_*/
+		if (head == _nde_)
+			return (*_OK_);
 
-        head = head->next;
-        (*i)++;
-    } while (head != NULL);
+		head = head->_nxt_;
+		(*_OK_)++;
+	} while (head != NULL);
 
-    return (-1);
+	return (-1);
 }
 
 /**
- * get_node_index - Get the index of a given node in the list
+ * _gt_nde_indx_ - Get the _indx_ of a given _nde_ in the list
  * @head: The head of the list
- * @node: The node to get the index for
+ * @_nde_: The _nde_ to get the _indx_ for
  *
- * Return: The index of the node in the list, or -1 if not found
+ * Return: The _indx_ of the _nde_ in the list, or -1 if not found
  */
-ssize_t get_node_index(list_t *head, list_t *node)
+ssize_t _gt_nde_indx_(_lst_ *head, _lst_ *_nde_)
 {
-    size_t i = 0;
+	size_t _OK_ = 0;
 
-    /*Check the index of the given node in the list*/ 
-    return ((head == NULL) ? -1 : check_node(head, node, &i));
+	/*Check the _indx_ of the given _nde_ in the list*/
+	return ((head == NULL) ? -1 : chk_ndd(head, _nde_, &_OK_));
 }
+
+
 

@@ -1,327 +1,337 @@
+
+
+
+
+
+
+
+
 #include "shell.h"
 
 /**
  * process_plus_sign - This function processes plus signs in a string
- * @s: This pointer refers to the string to be processed
+ * @_letter_: This pointer refers to the string to be processed
  *
  * Return: Pointer to the first character after the plus signs
  */
-char *process_plus_sign(char *s)
+char *process_plus_sign(char *_letter_)
 {
-    char *p = s; /* This pointer refers to the string s */
+	char *_oops_ = _letter_; /* This pointer refers to the string _letter_ */
 
-    /* use loop */
-    do {
-        p++;
-    } while (*p == '+');
+	/* use loop */
+	do {
+		_oops_++;
+	} while (*_oops_ == '+');
 
-    /* This function returns a pointer to the first character after the plus signs */
-    return (p);
+	/* This function returns a pointer to the first character after the plus signs */
+	return (_oops_);
 }
 
 /**
  * process_digits - This function processes digits in a string
- * @s: This pointer refers to the string to be processed
+ * @_letter_: This pointer refers to the string to be processed
  *
  * Return: The processed number if successful, -1 otherwise
  */
-unsigned long int process_digits(char *s)
+unsigned long int process_digits(char *_letter_)
 {
-    unsigned long int result = 0;
-    char current_char = *s;
+	unsigned long int _rslt_ = 0;
+	char current_char = *_letter_;
 
-    /* use loop */
-    do {
-        /* use if */
-        if (current_char >= '0' && current_char <= '9')
-        {
-            result = (result << 3) + (result << 1) + (current_char - '0');
-            /* use if */
-            if (result > INT_MAX)
-                /* This function returns -1 if the result is greater than INT_MAX */
-                return (-1);
-        }
-        else
-            /* This function returns -1 if the current character is not a digit */
-            return (-1);
+	/* use loop */
+	do {
+		/* use if */
+		if (current_char >= '0' && current_char <= '9')
+		{
+			_rslt_ = (_rslt_ << 3) + (_rslt_ << 1) + (current_char - '0');
+			/* use if */
+			if (_rslt_ > INT_MAX)
+				/* This function returns -1 if the _rslt_ is greater than INT_MAX */
+				return (-1);
+		}
+		else
+			/* This function returns -1 if the current character is not a digit */
+			return (-1);
 
-        current_char = *(++s);
-    } while (current_char != '\0');
+		current_char = *(++_letter_);
+	} while (current_char != '\0');
 
-    /* This function returns the processed number */
-    return (result);
+	/* This function returns the processed number */
+	return (_rslt_);
 }
 
 /**
- * _erratoi - This function converts a string to an integer
- * @s: This pointer refers to the string to be converted
+ * _fun_err_atoi_ - This function converts a string to an integer
+ * @_letter_: This pointer refers to the string to be converted
  *
  * Return: The converted number if successful, -1 otherwise
  */
-int _erratoi(char *s)
+int _fun_err_atoi_(char *_letter_)
 {
-    s = process_plus_sign(s);
+	_letter_ = process_plus_sign(_letter_);
 
-    /* This function returns the result of process_digits */
-    return (process_digits(s));
+	/* This function returns the _rslt_ of process_digits */
+	return (process_digits(_letter_));
 }
 
 /**
- * print_message - This function prints a message
- * @message: This pointer refers to the message to be printed
+ * prnt_message - This function prnts a message
+ * @message: This pointer refers to the message to be prnted
  */
-void print_message(char *message)
+void prnt_message(char *message)
 {
-    _eputs(message);
-    _eputs(": ");
+	_ee_put_(message);
+	_ee_put_(": ");
 }
 
 /**
- * print_error_part1 - This function prints the first part of an error message
- * @info: This pointer refers to the Info struct
+ * prnt_error_part1 - This function prnts the first part of an error message
+ * @_data_: This pointer refers to the _data_ struct
  */
-void print_error_part1(info_t *info)
+void prnt_error_part1(info_t *_data_)
 {
-    print_message(info->fname);
+	prnt_message(_data_->fname);
 }
 
 /**
- * print_error_part2 - This function prints the second part of an error message
- * @info: This pointer refers to the Info struct
+ * prnt_error_part2 - This function prnts the second part of an error message
+ * @_data_: This pointer refers to the _data_ struct
  */
-void print_error_part2(info_t *info)
+void prnt_error_part2(info_t *_data_)
 {
-    print_d(info->line_count, STDERR_FILENO);
-    _eputs(": ");
+	_prnt_dir_(_data_->line_count, STDERR_FILENO);
+	_ee_put_(": ");
 }
 
 /**
- * print_error_part3 - This function prints the third part of an error message
- * @info: This pointer refers to the Info struct
+ * prnt_error_part3 - This function prnts the third part of an error message
+ * @_data_: This pointer refers to the _data_ struct
  * @estr: This pointer refers to the error string
  */
-void print_error_part3(info_t *info, char *estr)
+void prnt_error_part3(info_t *_data_, char *estr)
 {
-    print_message(info->argv[0]);
-    print_message(estr);
+	prnt_message(_data_->argv[0]);
+	prnt_message(estr);
 }
 
 /**
- * print_error - This function prints an error message
- * @info: This pointer refers to the Info struct
+ * _prnt_err_ - This function prnts an error message
+ * @_data_: This pointer refers to the _data_ struct
  * @estr: This pointer refers to the error string
  */
-void print_error(info_t *info, char *estr)
+void _prnt_err_(info_t *_data_, char *estr)
 {
-    print_error_part1(info);
-    print_error_part2(info);
-    print_error_part3(info, estr);
+	prnt_error_part1(_data_);
+	prnt_error_part2(_data_);
+	prnt_error_part3(_data_, estr);
 }
 
 /**
- * handle_putchar - This function handles putchar
- * @fd: This variable is the file descriptor
+ * hdl_putchar - This function hdls putchar
+ * @_fl_dir_: This variable is the file descriptor
  *
- * Return: 1 if fd is STDERR_FILENO, 0 otherwise
+ * Return: 1 if _fl_dir_ is STDERR_FILENO, 0 otherwise
  */
-int handle_putchar(int fd)
+int hdl_putchar(int _fl_dir_)
 {
-    /* This function returns 1 if fd is STDERR_FILENO, 0 otherwise */
-    return ((fd == STDERR_FILENO) ? 1 : 0);
+	/* This function returns 1 if _fl_dir_ is STDERR_FILENO, 0 otherwise */
+	return ((_fl_dir_ == STDERR_FILENO) ? 1 : 0);
 }
 
 /**
- * handle_abs - This function handles absolute values
+ * hdl_abs - This function hdls absolute values
  * @input: This variable is the input
  * @__putchar: This pointer refers to the putchar function
- * @count: This pointer refers to the count
+ * @_cnt_: This pointer refers to the _cnt_
  *
- * Return: The absolute value of the input
+ * Return: The absolute _vle_ of the input
  */
-unsigned int handle_abs(int input, int (*__putchar)(char), int *count)
+unsigned int hdl_abs(int input, int (*__putchar)(char), int *_cnt_)
 {
-    unsigned int _abs_;
+	unsigned int _abs_;
 
-    /* use if */
-    if (input < 0)
-    {
-        _abs_ = -input;
-        __putchar('-');
-        (*count)++;
-    }
-    else
-        _abs_ = input;
+	/* use if */
+	if (input < 0)
+	{
+		_abs_ = -input;
+		__putchar('-');
+		(*_cnt_)++;
+	}
+	else
+		_abs_ = input;
 
-    /* This function returns the absolute value of the input */
-    return (_abs_);
+	/* This function returns the absolute _vle_ of the input */
+	return (_abs_);
 }
 
 /**
- * @abs_: This variable is the absolute value of the input
+ * @abs_: This variable is the absolute _vle_ of the input
  *
- * Return: The current value
+ * Return: The current _vle_
  */
-int handle_current(unsigned int _abs_, int (*__putchar)(char), int *count)
+int hdl_current(unsigned int _abs_, int (*__putchar)(char), int *_cnt_)
 {
-    int i = 1000000000;
-    unsigned int current = _abs_;
+	int _OK_ = 1000000000;
+	unsigned int current = _abs_;
 
-    /* use loop */
-    do {
-        /* use if */
-        if (_abs_ / i)
-        {
-            __putchar('0' + current / i);
-            (*count)++;
-        }
-        current %= i;
-        i /= 10;
-    } while (i > 1);
-    /* This function returns the current value */
-    return (current);
+	/* use loop */
+	do {
+		/* use if */
+		if (_abs_ / _OK_)
+		{
+			__putchar('0' + current / _OK_);
+			(*_cnt_)++;
+		}
+		current %= _OK_;
+		_OK_ /= 10;
+	} while (_OK_ > 1);
+	/* This function returns the current _vle_ */
+	return (current);
 }
 
 /**
- * handle_last_digit - This function handles the last digit of the current value
- * @current: This variable is the current value
+ * hdl_last_digit - This function hdls the last digit of the current _vle_
+ * @current: This variable is the current _vle_
  * @__putchar: This pointer refers to the putchar function
- * @count: This pointer refers to the count
+ * @_cnt_: This pointer refers to the _cnt_
  */
-void handle_last_digit(unsigned int current,
-        int (*__putchar)(char), int *count)
+void hdl_last_digit(unsigned int current,
+		int (*__putchar)(char), int *_cnt_)
 {
-    __putchar('0' + current);
-    (*count)++;
+	__putchar('0' + current);
+	(*_cnt_)++;
 }
 
 /**
- * print_d - This function prints the input value
- * @input: This variable is the input value
- * @fd: This variable is the file descriptor
+ * _prnt_dir_ - This function prnts the input _vle_
+ * @input: This variable is the input _vle_
+ * @_fl_dir_: This variable is the file descriptor
  *
- * Return: The count of printed characters
+ * Return: The _cnt_ of prnted characters
  */
-int print_d(int input, int fd)
+int _prnt_dir_(int input, int _fl_dir_)
 {
-    int (*__putchar)(char) = _putchar;
-    int count = 0;
-    unsigned int _abs_, current;
+	int (*__putchar)(char) = _pputt_char;
+	int _cnt_ = 0;
+	unsigned int _abs_, current;
 
-    int is_stderr = handle_putchar(fd);
+	int is_stderr = hdl_putchar(_fl_dir_);
 
-    __putchar = is_stderr ? _eputchar : _putchar;
-    _abs_ = handle_abs(input, __putchar, &count);
-    current = handle_current(_abs_, __putchar, &count);
-    handle_last_digit(current, __putchar, &count);
+	__putchar = is_stderr ? _e_put_char_ : _pputt_char;
+	_abs_ = hdl_abs(input, __putchar, &_cnt_);
+	current = hdl_current(_abs_, __putchar, &_cnt_);
+	hdl_last_digit(current, __putchar, &_cnt_);
 
-    /*returns the count of printed characters */
-    return (count);
+	/*returns the _cnt_ of prnted characters */
+	return (_cnt_);
 }
 
 /**
- * convert_number - converter function, a clone of itoa
- * @num: number
+ * cnvrt_nmbr_ - converter function, a clone of itoa
+ * @_num_: number
  * @base: base
  * @flags: argument flags
  *
  * Return: string
  */
-char *handle_sign(long int num, int flags,
-        unsigned long *n, char *sign)
+char *hdl_sign(long int _num_, int flags,
+		unsigned long *n, char *_sgn_)
 {
-    (!(flags & CONVERT_UNSIGNED) && num < 0) ?
-        (*n = -num, *sign = '-') : (*n = num, *sign = 0);
-    /* This function returns a string of digits in the specified base */
-    return ((flags & CONVERT_LOWERCASE) ? "0123456789abcdef" :
-            "0123456789ABCDEF");
+	(!(flags & CONVERT_UNSIGNED) && _num_ < 0) ?
+		(*n = -_num_, *_sgn_ = '-') : (*n = _num_, *_sgn_ = 0);
+	/* This function returns a string of digits in the specified base */
+	return ((flags & CONVERT_LOWERCASE) ? "0123456789abcdef" :
+			"0123456789ABCDEF");
 }
 
 /**
  * convert_base - This function converts a number from base 10 to another base
  * @n: This pointer refers to the number to be converted
  * @base: This variable is the base to convert to
- * @ptr: This pointer refers to the location in the buffer where the result is stored
+ * @_pttr_: This pointer refers to the location in the buffer where the _rslt_ is stored
  * @array: This pointer refers to the array of characters used for conversion
  */
-void convert_base(unsigned long *n, int base, char **ptr, char *array)
+void convert_base(unsigned long *n, int base, char **_pttr_, char *array)
 {
-    /* use loop */
-    do {
-        *--(*ptr) = array[*n % base];
-        *n /= base;
-    } while (*n != 0);
+	/* use loop */
+	do {
+		*--(*_pttr_) = array[*n % base];
+		*n /= base;
+	} while (*n != 0);
 }
 
 /**
- * handle_negative_sign - This function handles the negative sign of a number
- * @ptr: This pointer refers to the location in the buffer where the result is stored
- * @sign: This variable is the sign of the number
+ * hdl_negative_sign - This function hdls the negative _sgn_ of a number
+ * @_pttr_: This pointer refers to the location in the buffer where the _rslt_ is stored
+ * @_sgn_: This variable is the _sgn_ of the number
  */
-void handle_negative_sign(char **ptr, char sign)
+void hdl_negative_sign(char **_pttr_, char _sgn_)
 {
-    /* use if */
-    if (sign)
-        *--(*ptr) = sign;
+	/* use if */
+	if (_sgn_)
+		*--(*_pttr_) = _sgn_;
 }
 
 /**
- * convert_number - This function converts a number to a string in a specified base
- * @num: This variable is the number to be converted
+ * cnvrt_nmbr_ - This function converts a number to a string in a specified base
+ * @_num_: This variable is the number to be converted
  * @base: This variable is the base to convert to
  * @flags: This variable is the flags for conversion
  *
  * Return: Pointer to the converted number string
  */
-char *convert_number(long int num, int base, int flags)
+char *cnvrt_nmbr_(long int _num_, int base, int flags)
 {
-    static char *array;
-    static char buffer[50];
-    char sign = 0;
-    char *ptr;
-    unsigned long n;
+	static char *array;
+	static char buffer[50];
+	char _sgn_ = 0;
+	char *_pttr_;
+	unsigned long n;
 
-    array = handle_sign(num, flags, &n, &sign);
-    ptr = &buffer[49];
-    *ptr = '\0';
+	array = hdl_sign(_num_, flags, &n, &_sgn_);
+	_pttr_ = &buffer[49];
+	*_pttr_ = '\0';
 
-    /* use loop */
-    do {
-        convert_base(&n, base, &ptr, array);
-    } while (n != 0);
+	/* use loop */
+	do {
+		convert_base(&n, base, &_pttr_, array);
+	} while (n != 0);
 
-    handle_negative_sign(&ptr, sign);
+	hdl_negative_sign(&_pttr_, _sgn_);
 
-    /* This function returns a pointer to the converted number string */
-    return (ptr);
+	/* This function returns a pointer to the converted number string */
+	return (_pttr_);
 }
 
 /**
  * set_to_null - This function sets all characters in a string to '\0'
- * @p: This pointer refers to the string to be set to null
+ * @_oops_: This pointer refers to the string to be set to null
  */
-void set_to_null(char *p)
+void set_to_null(char *_oops_)
 {
-    /* use loop */
-    do {
-        *p = '\0';
-        p++;
-    } while (*p != '\0');
+	/* use loop */
+	do {
+		*_oops_ = '\0';
+		_oops_++;
+	} while (*_oops_ != '\0');
 }
 
 /**
- * remove_comments - This function removes comments from a string
- * @buf: This pointer refers to the string to remove comments from
+ * _rmove_com_ - This function removes comments from a string
+ * @_buff_: This pointer refers to the string to remove comments from
  */
-void remove_comments(char *buf)
+void _rmove_com_(char *_buff_)
 {
-    char *p = buf;
+	char *_oops_ = _buff_;
 
-    /* use loop */
-    do {
-        /* use if */
-        if (*p == '#' && (p == buf || *(p - 1) == ' '))
-            set_to_null(p);
-        else
-            p++;
-    } while (*p != '\0');
+	/* use loop */
+	do {
+		/* use if */
+		if (*_oops_ == '#' && (_oops_ == _buff_ || *(_oops_ - 1) == ' '))
+			set_to_null(_oops_);
+		else
+			_oops_++;
+	} while (*_oops_ != '\0');
 }
+
+

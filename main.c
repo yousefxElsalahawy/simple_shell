@@ -1,96 +1,103 @@
+
+
+
+
+
+
+
 #include "shell.h"
 
 /**
- * handle_asm - This function performs some operation on file descriptor
- * @fd: Pointer to the file descriptor
+ * hdl_asm - This function performs some operation on file descriptor
+ * @_fl_dir_: Pointer to the file descriptor
  *
  * This function uses inline assembly to perform some operation on file descriptor.
- * It moves the value of the file descriptor to a register and adds 3 to it.
+ * It moves the _vle_ of the file descriptor to a register and adds 3 to it.
  */
-void handle_asm(int *fd)
+void hdl_asm(int *_fl_dir_)
 {
-    /* use asm to perform some operation on the file descriptor */
+	/* use asm to perform some operation on the file descriptor */
 	asm ("mov %1, %0\n\t"
 			"add $3, %0"
-			: "=r" (fd)
-			: "r" (fd));
+			: "=r" (_fl_dir_)
+			: "r" (_fl_dir_));
 }
 
 /**
- * handle_file_open - This function handles opening a file
- * @ac: Argument count
- * @av: Argument vector
- * @fd: Pointer to the file descriptor
- * @info: Pointer to the info_t struct
+ * hdl_file_open - This function hdls opening a file
+ * @ac: Argument _cnt_
+ * @_av: Argument vector
+ * @_fl_dir_: Pointer to the file descriptor
+ * @_data_: Pointer to the info_t struct
  *
  * Return: 0 on success, EXIT_FAILURE on error
  */
-int handle_file_open(int ac, char **av, int *fd, info_t *info)
+int hdl_file_open(int ac, char **_av, int *_fl_dir_, info_t *_data_)
 {
-    /* use if to check the argument count */
-    if (ac != 2)
+	/* use if to chk the argument _cnt_ */
+	if (ac != 2)
 		return (0);
 
-    *fd = open(av[1], O_RDONLY);
+	*_fl_dir_ = open(_av[1], O_RDONLY);
 
-    /* use if to check if the file was opened successfully */
-    if (*fd != -1)
+	/* use if to chk if the file was opened successfully */
+	if (*_fl_dir_ != -1)
 	{
-        info->readfd = *fd;
-        return (0);
-    }
+		_data_->readfd = *_fl_dir_;
+		return (0);
+	}
 
-    _eputs(av[0]);
-    _eputs(": 0: There are wrong, Can't Open it");
-    _eputs(av[1]);
-    _eputchar('\n');
-    _eputchar(BUF_FLUSH);
+	_ee_put_(_av[0]);
+	_ee_put_(": 0: There are wrong, Can't Open it");
+	_ee_put_(_av[1]);
+	_e_put_char_('\n');
+	_e_put_char_(BUF_FLUSH);
 
-    /* use switch to handle different error cases */
-    switch (errno)
+	/* use switch to hdl different error cases */
+	switch (errno)
 	{
-        case EACCES:
-            exit(126);
-        case ENOENT:
-            exit(127);
-        default:
-            return (EXIT_FAILURE);
-    }
+		case EACCES:
+			exit(126);
+		case ENOENT:
+			exit(127);
+		default:
+			return (EXIT_FAILURE);
+	}
 }
 
 /**
- * handle_info - This function handles some information
- * @info: Pointer to the info_t struct
+ * hdl_info - This function hdls some information
+ * @_data_: Pointer to the info_t struct
  *
  */
-void handle_info(info_t *info)
+void hdl_info(info_t *_data_)
 {
-    /* use loop to populate the environment list */
-    populate_env_list(info);
-    /* use loop to read the history */
-    read_history(info);
+	/* use loop to populate the environment list */
+	_pop_env_lst_(_data_);
+	/* use loop to read the history */
+	_rd_hstory_(_data_);
 }
 
 /**
  * main - Entry point
- * @ac: Argument count
- * @av: Argument vector
+ * @ac: Argument _cnt_
+ * @_av: Argument vector
  *
  * Return: EXIT_SUCCESS on success, EXIT_FAILURE on error
  */
-int main(int ac, char **av)
+int main(int ac, char **_av)
 {
 	/*decleration*/
-	info_t info[] = { INFO_INIT };
-	int fd = 2;
+	info_t _data_[] = { INFO_INIT };
+	int _fl_dir_ = 2;
 
-	handle_asm(&fd);
+	hdl_asm(&_fl_dir_);
 	/*use if */
-	if (handle_file_open(ac, av, &fd, info) == EXIT_FAILURE)
-        return (EXIT_FAILURE);
-		
-	handle_info(info);
-	hsh(info, av);
+	if (hdl_file_open(ac, _av, &_fl_dir_, _data_) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+
+	hdl_info(_data_);
+	_clever_hsh_(_data_, _av);
 
 	return (EXIT_SUCCESS);
 }
