@@ -1,7 +1,5 @@
 
 
-
-
 #include "shell.h"
 
 
@@ -138,6 +136,232 @@ void chk_chain(_info_OK *_data_, char *_bbuuff_,
 
 
 
+
+
+
+
+
+
+
+
+
+/*****************************************/
+/**
+ * _gett_ndd_ - Retrieves a _nddee_ from the _alias_nd_ list
+ * @_data_: This pointer refers to the parameter struct
+ *
+ * Return: _nddee_ if found, NULL otherwise
+ */
+_lst_ *_gett_ndd_(_info_OK *_data_)
+{
+    /* Use if */
+    if (!_data_)
+        return (NULL);
+
+    return (_nde_strt_wth_(_data_->_alias_nd_, _data_->_arguv_[0], '=')); /* Returns _nddee_ if found, NULL otherwise */
+}
+
+/**
+ * get_new_p - Retrieves a _nww_ pointer from the _nddee_
+ * @_nddee_: This pointer refers to the _nddee_
+ *
+ * Return: _nww_ pointer if found, NULL otherwise
+ */
+char *get_new_p(_lst_ *_nddee_)
+{
+    /* Declaration */
+    char *_oqo_;
+
+    /* Use if */
+    if (!_nddee_)
+        return (NULL);
+
+    _oqo_ = _str_n_chr(_nddee_->_txt_, '=');
+
+    return (_oqo_ ? _str_dupp_(_oqo_ + 1) : NULL); /* Returns _nww_ pointer if found, NULL otherwise */
+}
+
+/**
+ * _rplce_als_ - Replaces the _alias_nd_ in the _arguv_[0] with the _vlle_ from the _alias_nd_ list
+ * @_data_: This pointer refers to the parameter struct
+ *
+ * Return: 1 if _alias_nd_ is replaced, 0 otherwise
+ */
+int _rplce_als_(_info_OK *_data_)
+{
+    /* Declaration */
+    int _oops_ = 0;
+    _lst_ *_nddee_;
+    char *_oqo_;
+
+    /* Use if */
+    if (!_data_)
+        return (0);
+
+    /* Use loop */
+    do {
+        _nddee_ = _gett_ndd_(_data_);
+
+        /* Use if */
+        if (!_nddee_)
+            return (0);
+
+        _oqo_ = get_new_p(_nddee_);
+
+        /* Use if */
+        if (!_oqo_)
+            return (0);
+        free(_data_->_arguv_[0]);
+        _data_->_arguv_[0] = _oqo_;
+        _oops_++;
+    } while (_oops_ < 10 && _data_->_arguv_[0] == NULL);
+
+    return (_data_->_arguv_[0] != NULL); /* Returns 1 if _alias_nd_ is replaced, 0 otherwise */
+}
+
+/**
+ * _chk_var_type - Checks the _style of the variable in _arguv_[_oops_]
+ * @_data_: This pointer refers to the parameter struct
+ * @_oops_: This variable refers to the _indx_ of _arguv_
+ *
+ * Return: 0 if not a variable, 1 if _cmdd_status_ variable, 2 if PID variable, 3 otherwise
+ */
+int _chk_var_type(_info_OK *_data_, int _oops_)
+{
+    /* Use if */
+    if (_data_->_arguv_[_oops_][0] != '$' || !_data_->_arguv_[_oops_][1])
+        return 0;
+    else if (!_str_cmpp_(_data_->_arguv_[_oops_], "$?"))
+        return 1;
+    else if (!_str_cmpp_(_data_->_arguv_[_oops_], "$$"))
+        return 2;
+    else
+        return 3; /* Returns 0 if not a variable, 1 if _cmdd_status_ variable, 2 if PID variable, 3 otherwise */
+}
+
+/**
+ * _rep_str_with_value - Replaces the string in _arguv_[_oops_] with the _vlle_
+ * @_data_: This pointer refers to the parameter struct
+ * @_oops_: This variable refers to the _indx_ of _arguv_
+ * @_vlle_: This variable refers to the _vlle_ to replace with
+ *
+ * Return: Nothing (void function)
+ */
+void _rep_str_with_value(_info_OK *_data_, int _oops_, int _vlle_)
+{
+    _rplce_str_(&(_data_->_arguv_[_oops_]), _str_dupp_(cnvrt_nmbr_(_vlle_, 10, 0)));
+}
+
+/**
+ * _get_ndd_ - Retrieves a _nddee_ from the environment list
+ * @_data_: This pointer refers to the parameter struct
+ * @_oops_: This variable refers to the _indx_ of _arguv_
+ *
+ * Return: _nddee_ if found, NULL otherwise
+ */
+_lst_ *_get_ndd_(_info_OK *_data_, int _oops_)
+{
+    return _nde_strt_wth_(_data_->_my_env, &_data_->_arguv_[_oops_][1], '='); /* Returns _nddee_ if found, NULL otherwise */
+}
+
+/**
+ * _rep_with_node_value - Replaces the string in _arguv_[_oops_] with the _vlle_ from the _nddee_
+ * @_data_: This pointer refers to the parameter struct
+ * @_oops_: This variable refers to the _indx_ of _arguv_
+ * @_nddee_: This pointer refers to the _nddee_
+ *
+ * Return: Nothing (void function)
+ */
+void _rep_with_node_value(_info_OK *_data_, int _oops_, _lst_ *_nddee_)
+{
+    _rplce_str_(&(_data_->_arguv_[_oops_]), _str_dupp_(_str_n_chr(_nddee_->_txt_, '=') + 1));
+}
+
+/**
+ * _rep_with_empty_str - Replaces the string in _arguv_[_oops_] with an empty string
+ * @_data_: This pointer refers to the parameter struct
+ * @_oops_: This variable refers to the _indx_ of _arguv_
+ *
+ * Return: Nothing (void function)
+ */
+void _rep_with_empty_str(_info_OK *_data_, int _oops_)
+{
+    _rplce_str_(&_data_->_arguv_[_oops_], _str_dupp_(""));
+}
+
+
+/**
+ * rplce_vrs_ - Replaces the variables in _arguv_ with their corresponding values
+ * @_data_: This pointer refers to the parameter struct
+ *
+ * Return: 0 (void function)
+ */
+int rplce_vrs_(_info_OK *_data_)
+{
+    /* Declaration */
+    int _oops_ = 0;
+    _lst_ *_nddee_;
+    int var_type;
+
+    /* Use loop */
+    do {
+        var_type = _chk_var_type(_data_, _oops_);
+
+        /* Use switch */
+        switch (var_type)
+        {
+        case 0:
+            _oops_++;
+            continue;
+        case 1:
+            _rep_str_with_value(_data_, _oops_, _data_->_cmdd_status_);
+            break;
+        case 2:
+            if (kill(getpid(), 0) == 0)
+			{
+                _rep_str_with_value(_data_, _oops_, getpid());
+            }
+			else
+			{
+                _rep_with_empty_str(_data_, _oops_);
+            }
+            break;
+        case 3:
+            _nddee_ = _get_ndd_(_data_, _oops_);
+            if (_nddee_)
+                _rep_with_node_value(_data_, _oops_, _nddee_);
+            else
+                _rep_with_empty_str(_data_, _oops_);
+            break;
+        }
+        _oops_++;
+    } while (_data_->_arguv_[_oops_]);
+
+    return (0); /* Returns 0 (void function) */
+}
+
+/**
+ * _rplce_str_ - Replaces _aodd_ string with _nww_ string
+ * @_aodd_: This pointer refers to the _aodd_ string
+ * @_nww_: This pointer refers to the _nww_ string
+ *
+ * Return: 1 if replaced, 0 otherwise
+ */
+int _rplce_str_(char **_aodd_, char *_nww_)
+{
+    /* Use if */
+    if (_aodd_ == NULL || _nww_ == NULL)
+    {
+        _put_ss_("Error: Null pointer passed to _rplce_str_\n");
+        return (0); /* Returns 0 if either _aodd_ or _nww_ is NULL */
+    }
+    if (*_aodd_ != _nww_)
+    {
+        free(*_aodd_);
+        *_aodd_ = _nww_;
+    }
+    return (1); /* Returns 1 if replaced */
+}
 
 
 

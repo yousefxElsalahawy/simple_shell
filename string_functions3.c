@@ -107,6 +107,24 @@ void cpy_chars(char *_desst, char *_srcc, int _sstrtt_, int n)
     _desst[_sstrtt_ + j] = (j < n) ? '\0' : _desst[_sstrtt_ + j];
 }
 
+
+/**
+ * _str_n_cat - This function concatenates two strings
+ * @_desst: This pointer refers to the destination string
+ * @_srcc: This pointer refers to the source string
+ * @n: This variable is the maximum number of characters to concatenate
+ *
+ * Return: Pointer to the destination string
+ */
+char *_str_n_cat(char *_desst, char *_srcc, int n)
+{
+    int Q = find_length(_desst); /* find the length of the destination string */
+
+    cpy_chars(_desst, _srcc, Q, n); /* copy characters from source to destination */
+
+    /* This function returns a pointer to the destination string */
+    return (_desst);
+}
 /**
  * chk_char - This function chks if a character is equal to another character
  * @_aso_: This pointer refers to the character to chk
@@ -146,5 +164,7 @@ char *_str_n_chr(char *_aso_, char _coco_c)
     /* This function returns NULL if the character is not found */
     return (_rultt_);
 }
+
+
 
 
