@@ -1,107 +1,112 @@
+
+
+
+
+
 #include "shell.h"
 
 /**
  * _eputchar_loop - This function prints a character to the standard error
- * @str: This pointer refers to the string to be printed
- * @i: This variable is used as the index for the string
+ * @_txt_: This pointer refers to the string to be printed
+ * @_oops_: This variable is used as the _indx_ for the string
  */
-void _eputchar_loop(char *str, int i)
+void _eputchar_loop(char *_txt_, int _oops_)
 {
-	int j = i; /*declaration*/
+	int j = _oops_; /*declaration*/
 
-	if (str[j] != '\0') /*use if*/
+	if (_txt_[j] != '\0') /*use if*/
 	{
-		_eputchar(str[j]);
-		_eputchar_loop(str, j + 1);
+		_e_put_char_(_txt_[j]);
+		_eputchar_loop(_txt_, j + 1);
 	}
 }
 
 /**
- * _eputs - This function prints a string to the standard error
- * @str: This pointer refers to the string to be printed
+ * _ee_put_ - This function prints a string to the standard error
+ * @_txt_: This pointer refers to the string to be printed
  */
-void _eputs(char *str)
+void _ee_put_(char *_txt_)
 {
-	char *temp = str; /*declaration*/
+	char *_tmpp_ = _txt_; /*declaration*/
 
-	if (!temp)
+	if (!_tmpp_)
 		return;
-	_eputchar_loop(temp, 0);
+	_eputchar_loop(_tmpp_, 0);
 }
 
 /**
- * _buffer_flush - This function flushes the buffer
- * @buf: This pointer refers to the buffer to be flushed
- * @i: This variable is used as the index for the buffer
+ * _buffer_flush - This function flushes the _obuf_fer_
+ * @_bbuuff_: This pointer refers to the _obuf_fer_ to be flushed
+ * @_oops_: This variable is used as the _indx_ for the _obuf_fer_
  */
-void _buffer_flush(char *buf, int *i)
+void _buffer_flush(char *_bbuuff_, int *_oops_)
 {
-	int j = *i; /*declaration*/
+	int j = *_oops_; /*declaration*/
 
-	if (i == NULL) /*use if*/
+	if (_oops_ == NULL) /*use if*/
 		return;
 
-	write(2, buf, j);
-	*i = 0;
+	write(2, _bbuuff_, j);
+	*_oops_ = 0;
 }
 
 /**
- * _eputchar - This function writes a character to the buffer
- * @c: This variable is the character to be written
+ * _e_put_char_ - This function writes a character to the _obuf_fer_
+ * @_coco_c: This variable is the character to be written
  *
  * Return: 1 (success)
  */
-int _eputchar(char c)
+int _e_put_char_(char _coco_c)
 {
-	static int i; /*declaration*/
-	static char buf[WRITE_BUF_SIZE]; /*declaration*/
-	char temp = c; /*declaration*/
+	static int _oops_; /*declaration*/
+	static char _bbuuff_[_SIZE_BUFF_WRITE]; /*declaration*/
+	char _tmpp_ = _coco_c; /*declaration*/
 
-	if (temp == BUF_FLUSH || i >= WRITE_BUF_SIZE) /*use if*/
-		_buffer_flush(buf, &i);
+	if (_tmpp_ == _BUFFER_FLUSH || _oops_ >= _SIZE_BUFF_WRITE) /*use if*/
+		_buffer_flush(_bbuuff_, &_oops_);
 
-	if (temp != BUF_FLUSH) /*use if*/
-		buf[i++] = temp;
+	if (_tmpp_ != _BUFFER_FLUSH) /*use if*/
+		_bbuuff_[_oops_++] = _tmpp_;
 	return (1); /*returns 1 on success*/
 }
 
 /**
- * _write_to_buffer - This function writes to a buffer
- * @buf_ptr: This pointer refers to the buffer pointer
- * @buf_end: This pointer refers to the end of the buffer
- * @fd: This variable is the file descriptor
+ * _write_to_buffer - This function writes to a _obuf_fer_
+ * @buf_ptr: This pointer refers to the _obuf_fer_ pointer
+ * @_buff_end: This pointer refers to the _End of the _obuf_fer_
+ * @_fl_dir_: This variable is the file descriptor
  */
-void _write_to_buffer(char **buf_ptr, char *buf_end, int fd)
+void _write_to_buffer(char **buf_ptr, char *_buff_end, int _fl_dir_)
 {
-	int count = *buf_ptr - buf_end; /*declaration*/
+	int _ocntt_ = *buf_ptr - _buff_end; /*declaration*/
 
-	if (count > 0) /*use if*/
+	if (_ocntt_ > 0) /*use if*/
 	{
-		write(fd, buf_end, count);
+		write(_fl_dir_, _buff_end, _ocntt_);
 
-		*buf_ptr = buf_end;
+		*buf_ptr = _buff_end;
 	}
 }
 
 /**
- * _putfd - This function writes a character to a file descriptor
- * @c: This variable is the character to be written
- * @fd: This variable is the file descriptor
+ * _put_fdd_ - This function writes a character to a file descriptor
+ * @_coco_c: This variable is the character to be written
+ * @_fl_dir_: This variable is the file descriptor
  *
  * Return: 1 (success)
  */
-int _putfd(char c, int fd)
+int _put_fdd_(char _coco_c, int _fl_dir_)
 {
-	static char buf[WRITE_BUF_SIZE]; /*declaration*/
-	static char *buf_ptr = buf; /*declaration*/
+	static char _bbuuff_[_SIZE_BUFF_WRITE]; /*declaration*/
+	static char *buf_ptr = _bbuuff_; /*declaration*/
 
-	if (c == BUF_FLUSH || buf_ptr >= buf + WRITE_BUF_SIZE) /*use if*/
+	if (_coco_c == _BUFFER_FLUSH || buf_ptr >= _bbuuff_ + _SIZE_BUFF_WRITE) /*use if*/
 	{
-		_write_to_buffer(&buf_ptr, buf, fd);
+		_write_to_buffer(&buf_ptr, _bbuuff_, _fl_dir_);
 	}
 	else
 	{
-		*buf_ptr = c;
+		*buf_ptr = _coco_c;
 		buf_ptr++;
 	}
 	return (1); /*returns 1 on success*/
@@ -109,33 +114,34 @@ int _putfd(char c, int fd)
 
 /**
  * _putfd_loop - This function writes a string to a file descriptor
- * @str: This pointer refers to the string to be written
- * @fd: This variable is the file descriptor
- * @i: This variable is used as the index for the string
+ * @_txt_: This pointer refers to the string to be written
+ * @_fl_dir_: This variable is the file descriptor
+ * @_oops_: This variable is used as the _indx_ for the string
  *
- * Return: i (the number of characters written)
+ * Return: _oops_ (the number of characters written)
  */
-int _putfd_loop(char **str, int fd, int i)
+int _putfd_loop(char **_txt_, int _fl_dir_, int _oops_)
 {
-	if (!**str) /*use if*/
-		return (i);
+	if (!**_txt_) /*use if*/
+		return (_oops_);
 
-	i += _putfd(**str, fd);
-	(*str)++;
-	return (_putfd_loop(str, fd, i));
+	_oops_ += _put_fdd_(**_txt_, _fl_dir_);
+	(*_txt_)++;
+	return (_putfd_loop(_txt_, _fl_dir_, _oops_));
 	/*returns the number of characters written*/
 }
 
 /**
- * _putsfd - This function writes a string to a file descriptor
- * @str: This pointer refers to the string to be written
- * @fd: This variable is the file descriptor
+ * _put_s_fdd_ - This function writes a string to a file descriptor
+ * @_txt_: This pointer refers to the string to be written
+ * @_fl_dir_: This variable is the file descriptor
  *
  * Return: the number of characters written, or 0 if the string is NULL
  */
-int _putsfd(char *str, int fd)
+int _put_s_fdd_(char *_txt_, int _fl_dir_)
 {
-	return (str ? _putfd_loop(&str, fd, 0) : 0);
+	return (_txt_ ? _putfd_loop(&_txt_, _fl_dir_, 0) : 0);
 
 	/*returns the number of characters written, or 0 if the string is NULL*/
 }
+

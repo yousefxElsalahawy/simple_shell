@@ -1,112 +1,150 @@
+
 #include "shell.h"
 
 /**
- **_strncpy - copies a string
- *@dest: the destination string to be copied to
- *@src: the source string
- *@n: the amount of characters to be copied
- *Return: the concatenated string
+ * _copy_chars_ - This function copies a string to another string
+ * @_desst: This pointer refers to the destination string
+ * @_srcc: This pointer refers to the source string
+ * @n: This variable is the maximum number of characters to copy
+ *
+ * Return: Pointer to the destination string
  */
-char *_copy_chars_(char *dest, char *src, int n)
+char *_copy_chars_(char *_desst, char *_srcc, int n)
 {
+    int _oops_ = 0;
 
-	int i = 0;
+    /* use loop */
+    while (_srcc[_oops_] != '\0' && _oops_ < n - 1)
+    {
+        _desst[_oops_] = _srcc[_oops_];
+        _oops_++;
+    }
+    _desst[_oops_] = '\0';
 
-	while (src[i] != '\0' && i < n - 1)
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-
-	return (dest);
-}
-
-char *fill_remaining_with_null(char *dest, int start, int n)
-{
-	int j = start;
-
-	do {
-		dest[j] = '\0';
-		j++;
-	} while (j < n);
-
-	return dest;
-}
-
-char *_strncpy(char *dest, char *src, int n)
-{
-	char *s = dest;
-	int i;
-
-	s = _copy_chars_(s, src, n);
-
-	i = _strlen(s);
-
-	s = (i < n) ? fill_remaining_with_null(s, i, n) : s;
-	return (s);
+    /* This function returns a pointer to the destination string */
+    return (_desst);
 }
 
 /**
- **_strncat - concatenates two strings
- *@dest: the first string
- *@src: the second string
- *@n: the amount of bytes to be maximally used
- *Return: the concatenated string
+ * _fll_remain_wth_nll - This function fills the remaining characters of a string with null
+ * @_desst: This pointer refers to the string to fill
+ * @_sstrtt_: This variable is the starting _indx_ to fill
+ * @n: This variable is the maximum number of characters to fill
+ *
+ * Return: Pointer to the filled string
  */
-int find_length(char *str)
+char *_fll_remain_wth_nll(char *_desst, int _sstrtt_, int n)
 {
-	int i = 0;
+    int j = _sstrtt_;
 
-	do {
-		i++;
-	} while (str[i] != '\0');
-	return (i - 1);
+    /* use loop */
+    do {
+        _desst[j] = '\0';
+        j++;
+    } while (j < n);
+
+    /* This function returns a pointer to the filled string */
+    return _desst;
 }
 
-void cpy_chars(char *dest, char *src, int start, int n)
-{
-	int j = 0;
-
-	do {
-
-		dest[start + j] = src[j];
-		j++;
-	} while (src[j] != '\0' && j < n);
-
-	dest[start + j] = (j < n) ? '\0' : dest[start + j];
-}
-
-char *_strncat(char *dest, char *src, int n)
-{
-	int i = find_length(dest);
-
-	cpy_chars(dest, src, i, n);
-
-	return (dest);
-}
 /**
- **_strchr - locates a character in a string
- *@s: the string to be parsed
- *@c: the character to look for
- *Return: (s) a pointer to the memory area s
+ * _strr_ncpy_ - This function copies a string to another string
+ * @_desst: This pointer refers to the destination string
+ * @_srcc: This pointer refers to the source string
+ * @n: This variable is the maximum number of characters to copy
+ *
+ * Return: Pointer to the destination string
  */
-char *check_char(char *s, char c)
+char *_strr_ncpy_(char *_desst, char *_srcc, int n)
 {
-	return ((*s == c) ? s : NULL);
+    char *_aso_ = _desst;
+    int _oops_;
+
+    _aso_ = _copy_chars_(_aso_, _srcc, n);
+
+    _oops_ = _str_len_(_aso_);
+
+    _aso_ = (_oops_ < n) ? _fll_remain_wth_nll(_aso_, _oops_, n) : _aso_;
+    /* This function returns a pointer to the destination string */
+    return (_aso_);
 }
 
-char *_strchr(char *s, char c)
+/**
+ * find_length - This function finds the _olent_ of a string
+ * @_txt_: This pointer refers to the string to find the _olent_ of
+ *
+ * Return: The _olent_ of the string
+ */
+int find_length(char *_txt_)
 {
-	char *result = NULL;
+    int _oops_ = 0;
 
-	do {
-		result = check_char(s, c);
-
-		if (result != NULL)
-			return (result);
-
-	} while (*s++ != '\0');
-
-	return (result);
+    /* use loop */
+    do {
+        _oops_++;
+    } while (_txt_[_oops_] != '\0');
+    /* This function returns the _olent_ of the string */
+    return (_oops_ - 1);
 }
+
+/**
+ * cpy_chars - This function copies a string to another string
+ * @_desst: This pointer refers to the destination string
+ * @_srcc: This pointer refers to the source string
+ * @_sstrtt_: This variable is the starting _indx_ to copy
+ * @n: This variable is the maximum number of characters to copy
+ */
+void cpy_chars(char *_desst, char *_srcc, int _sstrtt_, int n)
+{
+    int j = 0;
+
+    /* use loop */
+    do {
+        _desst[_sstrtt_ + j] = _srcc[j];
+        j++;
+    } while (_srcc[j] != '\0' && j < n);
+
+    _desst[_sstrtt_ + j] = (j < n) ? '\0' : _desst[_sstrtt_ + j];
+}
+
+/**
+ * chk_char - This function chks if a character is equal to another character
+ * @_aso_: This pointer refers to the character to chk
+ * @_coco_c: This variable is the character to compare with
+ *
+ * Return: Pointer to the character if it is equal to the other character, NULL otherwise
+ */
+char *chk_char(char *_aso_, char _coco_c)
+{
+    /*returns a pointer to the character if it is equal to the other character */
+    return ((*_aso_ == _coco_c) ? _aso_ : NULL);
+}
+
+/**
+ * _str_n_chr - This function finds the first occurrence of a character in a string
+ * @_aso_: This pointer refers to the string to search
+ * @_coco_c: This variable is the character to find
+ *
+ * Return: Pointer to the first occurrence of the character,
+ * NULL if the character is not found
+ */
+char *_str_n_chr(char *_aso_, char _coco_c)
+{
+    char *_rultt_ = NULL;
+
+    /* use loop */
+    do {
+        _rultt_ = chk_char(_aso_, _coco_c);
+
+        /* use if */
+        if (_rultt_ != NULL)
+            /* This function returns a pointer to the first occurrence of the character */
+            return (_rultt_);
+
+    } while (*_aso_++ != '\0');
+
+    /* This function returns NULL if the character is not found */
+    return (_rultt_);
+}
+
+
