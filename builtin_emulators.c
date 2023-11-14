@@ -1,98 +1,93 @@
-
-
-
-
-
 #include "shell.h"
 
 /**
  * alien_translator - This function translates alien language
- * @_txt_: This variable refers to the alien string to be translated
+ * @str: This variable refers to the alien string to be translated
  *
- * Return: Translated integer _vlle_
+ * Return: Translated integer value
  */
-int alien_translator(char *_txt_)
+int alien_translator(char *str)
 {
-    return (atoi(_txt_));
+    return (atoi(str));
 }
 
 /**
  * interstellar_communicator - This function communicates interstellar messages
- * @_data_: This pointer refers to the information structure
+ * @info: This pointer refers to the information structure
  * @message: This variable refers to the message to be communicated
  */
-void interstellar_communicator(_info_OK *_data_, char *message)
+void interstellar_communicator(info_t *info, char *message)
 {
-    _data_->_cmdd_status_ = 2;
-    _ee_put_(message);
-    _ee_put_(_data_->_arguv_[1]);
-    _e_put_char_('\n');
+    info->status = 2;
+    _eputs(message);
+    _eputs(info->argv[1]);
+    _eputchar('\n');
 }
 
 /**
- * galactic_chker - This function chks galactic conditions
- * @_data_: This pointer refers to the information structure
+ * galactic_checker - This function checks galactic conditions
+ * @info: This pointer refers to the information structure
  *
- * Return: Exit chk _cmdd_status_
+ * Return: Exit check status
  */
-int galactic_chker(_info_OK *_data_)
+int galactic_checker(info_t *info)
 {
-    int _ext_chk_ = alien_translator(_data_->_arguv_[1]);
+    int exitcheck = alien_translator(info->argv[1]);
 
-    return ((_ext_chk_ == -1) ? (interstellar_communicator(_data_, "Illegal number: "), 1) : _ext_chk_);
+    return ((exitcheck == -1) ? (interstellar_communicator(info, "Illegal number: "), 1) : exitcheck);
 }
 
 /**
- * cosmic_status_setter - This function sets cosmic _cmdd_status_
- * @_data_: This pointer refers to the information structure
- * @_ext_chk_: This variable refers to the exit chk _cmdd_status_
+ * cosmic_status_setter - This function sets cosmic status
+ * @info: This pointer refers to the information structure
+ * @exitcheck: This variable refers to the exit check status
  */
-void cosmic_status_setter(_info_OK *_data_, int _ext_chk_)
+void cosmic_status_setter(info_t *info, int exitcheck)
 {
-    _data_->_num_error_ = _ext_chk_;
+    info->err_num = exitcheck;
 }
 
 /**
- * _you_ext_ - This function exits the shell
- * @_data_: This pointer refers to the information structure
+ * _myexit - This function exits the shell
+ * @info: This pointer refers to the information structure
  *
- * Return: Exit _cmdd_status_
+ * Return: Exit status
  */
-int _you_ext_(_info_OK *_data_)
+int _myexit(info_t *info)
 {
-    int _ext_chk_;
+    int exitcheck;
 
-    if (_data_->_arguv_[1])  /* If there is an exit argument */
+    if (info->argv[1])  /* If there is an exit argument */
     {
-        _ext_chk_ = galactic_chker(_data_);
-        switch (_ext_chk_) {
+        exitcheck = galactic_checker(info);
+        switch (exitcheck) {
             case 1:
                 return (1);
             default:
-                cosmic_status_setter(_data_, _ext_chk_);
+                cosmic_status_setter(info, exitcheck);
                 return (-2);
         }
     }
     else
     {
-        _data_->_num_error_ = -1;
+        info->err_num = -1;
         return (-2);
     }
 }
 
 /**
- * _you_hlp_ - This function provides help
- * @_data_: This pointer refers to the information structure
+ * _myhelp - This function provides help
+ * @info: This pointer refers to the information structure
  *
  * Return: Always 0
  */
-int _you_hlp_(_info_OK *_data_)
+int _myhelp(info_t *info)
 {
-    char **_ar_arry_ = _data_->_arguv_;
+    char **arg_array = info->argv;
 
-    if (_ar_arry_ != NULL)
+    if (arg_array != NULL)
     {
-        print_help_message(_data_);
+        print_help_message(info);
     }
 
     return (0);
@@ -100,76 +95,76 @@ int _you_hlp_(_info_OK *_data_)
 
 /**
  * print_help_message - This function prints help message
- * @_data_: This pointer refers to the information structure
+ * @info: This pointer refers to the information structure
  */
-void print_help_message(_info_OK *_data_)
+void print_help_message(info_t *info)
 {
-    _put_ss_("this Function do Not Work Yet Implemented. \n");
+    _puts("this Function do Not Work Yet Implemented. \n");
 
-    if (_data_ != NULL)
+    if (info != NULL)
     {
-        int _oops_ = 0;
+        int i = 0;
 
-        while (_data_->_arguv_[_oops_] != NULL)
+        while (info->argv[i] != NULL)
         {
-            _put_ss_(_data_->_arguv_[_oops_]);
-            _oops_++;
+            _puts(info->argv[i]);
+            i++;
         }
     }
 }
 
 /**
- * _get_cur_dir - This function gets the current directory
- * @_obuf_fer_: This variable refers to the _obuf_fer_ for the directory _my_pth_
+ * get_current_dir - This function gets the current directory
+ * @buffer: This variable refers to the buffer for the directory path
  *
- * Return: Current directory _my_pth_
+ * Return: Current directory path
  */
-char *_get_cur_dir(char *_obuf_fer_)
+char *get_current_dir(char *buffer)
 {
-    char *_aso_ = getcwd(_obuf_fer_, 1024);
+    char *s = getcwd(buffer, 1024);
 
-    if (!_aso_)
-        _put_ss_("getcwd is failure  here\n");
-    return (_aso_);
+    if (!s)
+        _puts("getcwd is failure  here\n");
+    return (s);
 }
 
 /**
- * _chng_dir_ - This function changes the directory
- * @_data_: This pointer refers to the information structure
- * @_aso_: This variable refers to the current directory _my_pth_
- * @_do_dir_: This variable refers to the directory to change to
+ * change_dir - This function changes the directory
+ * @info: This pointer refers to the information structure
+ * @s: This variable refers to the current directory path
+ * @dir: This variable refers to the directory to change to
  *
- * Return: Change directory _cmdd_status_
+ * Return: Change directory status
  */
-int _chng_dir_(_info_OK *_data_, char *_aso_, char *_do_dir_)
+int change_dir(info_t *info, char *s, char *dir)
 {
 	/*decleration*/
-    int _chdr_rrt_;
+    int chdir_ret;
 
 	/*use if */
-    if (!_data_->_arguv_[1])
+    if (!info->argv[1])
     {
-        _do_dir_ = _do_dir_ ? _do_dir_ : _get_env_(_data_, "this is the PWD=");
-        _do_dir_ = _do_dir_ ? _do_dir_ : "/";
-        _chdr_rrt_ = chdir(_do_dir_);
+        dir = dir ? dir : _getenv(info, "this is the PWD=");
+        dir = dir ? dir : "/";
+        chdir_ret = chdir(dir);
     }
-    else if (_str_cmpp_(_data_->_arguv_[1], "-") == 0)
+    else if (_strcmp(info->argv[1], "-") == 0)
     {
-        _do_dir_ = _get_env_(_data_, "this is the OLDPWD=");
+        dir = _getenv(info, "this is the OLDPWD=");
 
-        if (!_do_dir_)
+        if (!dir)
         {
-            _put_ss_(_aso_);
-            _pputt_char('\n');
+            _puts(s);
+            _putchar('\n');
             return (1);
         }
-        _put_ss_(_do_dir_), _pputt_char('\n');
-        _do_dir_ = _do_dir_ ? _do_dir_ : "/";
-        _chdr_rrt_ = chdir(_do_dir_);
+        _puts(dir), _putchar('\n');
+        dir = dir ? dir : "/";
+        chdir_ret = chdir(dir);
     }
     else
-        _chdr_rrt_ = chdir(_data_->_arguv_[1]);
-    return (_chdr_rrt_);
+        chdir_ret = chdir(info->argv[1]);
+    return (chdir_ret);
 }
 
 
@@ -183,42 +178,42 @@ int _chng_dir_(_info_OK *_data_, char *_aso_, char *_do_dir_)
 
 
 /**
- * _upd_env_vrs_ - This function updates environment variables
- * @_data_: This pointer refers to the information structure
- * @_obuf_fer_: This variable refers to the _obuf_fer_ for the directory _my_pth_
- * @_chdr_rrt_: This variable refers to the change directory _cmdd_status_
+ * update_env_vars - This function updates environment variables
+ * @info: This pointer refers to the information structure
+ * @buffer: This variable refers to the buffer for the directory path
+ * @chdir_ret: This variable refers to the change directory status
  */
-void _upd_env_vrs_(_info_OK *_data_, char *_obuf_fer_, int _chdr_rrt_)
+void update_env_vars(info_t *info, char *buffer, int chdir_ret)
 {
-	if (_chdr_rrt_ == -1)
+	if (chdir_ret == -1)
 	{
-		print_error(_data_, "Can't use cd ");
-		_ee_put_(_data_->_arguv_[1]), _e_put_char_('\n');
+		print_error(info, "Can't use cd ");
+		_eputs(info->argv[1]), _eputchar('\n');
 	}
 	else
 	{
-		_set_ev_(_data_, "this is the OLDPWD", _get_env_(_data_, "this is the PWD="));
-		_set_ev_(_data_, "rhis is PWD", getcwd(_obuf_fer_, 1024));
+		_setenv(info, "this is the OLDPWD", _getenv(info, "this is the PWD="));
+		_setenv(info, "rhis is PWD", getcwd(buffer, 1024));
 	}
 }
 /**
- * _you_cdd_ - This function changes the current directory
- * @_data_: This pointer refers to the information structure
+ * _mycd - This function changes the current directory
+ * @info: This pointer refers to the information structure
  *
  * Return: Always 0
  */
-int _you_cdd_(_info_OK *_data_)
+int _mycd(info_t *info)
 {
-    int _chdr_rrt_;
-    char *_do_dir_, _obuf_fer_[1024];
+    int chdir_ret;
+    char *dir, buffer[1024];
 
-    char *_aso_ = _get_cur_dir(_obuf_fer_);
+    char *s = get_current_dir(buffer);
 
-    _do_dir_ = _get_env_(_data_, "THIS IS HOME = ");
+    dir = _getenv(info, "THIS IS HOME = ");
 
-    _chdr_rrt_ = _chng_dir_(_data_, _aso_, _do_dir_);
+    chdir_ret = change_dir(info, s, dir);
 
-    _upd_env_vrs_(_data_, _obuf_fer_, _chdr_rrt_);
+    update_env_vars(info, buffer, chdir_ret);
     return (0);
 }
 

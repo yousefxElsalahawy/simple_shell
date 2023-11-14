@@ -1,50 +1,48 @@
-
-
 #include "shell.h"
 
 
 /**
- * chk_operator - Checks if current char in _obuf_fer_ is a chain delimeter
- * @_data_: This pointer refers to the parameter struct
- * @_bbuuff_: This pointer refers to the char _obuf_fer_
- * @j: This variable refers to the current position in _bbuuff_
+ * check_operator - Checks if current char in buffer is a chain delimeter
+ * @info: This pointer refers to the parameter struct
+ * @buf: This pointer refers to the char buffer
+ * @j: This variable refers to the current position in buf
  *
  * Return: 1 if chain delimeter, 0 otherwise
  */
-int chk_operator(_info_OK *_data_, char *_bbuuff_, size_t *j)
+int check_operator(info_t *info, char *buf, size_t *j)
 {
     /* Declaration */
-    if (!_bbuuff_)
+    if (!buf)
         return (0);
 
     /* Use switch */
-    switch (_bbuuff_[*j])
+    switch (buf[*j])
     {
         case '|':
             /* Check for logical OR operator */
-            if (_bbuuff_[*j + 1] == '|')
+            if (buf[*j + 1] == '|')
             {
-                _bbuuff_[*j] = 0;
+                buf[*j] = 0;
                 (*j)++;
-                _data_->_cmdd_buff_shape_ = _CMDD_OR_;
+                info->cmd_buf_type = CMD_OR;
 
                 return (1); /* Returns 1 if logical OR operator is found */
             }
             break;
         case '&':
             /* Check for logical AND operator */
-            if (_bbuuff_[*j + 1] == '&')
+            if (buf[*j + 1] == '&')
             {
-                _bbuuff_[*j] = 0;
+                buf[*j] = 0;
                 (*j)++;
-                _data_->_cmdd_buff_shape_ = _CMDD_ANDD_;
+                info->cmd_buf_type = CMD_AND;
                 return (1); /* Returns 1 if logical AND operator is found */
             }
             break;
         case ';':
             /* Check for command chain operator */
-            _bbuuff_[*j] = 0;
-            _data_->_cmdd_buff_shape_ = _CMDD_CHN_;
+            buf[*j] = 0;
+            info->cmd_buf_type = CMD_CHAIN;
             return (1); /* Returns 1 if command chain operator is found */
         default:
             break;
@@ -53,83 +51,82 @@ int chk_operator(_info_OK *_data_, char *_bbuuff_, size_t *j)
 }
 
 /**
- * _s_chn_ - Checks if the position has changed, indicating an operator was found
- * @_data_: This pointer refers to the parameter struct
- * @_bbuuff_: This pointer refers to the char _obuf_fer_
- * @_oqo_: This variable refers to the current position in _bbuuff_
+ * is_chain - Checks if the position has changed, indicating an operator was found
+ * @info: This pointer refers to the parameter struct
+ * @buf: This pointer refers to the char buffer
+ * @p: This variable refers to the current position in buf
  *
  * Return: 1 if position has changed, 0 otherwise
  */
-int _s_chn_(_info_OK *_data_, char *_bbuuff_, size_t *_oqo_)
+int is_chain(info_t *info, char *buf, size_t *p)
 {
     /* Declaration */
     size_t j;
 
-    j = *_oqo_;
+    j = *p;
 
     /* Use loop */
-    *_oqo_ = j + chk_operator(_data_, _bbuuff_, &j);
+    *p = j + check_operator(info, buf, &j);
 
     /* Use if */
-    return ((*_oqo_ > j) ? 1 : 0);
-    /* Returns 1 if position has changed, 0 otherwise */
+    return ((*p > j) ? 1 : 0); /* Returns 1 if position has changed, 0 otherwise */
 }
 
 /**
- * chk_condition - Checks the condition of the command _obuf_fer_ _style
- * @_data_: This pointer refers to the parameter struct
+ * check_condition - Checks the condition of the command buffer type
+ * @info: This pointer refers to the parameter struct
  *
  * Return: 1 if condition is met, 0 otherwise
  */
-int chk_condition(_info_OK *_data_)
+int check_condition(info_t *info)
 {
-    return ((_data_->_cmdd_buff_shape_ == _CMDD_ANDD_ && _data_->_cmdd_status_) ||
-            (_data_->_cmdd_buff_shape_ == _CMDD_OR_ && !_data_->_cmdd_status_)); /* Returns 1 if condition is met, 0 otherwise */
+    return ((info->cmd_buf_type == CMD_AND && info->status) ||
+            (info->cmd_buf_type == CMD_OR && !info->status)); /* Returns 1 if condition is met, 0 otherwise */
 }
 
 /**
- * _upd_buffer_and_index -this Updates the _obuf_fer_ and _indx_ based on the condition
- * @_data_: This pointer refers to the parameter struct
- * @_bbuuff_: This pointer refers to the char _obuf_fer_
- * @_indx_: This variable refers to the current position in _bbuuff_
- * @_len_: This variable refers to the _olent_ of the _obuf_fer_
+ * update_buffer_and_index - Updates the buffer and index based on the condition
+ * @info: This pointer refers to the parameter struct
+ * @buf: This pointer refers to the char buffer
+ * @index: This variable refers to the current position in buf
+ * @len: This variable refers to the length of the buffer
  *
  * Return: Nothing (void function)
  */
-void _upd_buffer_and_index(_info_OK *_data_, char *_bbuuff_,
-        size_t *_indx_, size_t _len_)
+void update_buffer_and_index(info_t *info, char *buf,
+        size_t *index, size_t len)
 {
     /* Declaration */
-    int condition = chk_condition(_data_);
+    int condition = check_condition(info);
 
     /* Use if */
-    _bbuuff_[*_indx_] = condition ? 0 : _bbuuff_[*_indx_];
+    buf[*index] = condition ? 0 : buf[*index];
 
     /* Use loop */
-    *_indx_ = condition ? _len_ : *_indx_;
+    *index = condition ? len : *index;
 }
 
 /**
- * chk_chain - Checks the chain and updates the _obuf_fer_ and _indx_
- * @_data_: This pointer refers to the parameter struct
- * @_bbuuff_: This pointer refers to the char _obuf_fer_
- * @_oqo_: This variable refers to the current position in _bbuuff_
- * @_oops_: This variable is unused
- * @_len_: This variable refers to the _olent_ of the _obuf_fer_
+ * check_chain - Checks the chain and updates the buffer and index
+ * @info: This pointer refers to the parameter struct
+ * @buf: This pointer refers to the char buffer
+ * @p: This variable refers to the current position in buf
+ * @i: This variable is unused
+ * @len: This variable refers to the length of the buffer
  *
  * Return: Nothing (void function)
  */
-void chk_chain(_info_OK *_data_, char *_bbuuff_,
-        size_t *_oqo_, __attribute__((unused)) size_t _oops_, size_t _len_)
+void check_chain(info_t *info, char *buf,
+        size_t *p, __attribute__((unused)) size_t i, size_t len)
 {
     /* Declaration */
-    size_t j = *_oqo_;
+    size_t j = *p;
 
-    /* Call the function to update the _obuf_fer_ and _indx_ */
-    _upd_buffer_and_index(_data_, _bbuuff_, &j, _len_);
+    /* Call the function to update the buffer and index */
+    update_buffer_and_index(info, buf, &j, len);
 
     /* Use loop */
-    *_oqo_ = j;
+    *p = j;
 }
 
 
@@ -147,221 +144,218 @@ void chk_chain(_info_OK *_data_, char *_bbuuff_,
 
 /*****************************************/
 /**
- * _gett_ndd_ - Retrieves a _nddee_ from the _alias_nd_ list
- * @_data_: This pointer refers to the parameter struct
+ * get_node - Retrieves a node from the alias list
+ * @info: This pointer refers to the parameter struct
  *
- * Return: _nddee_ if found, NULL otherwise
+ * Return: Node if found, NULL otherwise
  */
-_lst_ *_gett_ndd_(_info_OK *_data_)
+list_t *get_node(info_t *info)
 {
     /* Use if */
-    if (!_data_)
+    if (!info)
         return (NULL);
 
-    return (_nde_strt_wth_(_data_->_alias_nd_, _data_->_arguv_[0], '=')); /* Returns _nddee_ if found, NULL otherwise */
+    return (node_starts_with(info->alias, info->argv[0], '=')); /* Returns node if found, NULL otherwise */
 }
 
 /**
- * get_new_p - Retrieves a _nww_ pointer from the _nddee_
- * @_nddee_: This pointer refers to the _nddee_
+ * get_new_p - Retrieves a new pointer from the node
+ * @node: This pointer refers to the node
  *
- * Return: _nww_ pointer if found, NULL otherwise
+ * Return: New pointer if found, NULL otherwise
  */
-char *get_new_p(_lst_ *_nddee_)
+char *get_new_p(list_t *node)
 {
     /* Declaration */
-    char *_oqo_;
+    char *p;
 
     /* Use if */
-    if (!_nddee_)
+    if (!node)
         return (NULL);
 
-    _oqo_ = _str_n_chr(_nddee_->_txt_, '=');
+    p = _strchr(node->str, '=');
 
-    return (_oqo_ ? _str_dupp_(_oqo_ + 1) : NULL); /* Returns _nww_ pointer if found, NULL otherwise */
+    return (p ? _strdup(p + 1) : NULL); /* Returns new pointer if found, NULL otherwise */
 }
 
 /**
- * _rplce_als_ - Replaces the _alias_nd_ in the _arguv_[0] with the _vlle_ from the _alias_nd_ list
- * @_data_: This pointer refers to the parameter struct
+ * replace_alias - Replaces the alias in the argv[0] with the value from the alias list
+ * @info: This pointer refers to the parameter struct
  *
- * Return: 1 if _alias_nd_ is replaced, 0 otherwise
+ * Return: 1 if alias is replaced, 0 otherwise
  */
-int _rplce_als_(_info_OK *_data_)
+int replace_alias(info_t *info)
 {
     /* Declaration */
-    int _oops_ = 0;
-    _lst_ *_nddee_;
-    char *_oqo_;
+    int i = 0;
+    list_t *node;
+    char *p;
 
     /* Use if */
-    if (!_data_)
+    if (!info)
         return (0);
 
     /* Use loop */
     do {
-        _nddee_ = _gett_ndd_(_data_);
+        node = get_node(info);
 
         /* Use if */
-        if (!_nddee_)
+        if (!node)
             return (0);
 
-        _oqo_ = get_new_p(_nddee_);
+        p = get_new_p(node);
 
         /* Use if */
-        if (!_oqo_)
+        if (!p)
             return (0);
-        free(_data_->_arguv_[0]);
-        _data_->_arguv_[0] = _oqo_;
-        _oops_++;
-    } while (_oops_ < 10 && _data_->_arguv_[0] == NULL);
+        free(info->argv[0]);
+        info->argv[0] = p;
+        i++;
+    } while (i < 10 && info->argv[0] == NULL);
 
-    return (_data_->_arguv_[0] != NULL); /* Returns 1 if _alias_nd_ is replaced, 0 otherwise */
+    return (info->argv[0] != NULL); /* Returns 1 if alias is replaced, 0 otherwise */
 }
 
 /**
- * _chk_var_type - Checks the _style of the variable in _arguv_[_oops_]
- * @_data_: This pointer refers to the parameter struct
- * @_oops_: This variable refers to the _indx_ of _arguv_
+ * check_variable_type - Checks the type of the variable in argv[i]
+ * @info: This pointer refers to the parameter struct
+ * @i: This variable refers to the index of argv
  *
- * Return: 0 if not a variable, 1 if _cmdd_status_ variable, 2 if PID variable, 3 otherwise
+ * Return: 0 if not a variable, 1 if status variable, 2 if PID variable, 3 otherwise
  */
-int _chk_var_type(_info_OK *_data_, int _oops_)
+int check_variable_type(info_t *info, int i)
 {
     /* Use if */
-    if (_data_->_arguv_[_oops_][0] != '$' || !_data_->_arguv_[_oops_][1])
+    if (info->argv[i][0] != '$' || !info->argv[i][1])
         return 0;
-    else if (!_str_cmpp_(_data_->_arguv_[_oops_], "$?"))
+    else if (!_strcmp(info->argv[i], "$?"))
         return 1;
-    else if (!_str_cmpp_(_data_->_arguv_[_oops_], "$$"))
+    else if (!_strcmp(info->argv[i], "$$"))
         return 2;
     else
-        return 3; /* Returns 0 if not a variable, 1 if _cmdd_status_ variable, 2 if PID variable, 3 otherwise */
+        return 3; /* Returns 0 if not a variable, 1 if status variable, 2 if PID variable, 3 otherwise */
 }
 
 /**
- * _rep_str_with_value - Replaces the string in _arguv_[_oops_] with the _vlle_
- * @_data_: This pointer refers to the parameter struct
- * @_oops_: This variable refers to the _indx_ of _arguv_
- * @_vlle_: This variable refers to the _vlle_ to replace with
+ * replace_string_with_value - Replaces the string in argv[i] with the value
+ * @info: This pointer refers to the parameter struct
+ * @i: This variable refers to the index of argv
+ * @value: This variable refers to the value to replace with
  *
  * Return: Nothing (void function)
  */
-void _rep_str_with_value(_info_OK *_data_, int _oops_, int _vlle_)
+void replace_string_with_value(info_t *info, int i, int value)
 {
-    _rplce_str_(&(_data_->_arguv_[_oops_]), _str_dupp_(cnvrt_nmbr_(_vlle_, 10, 0)));
+    replace_string(&(info->argv[i]), _strdup(convert_number(value, 10, 0)));
 }
 
 /**
- * _get_ndd_ - Retrieves a _nddee_ from the environment list
- * @_data_: This pointer refers to the parameter struct
- * @_oops_: This variable refers to the _indx_ of _arguv_
+ * _get_node_ - Retrieves a node from the environment list
+ * @info: This pointer refers to the parameter struct
+ * @i: This variable refers to the index of argv
  *
- * Return: _nddee_ if found, NULL otherwise
+ * Return: Node if found, NULL otherwise
  */
-_lst_ *_get_ndd_(_info_OK *_data_, int _oops_)
+list_t *_get_node_(info_t *info, int i)
 {
-    return _nde_strt_wth_(_data_->_my_env, &_data_->_arguv_[_oops_][1], '='); /* Returns _nddee_ if found, NULL otherwise */
+    return node_starts_with(info->env, &info->argv[i][1], '='); /* Returns node if found, NULL otherwise */
 }
 
 /**
- * _rep_with_node_value - Replaces the string in _arguv_[_oops_] with the _vlle_ from the _nddee_
- * @_data_: This pointer refers to the parameter struct
- * @_oops_: This variable refers to the _indx_ of _arguv_
- * @_nddee_: This pointer refers to the _nddee_
- *
- * Return: Nothing (void function)
- */
-void _rep_with_node_value(_info_OK *_data_, int _oops_, _lst_ *_nddee_)
-{
-    _rplce_str_(&(_data_->_arguv_[_oops_]), _str_dupp_(_str_n_chr(_nddee_->_txt_, '=') + 1));
-}
-
-/**
- * _rep_with_empty_str - Replaces the string in _arguv_[_oops_] with an empty string
- * @_data_: This pointer refers to the parameter struct
- * @_oops_: This variable refers to the _indx_ of _arguv_
+ * replace_with_node_value - Replaces the string in argv[i] with the value from the node
+ * @info: This pointer refers to the parameter struct
+ * @i: This variable refers to the index of argv
+ * @node: This pointer refers to the node
  *
  * Return: Nothing (void function)
  */
-void _rep_with_empty_str(_info_OK *_data_, int _oops_)
+void replace_with_node_value(info_t *info, int i, list_t *node)
 {
-    _rplce_str_(&_data_->_arguv_[_oops_], _str_dupp_(""));
+    replace_string(&(info->argv[i]), _strdup(_strchr(node->str, '=') + 1));
+}
+
+/**
+ * replace_with_empty_string - Replaces the string in argv[i] with an empty string
+ * @info: This pointer refers to the parameter struct
+ * @i: This variable refers to the index of argv
+ *
+ * Return: Nothing (void function)
+ */
+void replace_with_empty_string(info_t *info, int i)
+{
+    replace_string(&info->argv[i], _strdup(""));
 }
 
 
 /**
- * rplce_vrs_ - Replaces the variables in _arguv_ with their corresponding values
- * @_data_: This pointer refers to the parameter struct
+ * replace_vars - Replaces the variables in argv with their corresponding values
+ * @info: This pointer refers to the parameter struct
  *
  * Return: 0 (void function)
  */
-int rplce_vrs_(_info_OK *_data_)
+int replace_vars(info_t *info)
 {
     /* Declaration */
-    int _oops_ = 0;
-    _lst_ *_nddee_;
+    int i = 0;
+    list_t *node;
     int var_type;
 
     /* Use loop */
     do {
-        var_type = _chk_var_type(_data_, _oops_);
+        var_type = check_variable_type(info, i);
 
         /* Use switch */
         switch (var_type)
         {
         case 0:
-            _oops_++;
+            i++;
             continue;
         case 1:
-            _rep_str_with_value(_data_, _oops_, _data_->_cmdd_status_);
+            replace_string_with_value(info, i, info->status);
             break;
         case 2:
             if (kill(getpid(), 0) == 0)
 			{
-                _rep_str_with_value(_data_, _oops_, getpid());
+                replace_string_with_value(info, i, getpid());
             }
 			else
 			{
-                _rep_with_empty_str(_data_, _oops_);
+                replace_with_empty_string(info, i);
             }
             break;
         case 3:
-            _nddee_ = _get_ndd_(_data_, _oops_);
-            if (_nddee_)
-                _rep_with_node_value(_data_, _oops_, _nddee_);
+            node = _get_node_(info, i);
+            if (node)
+                replace_with_node_value(info, i, node);
             else
-                _rep_with_empty_str(_data_, _oops_);
+                replace_with_empty_string(info, i);
             break;
         }
-        _oops_++;
-    } while (_data_->_arguv_[_oops_]);
+        i++;
+    } while (info->argv[i]);
 
     return (0); /* Returns 0 (void function) */
 }
 
 /**
- * _rplce_str_ - Replaces _aodd_ string with _nww_ string
- * @_aodd_: This pointer refers to the _aodd_ string
- * @_nww_: This pointer refers to the _nww_ string
+ * replace_string - Replaces old string with new string
+ * @old: This pointer refers to the old string
+ * @new: This pointer refers to the new string
  *
  * Return: 1 if replaced, 0 otherwise
  */
-int _rplce_str_(char **_aodd_, char *_nww_)
+int replace_string(char **old, char *new)
 {
     /* Use if */
-    if (_aodd_ == NULL || _nww_ == NULL)
+    if (old == NULL || new == NULL)
     {
-        _put_ss_("Error: Null pointer passed to _rplce_str_\n");
-        return (0); /* Returns 0 if either _aodd_ or _nww_ is NULL */
+        _puts("Error: Null pointer passed to replace_string\n");
+        return (0); /* Returns 0 if either old or new is NULL */
     }
-    if (*_aodd_ != _nww_)
+    if (*old != new)
     {
-        free(*_aodd_);
-        *_aodd_ = _nww_;
+        free(*old);
+        *old = new;
     }
     return (1); /* Returns 1 if replaced */
 }
-
-
-

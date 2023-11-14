@@ -1,46 +1,37 @@
-
-
-
-
-
-
 #include "shell.h"
 
 /**
  * is_null - Checks if a pointer is null.
- * @_pttr_: Address of the pointer to chk.
+ * @ptr: Address of the pointer to check.
  *
  * Return: 1 if the pointer is null, otherwise 0.
  */
-int is_null(void **_pttr_)
+int is_null(void **ptr)
 {
 	/*use if */
-	return (!_pttr_ || !*_pttr_ ? 1 : 0);
+	return (!ptr || !*ptr ? 1 : 0);
 }
 
 /**
  * free_and_nullify - Frees a pointer and sets it to NULL.
- * @_pttr_: Address of the pointer to free.
+ * @ptr: Address of the pointer to free.
  */
-void free_and_nullify(void **_pttr_)
+void free_and_nullify(void **ptr)
 {
-	/*free for _pttr_ */
-	free(*_pttr_);
-	*_pttr_ = NULL;
+	/*free for ptr */
+	free(*ptr);
+	*ptr = NULL;
 }
 
 /**
- * _bfun_free_ - Frees a pointer and sets it to NULL if it is not null.
- * @_pttr_: Address of the pointer to free.
+ * bfree - Frees a pointer and sets it to NULL if it is not null.
+ * @ptr: Address of the pointer to free.
  *
  * Return: 1 if the pointer was freed, otherwise 0.
  */
-int _bfun_free_(void **_pttr_)
+int bfree(void **ptr)
 {
 	/*use if */
-	return (is_null(_pttr_) ? 0 : (free_and_nullify(_pttr_), 1));
+	return (is_null(ptr) ? 0 : (free_and_nullify(ptr), 1));
 }
-
-
-
 

@@ -1,231 +1,223 @@
-
-
-
-
-
 #include "shell.h"
 
 /**
- * clear_info_arg - This function clears the arguments in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * clear_info_arg - This function clears the arguments in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void clear_info_arg(_info_OK *_data_)
+void clear_info_arg(info_t *info)
 {
-	_data_->_arguv_ = NULL; /*use if */
-	_data_->_argu_ = NULL;
+	info->argv = NULL; /*use if */
+	info->arg = NULL;
 }
 
 /**
- * clear_info_pth_argc - This function clears the _my_pth_ and argument _ocntt_ in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * clear_info_path_argc - This function clears the path and argument count in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void clear_info_pth_argc(_info_OK *_data_)
+void clear_info_path_argc(info_t *info)
 {
-	_data_->_argu_c_ = 0;
-	_data_->_my_pth_ = NULL;
+	info->argc = 0;
+	info->path = NULL;
 }
 
 /**
- * _clr_inf_ - This function clears _All the fields in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * clear_info - This function clears all the fields in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void _clr_inf_(_info_OK *_data_)
+void clear_info(info_t *info)
 {
-	clear_info_pth_argc(_data_);
-	clear_info_arg(_data_);
+	clear_info_path_argc(info);
+	clear_info_arg(info);
 }
 
 /**
- * set_fname - This function sets the _fl_nmee_ in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
- * @_aav_: This pointer refers to Argument Vector
+ * set_fname - This function sets the filename in the info struct
+ * @info: This pointer refers to the Info Struct
+ * @av: This pointer refers to Argument Vector
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void set_fname(_info_OK *_data_, char **_aav_)
+void set_fname(info_t *info, char **av)
 {
-	char *_fl_nmee_ = _aav_[0];
-	_data_->_fil_name_ = _fl_nmee_;
+	char *filename = av[0];
+	info->fname = filename;
 }
 
 /**
- * allocate_argv - This function allocates memory for arguments in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * allocate_argv - This function allocates memory for arguments in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void allocate_argv(_info_OK *_data_)
+void allocate_argv(info_t *info)
 {
 	char **arguments = malloc(sizeof(char *) * 2);
 
 	if (arguments) /*use if */
 	{
-		arguments[0] = _str_dupp_(_data_->_argu_);
+		arguments[0] = _strdup(info->arg);
 		arguments[1] = NULL;
 	}
-	_data_->_arguv_ = arguments;
+	info->argv = arguments;
 }
 
 /**
- * set_argv - This function sets the arguments in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * set_argv - This function sets the arguments in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void set_argv(_info_OK *_data_)
+void set_argv(info_t *info)
 {
-	int _oops_ = 0;
-	char **_arguv_ = NULL;
+	int i = 0;
+	char **argv = NULL;
 
-	if (_data_->_argu_) /*use if */
+	if (info->arg) /*use if */
 	{
-		_arguv_ = _str_foo(_data_->_argu_, " \t");
-		if (!_arguv_) /*use if */
+		argv = strtow(info->arg, " \t");
+		if (!argv) /*use if */
 		{
-			allocate_argv(_data_);
+			allocate_argv(info);
 		}
 		else
 		{
-			while (_arguv_ && _arguv_[_oops_]) /*use loop */
+			while (argv && argv[i]) /*use loop */
 			{
-				_oops_++;
+				i++;
 			}
-			_data_->_arguv_ = _arguv_;
+			info->argv = argv;
 		}
-		_data_->_argu_c_ = _oops_;
+		info->argc = i;
 	}
 }
 
 /**
- * _rplce_nf_ - This function replaces aliases and variables in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * replace_info - This function replaces aliases and variables in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void _rplce_nf_(_info_OK *_data_)
+void replace_info(info_t *info)
 {
-	_rplce_als_(_data_);
-	rplce_vrs_(_data_);
+	replace_alias(info);
+	replace_vars(info);
 }
 
 /**
- * _st_nf_ - This function sets _All the fields in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
- * @_aav_: This pointer refers to Argument Vector
+ * set_info - This function sets all the fields in the info struct
+ * @info: This pointer refers to the Info Struct
+ * @av: This pointer refers to Argument Vector
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void _st_nf_(_info_OK *_data_, char **_aav_)
+void set_info(info_t *info, char **av)
 {
-	set_fname(_data_, _aav_);
-	set_argv(_data_);
-	_rplce_nf_(_data_);
+	set_fname(info, av);
+	set_argv(info);
+	replace_info(info);
 }
 
 /**
- * obliterate_argv - This function frees the arguments in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * obliterate_argv - This function frees the arguments in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void obliterate_argv(_info_OK *_data_)
+void obliterate_argv(info_t *info)
 {
-	_fun_free_(_data_->_arguv_);
-	_data_->_arguv_ = NULL;
+	ffree(info->argv);
+	info->argv = NULL;
 }
 
 /**
- * annihilate_pth - This function clears the _my_pth_ in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * annihilate_path - This function clears the path in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void annihilate_pth(_info_OK *_data_)
+void annihilate_path(info_t *info)
 {
-	_data_->_my_pth_ = NULL;
-
+	info->path = NULL;
+	
 }
 
 /**
- * exterminate_cmd_buf_and_arg - This function frees the command _obuf_fer_ and argument in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * exterminate_cmd_buf_and_arg - This function frees the command buffer and argument in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void exterminate_cmd_buf_and_arg(_info_OK *_data_)
+void exterminate_cmd_buf_and_arg(info_t *info)
 {
-	if (!_data_->_cmdd_buff_) /*use if */
-		free(_data_->_argu_);
+	if (!info->cmd_buf) /*use if */
+		free(info->arg);
 }
 
 /**
- * decimate_lists - This function frees the lists in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * decimate_lists - This function frees the lists in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void decimate_lists(_info_OK *_data_)
+void decimate_lists(info_t *info)
 {
 	int case_num = 1;
 
 	switch (case_num) /* use switch*/
 	{
 	case 1:
-		if (_data_->_my_env) /*use if */
-			_ree_lst_(&(_data_->_my_env));
+		if (info->env) /*use if */
+			free_list(&(info->env));
 		/* fall through */
 	case 2:
-		if (_data_->_my_hty)
-			_ree_lst_(&(_data_->_my_hty));
+		if (info->history)
+			free_list(&(info->history));
 		/* fall through */
 	case 3:
-		if (_data_->_alias_nd_) /*use if */
-			_ree_lst_(&(_data_->_alias_nd_));
+		if (info->alias) /*use if */
+			free_list(&(info->alias));
 		break;
 	}
 }
 /**
- * eradicate_environ_and_cmd_buf - This function frees the environment and command _obuf_fer_ in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
+ * eradicate_environ_and_cmd_buf - This function frees the environment and command buffer in the info struct
+ * @info: This pointer refers to the Info Struct
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void eradicate_environ_and_cmd_buf(_info_OK *_data_)
+void eradicate_environ_and_cmd_buf(info_t *info)
 {
-	_fun_free_(_data_->_env_you_);
-	_data_->_env_you_ = NULL;
-	_bfun_free_((void **)_data_->_cmdd_buff_);
+	ffree(info->environ);
+	info->environ = NULL;
+	bfree((void **)info->cmd_buf);
 
-	if (_data_->_read_fd_ > 2) /*use if */
-		close(_data_->_read_fd_);
-	_pputt_char(_BUFFER_FLUSH);
+	if (info->readfd > 2) /*use if */
+		close(info->readfd);
+	_putchar(BUF_FLUSH);
 }
 
 /**
- * _fr_nf_ - This function frees _All the fields in the _data_ struct
- * @_data_: This pointer refers to the _data_ Struct
- * @_All: This variable is used to determine if _All fields should be freed
+ * free_info - This function frees all the fields in the info struct
+ * @info: This pointer refers to the Info Struct
+ * @all: This variable is used to determine if all fields should be freed
  *
- * No return _vlle_ (void function)
+ * No return value (void function)
  */
-void _fr_nf_(_info_OK *_data_, int _All)
+void free_info(info_t *info, int all)
 {
-	obliterate_argv(_data_);
-	annihilate_pth(_data_);
-	if (_All) /*use if */
+	obliterate_argv(info);
+	annihilate_path(info);
+	if (all) /*use if */
 	{
-		exterminate_cmd_buf_and_arg(_data_);
-		decimate_lists(_data_);
-		eradicate_environ_and_cmd_buf(_data_);
+		exterminate_cmd_buf_and_arg(info);
+		decimate_lists(info);
+		eradicate_environ_and_cmd_buf(info);
 	}
      /* The function returns here */
 }
-
-
-

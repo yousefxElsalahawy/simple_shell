@@ -16,409 +16,420 @@
 #include <errno.h>
 
 /* for read/write buffers */
-#define _SIZE_BUFF_READ 1024
-#define _SIZE_BUFF_WRITE 1024
-#define _BUFFER_FLUSH -1
+#define READ_BUF_SIZE 1024
+#define WRITE_BUF_SIZE 1024
+#define BUF_FLUSH -1
 
 /* for command chaining */
-#define _CMDD_NORMAL_	0
-#define _CMDD_OR_		1
-#define _CMDD_ANDD_		2
-#define _CMDD_CHN_	3
+#define CMD_NORM	0
+#define CMD_OR		1
+#define CMD_AND		2
+#define CMD_CHAIN	3
 
-/* for cnvrt_nmbr_() */
-#define _CONV_LOWERCASE_	1
-#define _CONV_UNSIGNED_	2
+/* for convert_number() */
+#define CONVERT_LOWERCASE	1
+#define CONVERT_UNSIGNED	2
 
 /* 1 if using system getline() */
-#define _USE_GETLINE_ 0
-/*#define USE_STRTOK 0 */
+#define USE_GETLINE 0
+#define USE_STRTOK 0
 
-#define _MYHIST_FILE_	".simple_shell_history"
-#define _MYHIST_MAX_	4096
+#define HIST_FILE	".simple_shell_history"
+#define HIST_MAX	4096
 
-extern char **_env_you_;
+extern char **environ;
 
 
 /**
- * struct _listtxt_ - singly linked list
- * @_num_: the number field
- * @_txt_: a string
- * @_nxt_: points to the _nxt_ _nddee_
+ * struct liststr - singly linked list
+ * @num: the number field
+ * @str: a string
+ * @next: points to the next node
  */
-typedef struct _listtxt_
+typedef struct liststr
 {
-	int _num_;
-	char *_txt_;
-	struct _listtxt_ *_nxt_;
-} _lst_;
+	int num;
+	char *str;
+	struct liststr *next;
+} list_t;
 
 /**
  *struct passinfo - contains pseudo-arguements to pass into a function,
  *					allowing uniform prototype for function pointer struct
- *@_my_tcount_: the _my_hty line number _ocntt_
- *@_cmdd_buff_: address of pointer to _cmdd_buff_, on if chaining
- *@_cmdd_buff_shape_: CMD_type ||, &&, ;
- *@_read_fd_: the _fl_dir_ from which to read line input
- *@_argu_: a string generated from getline containing arguements
- *@_arguv_: an array of strings generated from _argu_
- *@_my_pth_: a string _my_pth_ for the current command
- *@_argu_c_: the argument _ocntt_
- *@_my_line_count: the error _ocntt_
- *@_num_error_: the error code for exit()_aso_
- *@_flag_mycount_: if on _ocntt_ this line of input
- *@_fil_name_: the program _fl_nmee_
- *@_my_env: linked list local copy of _env_you_
- *@_my_hty: the _my_hty _nddee_
- *@_alias_nd_: the _alias_nd_ _nddee_
- *@_env_you_: custom modified copy of _env_you_ from LL _my_env
- *@_myenv_edit_: on if _env_you_ was changed
- *@_cmdd_status_: the return _cmdd_status_ of the last exec'd command
- * @_argu_pos: this variable
- * @_argu_len: this lenght
+ *@histcount: the history line number count
+ *@cmd_buf: address of pointer to cmd_buf, on if chaining
+ *@cmd_buf_type: CMD_type ||, &&, ;
+ *@readfd: the fd from which to read line input
+ *@arg: a string generated from getline containing arguements
+ *@argv: an array of strings generated from arg
+ *@path: a string path for the current command
+ *@argc: the argument count
+ *@line_count: the error count
+ *@err_num: the error code for exit()s
+ *@linecount_flag: if on count this line of input
+ *@fname: the program filename
+ *@env: linked list local copy of environ
+ *@history: the history node
+ *@alias: the alias node
+ *@environ: custom modified copy of environ from LL env
+ *@env_changed: on if environ was changed
+ *@status: the return status of the last exec'd command
  */
 
 typedef struct passinfo
 {
-    char *_argu_;
-    size_t _argu_pos;
-    size_t _argu_len;
-    char **_arguv_;
-    char *_my_pth_;
-    int _argu_c_;
-    unsigned int _my_line_count;
-    int _num_error_;
-    int _flag_mycount_;
-    char *_fil_name_;
-    _lst_ *_my_env;
-    _lst_ *_my_hty;
-    _lst_ *_alias_nd_;
-    char **_env_you_;
-    int _myenv_edit_;
-    int _cmdd_status_;
-    char **_cmdd_buff_; /* pointer to _ccmmdd_ ; chain _obuf_fer_, for memory mangement */
-    int _cmdd_buff_shape_; /* CMD_type ||, &&, ; */
-    int _read_fd_;
-    int _my_tcount_;
-} _info_OK;
+    char *arg;
+    size_t arg_pos;
+    size_t arg_len;
+    char **argv;
+    char *path;
+    int argc;
+    unsigned int line_count;
+    int err_num;
+    int linecount_flag;
+    char *fname;
+    list_t *env;
+    list_t *history;
+    list_t *alias;
+    char **environ;
+    int env_changed;
+    int status;
+    char **cmd_buf; /* pointer to cmd ; chain buffer, for memory mangement */
+    int cmd_buf_type; /* CMD_type ||, &&, ; */
+    int readfd;
+    int histcount;
+} info_t;
 
-#define _MY_INFO_INIT_ \
+#define INFO_INIT \
 {NULL, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, \
 	NULL, NULL, 0, 0, NULL, 0, 0, 0}
 /**
- *struct crafty_builtin - contains a crafty_builtin string and related function
- *@_style: the crafty_builtin command _flg_
- *@_operat_: the function
+ *struct builtin - contains a builtin string and related function
+ *@type: the builtin command flag
+ *@func: the function
  */
-typedef struct crafty_builtin
+typedef struct builtin
 {
-	char *_style;
-	int (*_operat_)(_info_OK *);
-} _cunning_table;
+	char *type;
+	int (*func)(info_t *);
+} builtin_table;
 
 
-/* hsh._coco_c */
-void ask_user(_info_OK *_data_);
-void _hdl_iinput_(_info_OK *_data_, char **_aav_, ssize_t *_oorr,
-		int *_bltin_rt_);
-void hdl_exit(_info_OK *_data_, int _bltin_rt_);
-void cleanup_clever_(_info_OK *_data_);
-int hsh(_info_OK *_data_, char **_aav_);
-_cunning_table *initialize_builtin_table(void);
-int _execute_operation(_info_OK *_data_, _cunning_table *builtintbl, int _oops_);
-int find_operation(_info_OK *_data_);
-void increment_line_count(_info_OK *_data_);
-void count_non_delim(_info_OK *_data_, int *_kok_);
-void hdl_pth_found(_info_OK *_data_, char *_my_pth_);
-void hdl_pth_not_found(_info_OK *_data_);
-void _find_cmmd_(_info_OK *_data_);
-void hdl_fork_error(pid_t _child_pidd_);
-void hdl_exec_error(_info_OK *_data_);
-void hdl_child_process(_info_OK *_data_);
-void hdl_parent_process(_info_OK *_data_);
-void _forkK_comm_(_info_OK *_data_);
-/* _my_pth_._coco_c */
-int _ck_pth(char *_my_pth_, struct stat *_qst_);
-int chk_file_mode(struct stat *_qst_);
-int _my_i_cmdd_(_info_OK *_data_, char *_my_pth_);
-char *_COpYY_cHaRS_(char *pthstr, int _sstrtt_, int _sososo, char *_bbuuff_);
-char *_dupp_chart_(char *pthstr, int _sstrtt_, int _sososo);
-char *chk_cmd(_info_OK *_data_, char *_ccmmdd_);
-char *build_pth(char *_my_pth_, char *_ccmmdd_);
-char *find_cmd_in_pth(_info_OK *_data_, char *pthstr,
-		char *_ccmmdd_, int _oops_, int curr_pos);
-char *_fnd_pth_(_info_OK *_data_, char *pthstr, char *_ccmmdd_);
-/* _lp_sh_._coco_c */
-int _lp_sh_(char **);
+/* hsh.c */
+void prompt_user(info_t *info);
+void _handle_with_input_(info_t *info, char **av, ssize_t *r,
+		int *builtin_ret);
+void handle_exit(info_t *info, int builtin_ret);
+void cleanup(info_t *info);
+int hsh(info_t *info, char **av);
+builtin_table *initialize_builtin_table(void);
+int execute_builtin(info_t *info, builtin_table *builtintbl, int i);
+int find_builtin(info_t *info);
+void increment_line_count(info_t *info);
+void count_non_delim(info_t *info, int *k);
+void handle_path_found(info_t *info, char *path);
+void handle_path_not_found(info_t *info);
+void find_cmd(info_t *info);
+void handle_fork_error(pid_t child_pid);
+void handle_exec_error(info_t *info);
+void handle_child_process(info_t *info);
+void handle_parent_process(info_t *info);
+void fork_cmd(info_t *info);
+/* path.c */
+int check_path(char *path, struct stat *st);
+int check_file_mode(struct stat *st);
+int is_cmd(info_t *info, char *path);
+char *_COpYY_cHaRS_(char *pathstr, int start, int stop, char *buf);
+char *dup_chars(char *pathstr, int start, int stop);
+char *check_cmd(info_t *info, char *cmd);
+char *build_path(char *path, char *cmd);
+char *find_cmd_in_path(info_t *info, char *pathstr,
+		char *cmd, int i, int curr_pos);
+char *find_path(info_t *info, char *pathstr, char *cmd);
+/* loophsh.c */
+int loophsh(char **);
 
-/* err_string_functions._coco_c */
+/* err_string_functions.c */
 
-void _eputchar_loop(char *_txt_, int _oops_);
-void _ee_put_(char *_txt_);
-void _buffer_flush(char *_bbuuff_, int *_oops_);
-int _e_put_char_(char _coco_c);
-void _write_to_buffer(char **buf_ptr, char *_buff_end, int _fl_dir_);
-int _put_fdd_(char _coco_c, int _fl_dir_);
-int _putfd_loop(char **_txt_, int _fl_dir_, int _oops_);
-int _put_s_fdd_(char *_txt_, int _fl_dir_);
+void _eputchar_loop(char *str, int i);
+void _eputs(char *str);
+void _buffer_flush(char *buf, int *i);
+int _eputchar(char c);
+void _write_to_buffer(char **buf_ptr, char *buf_end, int fd);
+int _putfd(char c, int fd);
+int _putfd_loop(char **str, int fd, int i);
+int _putsfd(char *str, int fd);
 
-/* string_functions._coco_c */
-int _increment_while_not_null(char **_aso_, int *_oops_);
-int _str_len_(char *_aso_);
-int compare_chars(char _c1, char _c2);
-int _str_cmpp_(char *_s1, char *_s2);
-int chk_chars(const char **needle, const char **haystack);
-char *_start_wh_(const char *haystack, const char *needle);
-char *find_end(char *_txt_);
-void copy_str(char *_desst, char *_srcc);
-char *_str_catt_(char *_desst, char *_srcc);
-/* string_functions2._coco_c */
-char *_copy(char *_desst, char *_srcc, int _oops_);
-char *_str_cpy(char *_desst, char *_srcc);
-int _strlen___(const char *_txt_);
-char *_str_dupp_(const char *_txt_);
-void _print_char(char *_txt_, char *_End);
-void _put_ss_(char *_txt_);
-void write_buffer(char *_bbuuff_, int *_oops_);
-void add_to_buffer(char *_bbuuff_, int *_oops_, char _coco_c);
-int _pputt_char(char _coco_c);
-/* string_functions3._coco_c */
-char *_copy_chars_(char *_desst, char *_srcc, int n);
-char *_fll_remain_wth_nll(char *_desst, int _sstrtt_, int n);
-char *_strr_ncpy_(char *_desst, char *_srcc, int n);
-int find_length(char *_txt_);
-void cpy_chars(char *_desst, char *_srcc, int _sstrtt_, int n);
-char *_str_n_cat(char *_desst, char *_srcc, int n);
-char *chk_char(char *_aso_, char _coco_c);
-char *_str_n_chr(char *_aso_, char _coco_c);
-/* string_functions4._coco_c */
-int delimiter_detector(char _coco_c, char *d);
-int lexeme_counter(char *_txt_, char *d);
+/* string_functions.c */
+int _increment_while_not_null(char **s, int *i);
+int _strlen(char *s);
+int compare_chars(char c1, char c2);
+int _strcmp(char *s1, char *s2);
+int check_chars(const char **needle, const char **haystack);
+char *starts_with(const char *haystack, const char *needle);
+char *find_end(char *str);
+void copy_str(char *dest, char *src);
+char *_strcat(char *dest, char *src);
+/* string_functions2.c */
+char *_copy(char *dest, char *src, int i);
+char *_strcpy(char *dest, char *src);
+int _strlen___(const char *str);
+char *_strdup(const char *str);
+void _print_char(char *str, char *end);
+void _puts(char *str);
+void write_buffer(char *buf, int *i);
+void add_to_buffer(char *buf, int *i, char c);
+int _putchar(char c);
+/* string_functions3.c */
+char *_copy_chars_(char *dest, char *src, int n);
+char *fill_remaining_with_null(char *dest, int start, int n);
+char *_strncpy(char *dest, char *src, int n);
+int find_length(char *str);
+void cpy_chars(char *dest, char *src, int start, int n);
+char *_strncat(char *dest, char *src, int n);
+char *check_char(char *s, char c);
+char *_strchr(char *s, char c);
+/* string_functions4.c */
+int delimiter_detector(char c, char *d);
+int lexeme_counter(char *str, char *d);
 char **_mem_allocate_(int numwords);
-int lexeme_length_finder(char *_txt_, char *d, int _oops_);
-void memory_liberator(char **_aso_, int j);
-char *word_allocator(int _kok_);
-void lexeme_copier(char *_desst, char *_srcc, int _len_);
-char **_str_foo(char *_txt_, char *d);
-int is_str_void_or_vacant(char *_txt_);
-int tally_lexemes(char *_txt_, char d);
+int lexeme_length_finder(char *str, char *d, int i);
+void memory_liberator(char **s, int j);
+char *word_allocator(int k);
+void lexeme_copier(char *dest, char *src, int len);
+char **strtow(char *str, char *d);
+int is_str_void_or_vacant(char *str);
+int tally_lexemes(char *str, char d);
 char **reserve_memory(int lexemeCount);
-int bypass_separators(char *_txt_, char d, int _oops_);
-int determine_lexeme_extent(char *_txt_, char d, int _oops_);
-char *reserve_lexeme(int _kok_);
-void relinquish_memory(char **_aso_, int j);
-void replicate_lexeme(char **_aso_, char *_txt_, int j, int _kok_, int *_oops_);
-char **_str_foo2_(char *_txt_, char d);
+int bypass_separators(char *str, char d, int i);
+int determine_lexeme_extent(char *str, char d, int i);
+char *reserve_lexeme(int k);
+void relinquish_memory(char **s, int j);
+void replicate_lexeme(char **s, char *str, int j, int k, int *i);
+char **strtow2(char *str, char d);
 /* memory_functions */
 
-void fillMemory(char *_aso_, char _abo_, unsigned int n, unsigned int _oops_);
-char *_mem_sett_(char *_aso_, char _abo_, unsigned int n);
-void freeArray(char **apopo_, int _oops_);
-void _fun_free_(char **apopo_);
-void *allocate_memory(unsigned int _osize_);
-void copy_memory(void *_pttr_, char *_oqo_, unsigned int _osize_);
-void *_rea_lloc_(void *_pttr_, unsigned int old_size, unsigned int new_size);
+void fillMemory(char *s, char b, unsigned int n, unsigned int i);
+char *_memset(char *s, char b, unsigned int n);
+void freeArray(char **pp, int i);
+void ffree(char **pp);
+void *allocate_memory(unsigned int size);
+void copy_memory(void *ptr, char *p, unsigned int size);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
-/* memory_functions2._coco_c */
-int is_null(void **_pttr_);
-void free_and_nullify(void **_pttr_);
-int _bfun_free_(void **_pttr_);
-/* more_functions._coco_c */
-int _inter_active(_info_OK *_data_);
-int _CHEcK_chARs_(char _coco_c, char *_tmpp_);
-int _my_delm(char _coco_c, char *delim);
-int _islower(int _coco_c);
-int _isupper(int _coco_c);
-int _you_alpha_(int _coco_c);
-int process_sign(char _aso_, int _ssgnn_);
-unsigned int process_digit(char _aso_, unsigned int _rultt_, int *_flg_);
-int _fun_atoi_(char *_aso_);
-/* more_functions2._coco_c */
-char *process_plus_sign(char *_aso_);
-unsigned long int process_digits(char *_aso_);
-int _fun_err_atoi_(char *_aso_);
+/* memory_functions2.c */
+int is_null(void **ptr);
+void free_and_nullify(void **ptr);
+int bfree(void **ptr);
+/* more_functions.c */
+int interactive(info_t *info);
+int _CHEcK_chARs_(char c, char *temp);
+int is_delim(char c, char *delim);
+int _islower(int c);
+int _isupper(int c);
+int _isalpha(int c);
+int process_sign(char s, int sign);
+unsigned int process_digit(char s, unsigned int result, int *flag);
+int _atoi(char *s);
+/* more_functions2.c */
+char *process_plus_sign(char *s);
+unsigned long int process_digits(char *s);
+int _erratoi(char *s);
 void print_message(char *message);
-void print_error_part1(_info_OK *_data_);
-void print_error_part2(_info_OK *_data_);
-void print_error_part3(_info_OK *_data_, char *_oeo_str);
-void print_error(_info_OK *_data_, char *_oeo_str);
-int hdl_putchar(int _fl_dir_);
-unsigned int hdl_abs(int input, int (*__putchar)(char), int *_ocntt_);
-int hdl_current(unsigned int _abs_, int (*__putchar)(char), int *_ocntt_);
-void hdl_last_digit(unsigned int current,
-		int (*__putchar)(char), int *_ocntt_);
-int _prnt_dir_(int input, int _fl_dir_);
-char *hdl_sign(long int _num_, int _oflgs_, unsigned long *n, char *_ssgnn_);
-void convert_base(unsigned long *n, int base, char **_pttr_, char *array);
-void hdl_negative_sign(char **_pttr_, char _ssgnn_);
-char *cnvrt_nmbr_(long int _num_, int base, int _oflgs_);
-void set_to_null(char *_oqo_);
-void _rmove_com_(char *_bbuuff_);
-/* builtin_emulators._coco_c */
-int _you_ext_(_info_OK *);
-int _you_cdd_(_info_OK *);
-int _you_hlp_(_info_OK *);
+void print_error_part1(info_t *info);
+void print_error_part2(info_t *info);
+void print_error_part3(info_t *info, char *estr);
+void print_error(info_t *info, char *estr);
+int handle_putchar(int fd);
+unsigned int handle_abs(int input, int (*__putchar)(char), int *count);
+int handle_current(unsigned int _abs_, int (*__putchar)(char), int *count);
+void handle_last_digit(unsigned int current,
+		int (*__putchar)(char), int *count);
+int print_d(int input, int fd);
+char *handle_sign(long int num, int flags, unsigned long *n, char *sign);
+void convert_base(unsigned long *n, int base, char **ptr, char *array);
+void handle_negative_sign(char **ptr, char sign);
+char *convert_number(long int num, int base, int flags);
+void set_to_null(char *p);
+void remove_comments(char *buf);
+/* builtin_emulators.c */
+int _myexit(info_t *);
+int _mycd(info_t *);
+int _myhelp(info_t *);
 
-/* builtin_emulators2._coco_c */
-int _you_hstry_(_info_OK *);
-int _you_als_(_info_OK *);
+/* builtin_emulators2.c */
+int _myhistory(info_t *);
+int _myalias(info_t *);
 
-/* getline._coco_c module */
-void reset_buffer(_info_OK *_data_, char **_bbuuff_);
-ssize_t input_reader(_info_OK *_data_, char **_bbuuff_, size_t *_len_op_);
-void input_processor(_info_OK *_data_, char **_bbuuff_, ssize_t *_oorr);
-void command_chain_hdlr(_info_OK *_data_, char **_bbuuff_, size_t *_len_, ssize_t _oorr);
-ssize_t input_buf(_info_OK *_data_, char **_bbuuff_, size_t *_len_);
-ssize_t read_from_fd(_info_OK *_data_, char *_bbuuff_);
-
-
-
-ssize_t gt_userinpt_(_info_OK *_data_);
+/* getline.c module */
+void reset_buffer(info_t *info, char **buf);
+ssize_t input_reader(info_t *info, char **buf, size_t *len_p);
+void input_processor(info_t *info, char **buf, ssize_t *r);
+void command_chain_handler(info_t *info, char **buf, size_t *len, ssize_t r);
+ssize_t input_buf(info_t *info, char **buf, size_t *len);
+ssize_t read_from_fd(info_t *info, char *buf);
 
 
 
+ssize_t get_input(info_t *info);
+void cryptic_processor(info_t *info);
+ssize_t alien_input(info_t *info, char **buf_p);
+size_t find_end_of_universe(info_t *info, char *buf, size_t start, size_t len);
+size_t update_position_in_space(info_t *info, size_t pos, size_t len);
+void reset_position_in_space(info_t *info);
 
 
 
 
-ssize_t _red_buff_(_info_OK *_data_, char *_bbuuff_, size_t *_oops_);
-ssize_t buffer_reader(_info_OK *_data_, char *_bbuuff_, size_t *_len_);
-char *locate_newline(char *_bbuuff_, size_t _oops_);
-char *memory_allocator(char *_oqo_, size_t _aso_, size_t _kok_);
-void buffer_copier(char *new_p, char *_bbuuff_, size_t _oops_, size_t _kok_, size_t _aso_);
-int _gt_lne_(_info_OK *_data_, char **_pttr_, size_t *_olent_);
-void sgn_Her_(int _sig_nmm_);
-/* _data_._coco_c module */
 
-void _clr_inf_(_info_OK *_data_);
-void allocate_argv(_info_OK *_data_);
-void _rplce_nf_(_info_OK *_data_);
-void _st_nf_(_info_OK *_data_, char **_aav_);
-void _fr_nf_(_info_OK *_data_, int _All);
-/* _my_env._coco_c module */
-int _mEnv(_info_OK *_data_);
-char *_get_env_(_info_OK *_data_, const char *name);
-int validate_args(_info_OK *_data_);
-int _mSetenv(_info_OK *_data_);
-int chk_argc(_info_OK *_data_);
-int _mUnsetenv(_info_OK *_data_);
-_lst_ *create_env_ndd();
-int _pop_env_lst_(_info_OK *_data_);
-/* env2._coco_c module */
-char **refresh_environ(_info_OK *_data_);
-char **_gtt_envrnn_(_info_OK *_data_);
-char *get_starting_string(_lst_ *_nddee_, char *_ovvrr_);
-int reset_environment(_info_OK *_data_, size_t *_oops_, _lst_ **_nddee_);
-int _Un_Set_env_(_info_OK *_data_, char *_ovvrr_);
-char *create_buf(char *_ovvrr_, char *_vlle_);
-_lst_ *find_var_in_env(_lst_ *_nddee_, char *_ovvrr_, char *_bbuuff_, _info_OK *_data_);
-void add_ndd_and_free_buf(_lst_ **_my_env, char *_bbuuff_, _info_OK *_data_);
-int _set_ev_(_info_OK *_data_, char *_ovvrr_, char *_vlle_);
-/* file_io_functions._coco_c */
 
-char *get_dir(_info_OK *_data_);
 
-char *allocate_buf(char *_do_dir_);
+ssize_t read_buf(info_t *info, char *buf, size_t *i);
+ssize_t buffer_reader(info_t *info, char *buf, size_t *len);
+char *locate_newline(char *buf, size_t i);
+char *memory_allocator(char *p, size_t s, size_t k);
+void buffer_copier(char *new_p, char *buf, size_t i, size_t k, size_t s);
+int _getline(info_t *info, char **ptr, size_t *length);
+void sigintHandler(int sig_num);
+/* info.c module */
+void set_value(info_t *info, int argc_value, char *arg_value);
 
-char *_gt_hstry_fle_(_info_OK *_data_);
+void clear_info(info_t *info);
+void allocate_argv(info_t *info);
+void count_args(info_t *info);
+void replace_info(info_t *info);
+void set_info(info_t *info, char **av);
+void free_argv_and_path(info_t *info);
+void free_lists(info_t *info);
+void free_remaining(info_t *info);
+void free_info(info_t *info, int all);
+/* env.c module */
+int _myenv(info_t *info);
+char *search_in_list(list_t *node, const char *name);
+char *_getenv(info_t *info, const char *name);
+int validate_args(info_t *info);
+int _mysetenv(info_t *info);
+int check_argc(info_t *info);
+int _myunsetenv(info_t *info);
+list_t *create_env_node();
+int populate_env_list(info_t *info);
+/* env2.c module */
+char **refresh_environ(info_t *info);
+char **get_environ(info_t *info);
+char *get_starting_string(list_t *node, char *var);
+int reset_environment(info_t *info, size_t *i, list_t **node);
+int _unsetenv(info_t *info, char *var);
+char *create_buf(char *var, char *value);
+list_t *find_var_in_env(list_t *node, char *var, char *buf, info_t *info);
+void add_node_and_free_buf(list_t **env, char *buf, info_t *info);
+int _setenv(info_t *info, char *var, char *value);
+/* file_io_functions.c */
 
-int open_file(char *_fl_nmee_);
+char *get_dir(info_t *info);
 
-void write_to_file(_lst_ *_nddee_, ssize_t _fl_dir_);
+char *allocate_buf(char *dir);
 
-int _wrt_hstry_(_info_OK *_data_);
+char *get_history_file(info_t *info);
 
-char *get_file(_info_OK *_data_);
+int open_file(char *filename);
 
-ssize_t open_and_read_file(char *_fl_nmee_, char **_bbuuff_, struct stat *_qst_);
+void write_to_file(list_t *node, ssize_t fd);
 
-void process_buffer(_info_OK *_data_, char *_bbuuff_, ssize_t _F_Size, int *_lne_cnnt_);
+int write_history(info_t *info);
 
-void update_history(_info_OK *_data_, int _lne_cnnt_);
+char *get_file(info_t *info);
 
-int _rd_hstory_(_info_OK *_data_);
+ssize_t open_and_read_file(char *filename, char **buf, struct stat *st);
 
-int update_ndd_numbers(_lst_ **_nddee_);
+void process_buffer(info_t *info, char *buf, ssize_t fsize, int *linecount);
 
-int _re_num_hstry_(_info_OK *_data_);
+void update_history(info_t *info, int linecount);
 
-_lst_ *_gett_ndd_(_info_OK *_data_);
+int read_history(info_t *info);
 
-int _buld_hstry_lst_(_info_OK *_data_, char *_bbuuff_, int _lne_cnnt_);
+int update_node_numbers(list_t **node);
 
-/* _listtxt_._coco_c module */
-_lst_ *_gen_unique_ndd(void);
-void _pop_ndd_data(_lst_ *_nddee_, const char *_txt_, int _num_);
-void link_new_head(_lst_ **_ohadd_, _lst_ *_nw_hd_);
-_lst_ *_add_nd_(_lst_ **_ohadd_, const char *_txt_, int _num_);
-_lst_ *create_new_ndd(const char *_txt_, int _num_);
-_lst_ *find_last_ndd(_lst_ *_nddee_);
-void link_new_ndd_to_end(_lst_ *_nddee_, _lst_ *new_ndd);
-_lst_ *_add_nd_end_(_lst_ **_ohadd_, const char *_txt_, int _num_);
-void print_ndd(const _lst_ *_nddee_);
-size_t print_list_str(const _lst_ *h);
-int is_head_null(_lst_ **_ohadd_);
-void delete_ndd(_lst_ **_nddee_);
-void delete_head_ndd(_lst_ **_ohadd_);
-void delete_index_ndd(_lst_ **_nddee_, _lst_ *prev_ndd);
-int iterate_through_ndds(_lst_ **_ohadd_, unsigned int _indx_);
-int _dlt_nd_at_ndx(_lst_ **_ohadd_, unsigned int _indx_);
-void annihilate_ndd(_lst_ *_nddee_);
-_lst_ *fetch_next_in_line(_lst_ *_nddee_);
-void _ree_lst_(_lst_ **_hd_ptr_);
-/* liststr2._coco_c module */
-bool is_list_empty(const _lst_ *h);
-size_t _lst_len_(const _lst_ *h);
-char **_alloc_string_array(size_t _ocntt_);
-char *allocate_string(size_t _olent_);
-void deallocate_string_array(char **_ostr_arryy_, size_t _ocntt_);
-char **_pop_string_array(_lst_ *_nddee_, char **_ostr_arryy_);
-char **_lst_to_strng_(_lst_ *_ohadd_);
-void _Print_The_Node_(const _lst_ *_nddee_, size_t *_oops_);
-size_t traverse_list(const _lst_ *h, void (*_operat_)(const _lst_*, size_t*));
-size_t _prnt_lst_(const _lst_ *h);
-char *chk_prefix_and_cond(_lst_ *_nddee_, char *_opre_fix_, char _coco_c);
-_lst_ *_nde_strt_wth_(_lst_ *_nddee_, char *_opre_fix_, char _coco_c);
-ssize_t chk_ndd(_lst_ *_ohadd_, _lst_ *_nddee_, size_t *_oops_);
-ssize_t _gt_nde_indx_(_lst_ *_ohadd_, _lst_ *_nddee_);
-/* chain._coco_c */
+int renumber_history(info_t *info);
 
-int chk_operator(_info_OK *_data_, char *_bbuuff_, size_t *j);
-int _s_chn_(_info_OK *_data_, char *_bbuuff_, size_t *_oqo_);
-int chk_condition(_info_OK *_data_);
-void _upd_buffer_and_index(_info_OK *_data_, char *_bbuuff_,
-		size_t *_indx_, size_t _len_);
-void chk_chain(_info_OK *_data_, char *_bbuuff_, size_t *_oqo_,
-		size_t _oops_, size_t _len_);
-_lst_ *_gett_ndd_(_info_OK *_data_);
-char *get_new_p(_lst_ *_nddee_);
-int _rplce_als_(_info_OK *_data_);
-int _chk_var_type(_info_OK *_data_, int _oops_);
-void _rep_str_with_value(_info_OK *_data_, int _oops_, int _vlle_);
-_lst_ *_get_ndd_(_info_OK *_data_, int _oops_);
-void _rep_with_node_value(_info_OK *_data_, int _oops_, _lst_ *_nddee_);
-void _rep_with_empty_str(_info_OK *_data_, int _oops_);
-int rplce_vrs_(_info_OK *_data_);
-int _rplce_str_(char **_aodd_, char *_nww_);
+list_t *get_node(info_t *info);
 
-/*************************_nww_ bulit 1******/
+int build_history_list(info_t *info, char *buf, int linecount);
 
-void print_help_message(_info_OK *_data_);
-char *_get_cur_dir(char *_obuf_fer_);
-int _chng_dir_(_info_OK *_data_, char *_aso_, char *_do_dir_);
-void _upd_env_vrs_(_info_OK *_data_, char *_obuf_fer_, int _chdr_rrt_);
+/* liststr.c module */
+list_t *generate_unique_node(void);
+void populate_node_data(list_t *node, const char *str, int num);
+void link_new_head(list_t **head, list_t *new_head);
+list_t *add_node(list_t **head, const char *str, int num);
+list_t *create_new_node(const char *str, int num);
+list_t *find_last_node(list_t *node);
+void link_new_node_to_end(list_t *node, list_t *new_node);
+list_t *add_node_end(list_t **head, const char *str, int num);
+void print_node(const list_t *node);
+size_t print_list_str(const list_t *h);
+int is_head_null(list_t **head);
+void delete_node(list_t **node);
+void delete_head_node(list_t **head);
+void delete_index_node(list_t **node, list_t *prev_node);
+int iterate_through_nodes(list_t **head, unsigned int index);
+int delete_node_at_index(list_t **head, unsigned int index);
+void annihilate_node(list_t *node);
+list_t *fetch_next_in_line(list_t *node);
+void free_list(list_t **head_ptr);
+/* liststr2.c module */
+bool is_list_empty(const list_t *h);
+size_t list_len(const list_t *h);
+char **allocate_string_array(size_t count);
+char *allocate_string(size_t length);
+void deallocate_string_array(char **string_array, size_t count);
+char **populate_string_array(list_t *node, char **string_array);
+char **list_to_strings(list_t *head);
+void _Print_The_Node_(const list_t *node, size_t *i);
+size_t traverse_list(const list_t *h, void (*func)(const list_t*, size_t*));
+size_t print_list(const list_t *h);
+char *check_prefix_and_condition(list_t *node, char *prefix, char c);
+list_t *node_starts_with(list_t *node, char *prefix, char c);
+ssize_t check_node(list_t *head, list_t *node, size_t *i);
+ssize_t get_node_index(list_t *head, list_t *node);
+/* chain.c */
 
-/********************************_nww_ function bulit 11*******/
-char *find_equal_sign(char *_txt_);
-int _del_alias_ndd(_info_OK *_data_, char *_txt_);
-int _unstt_alas_(_info_OK *_data_, char *_txt_);
-char *find_equal_sign_in_ndd(_lst_ *_nddee_);
-void print_ndd_until_char(_lst_ *_nddee_, char *_oqo_);
-int print_alias(_lst_ *_nddee_);
-void print_all_aliases(_info_OK *_data_);
-void hdl_alias(_info_OK *_data_, char *_argu_);
-int _stt_alass_(_info_OK *_data_, char *_txt_);
-int handl_unset_alias(_info_OK *_data_, char *_txt_, char *_oqo_);
+int check_operator(info_t *info, char *buf, size_t *j);
+int is_chain(info_t *info, char *buf, size_t *p);
+int check_condition(info_t *info);
+void update_buffer_and_index(info_t *info, char *buf,
+		size_t *index, size_t len);
+void check_chain(info_t *info, char *buf, size_t *p,
+		size_t i, size_t len);
+list_t *get_node(info_t *info);
+char *get_new_p(list_t *node);
+int replace_alias(info_t *info);
+int check_variable_type(info_t *info, int i);
+void replace_string_with_value(info_t *info, int i, int value);
+list_t *_get_node_(info_t *info, int i);
+void replace_with_node_value(info_t *info, int i, list_t *node);
+void replace_with_empty_string(info_t *info, int i);
+int replace_vars(info_t *info);
+int replace_string(char **old, char *new);
+
+/*************************new bulit 1******/
+
+int process_exit_arg(info_t *info, int exitcheck);
+void print_help_message(info_t *info);
+char *get_current_dir(char *buffer);
+int change_dir(info_t *info, char *s, char *dir);
+void update_env_vars(info_t *info, char *buffer, int chdir_ret);
+
+/********************************new function bulit 11*******/
+char *find_equal_sign(char *str);
+int delete_alias_node(info_t *info, char *str);
+int unset_alias(info_t *info, char *str);
+char *find_equal_sign_in_node(list_t *node);
+void print_node_until_char(list_t *node, char *p);
+int print_alias(list_t *node);
+void print_all_aliases(info_t *info);
+void handle_alias(info_t *info, char *arg);
+int set_alias(info_t *info, char *str);
+int handle_unset_alias(info_t *info, char *str, char *p);
 
 #endif
+
 

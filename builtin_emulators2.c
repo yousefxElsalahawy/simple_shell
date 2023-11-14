@@ -1,237 +1,233 @@
-
-
-
-
-
-
 #include "shell.h"
 
 /**
- * _you_hstry_ - This function prints the _my_hty of commands
- * @_data_: This pointer refers to the information structure
+ * _myhistory - This function prints the history of commands
+ * @info: This pointer refers to the information structure
  *
  * Return: 0 (success)
  */
-int _you_hstry_(_info_OK *_data_)
+int _myhistory(info_t *info)
 {
 	/*decleration*/
-	_lst_ *_tmpp_ = _data_->_my_hty;
+	list_t *temp = info->history;
 
-	_prnt_lst_(_tmpp_);
+	print_list(temp);
 
 	return (0);
 }
 
 /**
- * find_equal_sign - This function finds the equal _ssgnn_ in a string
- * @_txt_: This variable refers to the string to be searched
+ * find_equal_sign - This function finds the equal sign in a string
+ * @str: This variable refers to the string to be searched
  *
- * Return: pointer to the equal _ssgnn_ or NULL
+ * Return: pointer to the equal sign or NULL
  */
-char *find_equal_sign(char *_txt_)
+char *find_equal_sign(char *str)
 {
 		/*decleration*/
 
-	char *_oqo_ = _str_n_chr(_txt_, '=');
+	char *p = _strchr(str, '=');
 
 
-	return (_oqo_ ? _oqo_ : NULL);
+	return (p ? p : NULL);
 }
 
 /**
- * _del_alias_ndd - This function deletes an _alias_nd_ _nddee_
- * @_data_: This pointer refers to the information structure
- * @_txt_: This variable refers to the string to be deleted
+ * delete_alias_node - This function deletes an alias node
+ * @info: This pointer refers to the information structure
+ * @str: This variable refers to the string to be deleted
  *
- * Return: 1 if _nddee_ not found, else 0
+ * Return: 1 if node not found, else 0
  */
-int _del_alias_ndd(_info_OK *_data_, char *_txt_)
+int delete_alias_node(info_t *info, char *str)
 {
 		/*decleration*/
 
-	int _indx_ = _gt_nde_indx_(_data_->_alias_nd_, _nde_strt_wth_(_data_->_alias_nd_, _txt_, -1));
+	int index = get_node_index(info->alias, node_starts_with(info->alias, str, -1));
 
-	return (_indx_ >= 0 ? _dlt_nd_at_ndx(&(_data_->_alias_nd_), _indx_) : 1);
+	return (index >= 0 ? delete_node_at_index(&(info->alias), index) : 1);
 }
 
 /**
- * _unstt_alas_ - This function unsets an _alias_nd_
- * @_data_: This pointer refers to the information structure
- * @_txt_: This variable refers to the string to be unset
+ * unset_alias - This function unsets an alias
+ * @info: This pointer refers to the information structure
+ * @str: This variable refers to the string to be unset
  *
- * Return: _rultt_ of _del_alias_ndd
+ * Return: result of delete_alias_node
  */
-int _unstt_alas_(_info_OK *_data_, char *_txt_)
+int unset_alias(info_t *info, char *str)
 {
 	/*decleration*/
 
-	int _reett_;
-	char *_oqo_, _coco_c;
+	int ret;
+	char *p, c;
 
-	_oqo_ = find_equal_sign(_txt_);
-	if (!_oqo_)
+	p = find_equal_sign(str);
+	if (!p)
 		return (1);
 
-	_coco_c = *_oqo_;
-	*_oqo_ = 0;
+	c = *p;
+	*p = 0;
 	do {
-		_reett_ = _del_alias_ndd(_data_, _txt_);
-	} while (_reett_ == 0);
-	*_oqo_ = _coco_c;
-
-	return (_reett_);
+		ret = delete_alias_node(info, str);
+	} while (ret == 0);
+	*p = c;
+	return (ret);
 }
 
 /**
- * find_equal_sign_in_ndd - This function finds the equal _ssgnn_ in a _nddee_
- * @_nddee_: This pointer refers to the _nddee_ to be searched
+ * find_equal_sign_in_node - This function finds the equal sign in a node
+ * @node: This pointer refers to the node to be searched
  *
- * Return: pointer to the equal _ssgnn_ or NULL
+ * Return: pointer to the equal sign or NULL
  */
-char *find_equal_sign_in_ndd(_lst_ *_nddee_)
+char *find_equal_sign_in_node(list_t *node)
 {
-	return (_nddee_ ? _str_n_chr(_nddee_->_txt_, '=') : NULL);
+	return (node ? _strchr(node->str, '=') : NULL);
 }
 
 /**
- * print_ndd_until_char - This function prints a _nddee_ until a specific character
- * @_nddee_: This pointer refers to the _nddee_ to be printed
- * @_oqo_: This variable refers to the specific character
+ * print_node_until_char - This function prints a node until a specific character
+ * @node: This pointer refers to the node to be printed
+ * @p: This variable refers to the specific character
  */
-void print_ndd_until_char(_lst_ *_nddee_, char *_oqo_)
+void print_node_until_char(list_t *node, char *p)
 {
 	/*decleration*/
-	char *Q = _nddee_->_txt_;
+	char *a = node->str;
 
-	while (Q <= _oqo_)
+	while (a <= p)
 	{
-		_pputt_char(*Q);
-		Q++;
+		_putchar(*a);
+		a++;
 	}
 }
 
 /**
- * print_alias - This function prints an _alias_nd_
- * @_nddee_: This pointer refers to the _nddee_ to be printed
+ * print_alias - This function prints an alias
+ * @node: This pointer refers to the node to be printed
  *
- * Return: 0 if successful, 1 if equal _ssgnn_ not found in _nddee_
+ * Return: 0 if successful, 1 if equal sign not found in node
  */
-int print_alias(_lst_ *_nddee_)
+int print_alias(list_t *node)
 {
 	/*decleration*/
-	char *_oqo_ = find_equal_sign_in_ndd(_nddee_);
+	char *p = find_equal_sign_in_node(node);
 
-	if (_oqo_)
+	if (p)
 	{
-		print_ndd_until_char(_nddee_, _oqo_);
-		_pputt_char('\'');
-		_put_ss_(_oqo_ + 1);
-		_put_ss_("'\n");
+		print_node_until_char(node, p);
+		_putchar('\'');
+		_puts(p + 1);
+		_puts("'\n");
 		return (0);
 	}
 	return (1);
 }
 
 /**
- * handl_unset_alias - This function hdls the unsetting of an _alias_nd_
- * @_data_: This pointer refers to the information structure
- * @_txt_: This variable refers to the string to be unset
- * @_oqo_: This variable refers to the pointer to the equal _ssgnn_
+ * handle_unset_alias - This function handles the unsetting of an alias
+ * @info: This pointer refers to the information structure
+ * @str: This variable refers to the string to be unset
+ * @p: This variable refers to the pointer to the equal sign
  *
- * Return: _rultt_ of _unstt_alas_
+ * Return: result of unset_alias
  */
-int handl_unset_alias(_info_OK *_data_, char *_txt_, char *_oqo_)
+int handle_unset_alias(info_t *info, char *str, char *p)
 {
 	/*decleration*/
-	int _rultt_ = 1;
+	int result = 1;
 
-	if (_oqo_ && !*++_oqo_)
+	if (p && !*++p)
 	{
-		_rultt_ = _unstt_alas_(_data_, _txt_);
-		_unstt_alas_(_data_, _txt_);
-		if (_add_nd_end_(&(_data_->_alias_nd_), _txt_, 0) == NULL)
-			_rultt_ = 0;
+		result = unset_alias(info, str);
+		unset_alias(info, str);
+		if (add_node_end(&(info->alias), str, 0) == NULL)
+			result = 0;
 	}
-	return (_rultt_);
+	return (result);
 }
 
 /**
- * _stt_alass_ - This function sets an _alias_nd_
- * @_data_: This pointer refers to the information structure
- * @_txt_: This variable refers to the string to be set
+ * set_alias - This function sets an alias
+ * @info: This pointer refers to the information structure
+ * @str: This variable refers to the string to be set
  *
- * Return: _rultt_ of handl_unset_alias
+ * Return: result of handle_unset_alias
  */
-int _stt_alass_(_info_OK *_data_, char *_txt_)
+int set_alias(info_t *info, char *str)
 {
-	return (handl_unset_alias(_data_, _txt_, _str_n_chr(_txt_, '=')));
+	return (handle_unset_alias(info, str, _strchr(str, '=')));
 }
 
 
 /**
- * print_all_aliases - This function prints _All aliases
- * @_data_: This pointer refers to the information structure
+ * print_all_aliases - This function prints all aliases
+ * @info: This pointer refers to the information structure
  */
-void print_all_aliases(_info_OK *_data_)
+void print_all_aliases(info_t *info)
 {
 	/*decleration*/
-	_lst_ *_nddee_ = _data_->_alias_nd_;
+	list_t *node = info->alias;
 
 	do {
-		print_alias(_nddee_);
-		_nddee_ = _nddee_->_nxt_;
-	} while (_nddee_);
+		print_alias(node);
+		node = node->next;
+	} while (node);
 }
 
 /**
- * hdl_alias - This function hdls an _alias_nd_
- * @_data_: This pointer refers to the information structure
- * @_argu_: This variable refers to the argument
+ * handle_alias - This function handles an alias
+ * @info: This pointer refers to the information structure
+ * @arg: This variable refers to the argument
  */
-void hdl_alias(_info_OK *_data_, char *_argu_)
+void handle_alias(info_t *info, char *arg)
 {
 	/*decleration*/
-	char *_oqo_ = _str_n_chr(_argu_, '=');
+	char *p = _strchr(arg, '=');
 
-	_oqo_ ? _stt_alass_(_data_, _argu_) :
-		print_alias(_nde_strt_wth_(_data_->_alias_nd_, _argu_, '='));
+	p ? set_alias(info, arg) :
+		print_alias(node_starts_with(info->alias, arg, '='));
 }
 
 /**
- * _you_als_ - This function is a mysterious enigma
- * @_data_: This pointer refers to the information structure
+ * _myalias - This function is a mysterious enigma
+ * @info: This pointer refers to the information structure
  *
- * Return: 0 (always, because it'_aso_ a riddle wrapped in a mystery)
+ * Return: 0 (always, because it's a riddle wrapped in a mystery)
  */
-int _you_als_(_info_OK *_data_)
+int _myalias(info_t *info)
 {
-	/* This variable refers to the _indx_ of the argument vector*/
-	int _oops_ = 1;
+	/**
+	 * i: This variable refers to the index of the argument vector
+	 */
+	int i = 1;
 
-	switch (_data_->_argu_c_)
+	/**
+	 * switch: This function uses a switch statement to handle different cases
+	 */
+	switch (info->argc)
 	{
 		/**
-		 * case 1: This function prints _All aliases if there'_aso_ only one argument
+		 * case 1: This function prints all aliases if there's only one argument
 		 */
 		case 1:
-			print_all_aliases(_data_);
+			print_all_aliases(info);
 			break;
-		/** default: This function hdls each _alias_nd_ if*/
+		/**
+		 * default: This function handles each alias if there are multiple arguments
+		 */
 		default:
-			while (_data_->_arguv_[_oops_])
+			while (info->argv[i])
 			{
-				hdl_alias(_data_, _data_->_arguv_[_oops_]);
-				_oops_++;
+				handle_alias(info, info->argv[i]);
+				i++;
 			}
 			break;
 	}
 
 	/**
-	 * Return: This function always returns 0, because it'_aso_ an enigma
+	 * Return: This function always returns 0, because it's an enigma
 	 */
 	return (0);
 }
-
-
-
-

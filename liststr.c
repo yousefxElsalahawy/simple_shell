@@ -1,314 +1,310 @@
-
-
-
-
 #include "shell.h"
 
 /**
- * _gen_unique_ndd - This function generates a unique _nddee_
+ * generate_unique_node - This function generates a unique node
  *
- * Return: new_ndd (success), NULL (error)
+ * Return: new_node (success), NULL (error)
  */
-_lst_ *_gen_unique_ndd(void)
+list_t *generate_unique_node(void)
 {
 	/*use malloc*/
-	_lst_ *new_ndd = (_lst_ *)malloc(sizeof(_lst_));
+	list_t *new_node = (list_t *)malloc(sizeof(list_t));
 
 	/*use if*/
-	return ((!new_ndd) ? NULL :
-			(_lst_ *)_mem_sett_((void *)new_ndd, 0, sizeof(_lst_)));
+	return ((!new_node) ? NULL :
+			(list_t *)_memset((void *)new_node, 0, sizeof(list_t)));
 }
 
 /**
- * _pop_ndd_data - This function populates a _nddee_ with data
- * @_nddee_: This pointer refers to the _nddee_ to be populated
- * @_txt_: This string is used as the data for the _nddee_
- * @_num_: This integer is used as the _indx_ for the _nddee_
+ * populate_node_data - This function populates a node with data
+ * @node: This pointer refers to the node to be populated
+ * @str: This string is used as the data for the node
+ * @num: This integer is used as the index for the node
  *
  * Return: void
  */
-void _pop_ndd_data(_lst_ *_nddee_, const char *_txt_, int _num_)
+void populate_node_data(list_t *node, const char *str, int num)
 {
 	/*use if*/
-	if (_nddee_)
+	if (node)
 	{
-		_nddee_->_num_ = _num_;
-		_nddee_->_txt_ = _txt_ ? strdup(_txt_) : NULL;
+		node->num = num;
+		node->str = str ? strdup(str) : NULL;
 		/*use if*/
-		if (_txt_ && !_nddee_->_txt_)
+		if (str && !node->str)
 		{
-			free(_nddee_);
-			_nddee_ = NULL;
+			free(node);
+			node = NULL;
 		}
 	}
 }
 
 /**
- * link_new_head - This function links a _nww_ _ohadd_ to a list
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
- * @_nw_hd_: This pointer refers to the _nww_ _ohadd_ to be linked
+ * link_new_head - This function links a new head to a list
+ * @head: This pointer refers to the head of the list
+ * @new_head: This pointer refers to the new head to be linked
  *
  * Return: void
  */
-void link_new_head(_lst_ **_ohadd_, _lst_ *_nw_hd_)
+void link_new_head(list_t **head, list_t *new_head)
 {
 	/*use if*/
-	if (_nw_hd_ && _ohadd_)
+	if (new_head && head)
 	{
-		_nw_hd_->_nxt_ = *_ohadd_;
-		*_ohadd_ = _nw_hd_;
+		new_head->next = *head;
+		*head = new_head;
 	}
 }
 
 /**
- * _add_nd_ - This function adds a _nddee_ to a list
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
- * @_txt_: This string is used as the data for the _nddee_
- * @_num_: This integer is used as the _indx_ for the _nddee_
+ * add_node - This function adds a node to a list
+ * @head: This pointer refers to the head of the list
+ * @str: This string is used as the data for the node
+ * @num: This integer is used as the index for the node
  *
- * Return: _nw_hd_ (success), NULL (error)
+ * Return: new_head (success), NULL (error)
  */
-_lst_ *_add_nd_(_lst_ **_ohadd_, const char *_txt_, int _num_)
+list_t *add_node(list_t **head, const char *str, int num)
 {
 	/*use if*/
-	if (_ohadd_)
+	if (head)
 	{
-		_lst_ *_nw_hd_ = _gen_unique_ndd();
+		list_t *new_head = generate_unique_node();
 
 		/*use if*/
-		if (_nw_hd_)
+		if (new_head)
 		{
-			_pop_ndd_data(_nw_hd_, _txt_, _num_);
-			link_new_head(_ohadd_, _nw_hd_);
+			populate_node_data(new_head, str, num);
+			link_new_head(head, new_head);
 		}
 		/*use return*/
-		return (_nw_hd_);
+		return (new_head);
 	}
 	/*use return*/
 	return (NULL);
 }
 
 /**
- * create_new_ndd - This function creates a _nww_ _nddee_
- * @_txt_: This string is used as the data for the _nddee_
- * @_num_: This integer is used as the _indx_ for the _nddee_
+ * create_new_node - This function creates a new node
+ * @str: This string is used as the data for the node
+ * @num: This integer is used as the index for the node
  *
- * Return: new_ndd (success), NULL (error)
+ * Return: new_node (success), NULL (error)
  */
-_lst_ *create_new_ndd(const char *_txt_, int _num_)
+list_t *create_new_node(const char *str, int num)
 {
 	/*use malloc*/
-	_lst_ *new_ndd = (_lst_ *)malloc(sizeof(_lst_));
+	list_t *new_node = (list_t *)malloc(sizeof(list_t));
 
 	/*use if*/
-	if (new_ndd == NULL)
+	if (new_node == NULL)
 		/*use return*/
 		return (NULL);
-	new_ndd->_num_ = _num_;
-	new_ndd->_txt_ = _txt_ ? _str_dupp_(_txt_) : NULL;
+	new_node->num = num;
+	new_node->str = str ? _strdup(str) : NULL;
 	/*use if*/
-	if (_txt_ && !new_ndd->_txt_)
+	if (str && !new_node->str)
 	{
-		free(new_ndd);
+		free(new_node);
 		/*use return*/
 		return (NULL);
 	}
-	new_ndd->_nxt_ = NULL;
+	new_node->next = NULL;
 	/*use return*/
-	return (new_ndd);
+	return (new_node);
 }
 
 /**
- * find_last_ndd - This function finds the last _nddee_ in a list
- * @_nddee_: This pointer refers to the _nddee_ to _sstrtt_ from
+ * find_last_node - This function finds the last node in a list
+ * @node: This pointer refers to the node to start from
  *
- * Return: _nddee_ (success), NULL (error)
+ * Return: node (success), NULL (error)
  */
-_lst_ *find_last_ndd(_lst_ *_nddee_)
+list_t *find_last_node(list_t *node)
 {
 	/*use if*/
-	if (_nddee_)
+	if (node)
 	{
 		/*use loop*/
-		while (_nddee_->_nxt_)
+		while (node->next)
 		{
-			_nddee_ = _nddee_->_nxt_;
+			node = node->next;
 		}
 	}
 	/*use return*/
-	return (_nddee_);
+	return (node);
 }
 
 /**
- * link_new_ndd_to_end - This function links a _nww_ _nddee_ to the _End of a list
- * @_nddee_: This pointer refers to the _nddee_ to be linked
- * @new_ndd: This pointer refers to the _nww_ _nddee_ to be linked
+ * link_new_node_to_end - This function links a new node to the end of a list
+ * @node: This pointer refers to the node to be linked
+ * @new_node: This pointer refers to the new node to be linked
  *
  * Return: void
  */
-void link_new_ndd_to_end(_lst_ *_nddee_, _lst_ *new_ndd)
+void link_new_node_to_end(list_t *node, list_t *new_node)
 {
 	/*use if*/
-	if (_nddee_)
+	if (node)
 	{
-		_nddee_->_nxt_ = new_ndd;
+		node->next = new_node;
 	}
 }
 /**
- * _add_nd_end_ - This function adds a _nddee_ to the _End of a list
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
- * @_txt_: This string is used as the data for the _nddee_
- * @_num_: This integer is used as the _indx_ for the _nddee_
+ * add_node_end - This function adds a node to the end of a list
+ * @head: This pointer refers to the head of the list
+ * @str: This string is used as the data for the node
+ * @num: This integer is used as the index for the node
  *
- * Return: new_ndd (success), NULL (error)
+ * Return: new_node (success), NULL (error)
  */
-_lst_ *_add_nd_end_(_lst_ **_ohadd_, const char *_txt_, int _num_)
+list_t *add_node_end(list_t **head, const char *str, int num)
 {
-	_lst_ *new_ndd = create_new_ndd(_txt_, _num_);
-	_lst_ *last_ndd;
+	list_t *new_node = create_new_node(str, num);
+	list_t *last_node;
 
 	/*use if*/
-	if (!new_ndd)
+	if (!new_node)
 		/*use return*/
 		return (NULL);
 
-	last_ndd = find_last_ndd(*_ohadd_);
+	last_node = find_last_node(*head);
 
 	/*use if*/
-	if (last_ndd)
+	if (last_node)
 	{
-		link_new_ndd_to_end(last_ndd, new_ndd);
+		link_new_node_to_end(last_node, new_node);
 	}
 	else
 	{
-		*_ohadd_ = new_ndd;
+		*head = new_node;
 	}
 	/*use return*/
-	return (new_ndd);
+	return (new_node);
 }
 
 /**
- * print_ndd - This function prints a _nddee_
- * @_nddee_: This pointer refers to the _nddee_ to be printed
+ * print_node - This function prints a node
+ * @node: This pointer refers to the node to be printed
  *
  * Return: void
  */
-void print_ndd(const _lst_ *_nddee_)
+void print_node(const list_t *node)
 {
 	char *str_to_print = "(nil)";
 
 	/*use if*/
-	if (_nddee_ && _nddee_->_txt_)
-		str_to_print = (char *)_nddee_->_txt_;
+	if (node && node->str)
+		str_to_print = (char *)node->str;
 
-	_put_ss_(str_to_print);
-	_put_ss_("\n");
+	_puts(str_to_print);
+	_puts("\n");
 }
 
 /**
  * print_list_str - This function prints the string of a list
- * @h: This pointer refers to the _ohadd_ of the list
+ * @h: This pointer refers to the head of the list
  *
- * Return: _oops_ (success), 0 (error)
+ * Return: i (success), 0 (error)
  */
-size_t print_list_str(const _lst_ *h)
+size_t print_list_str(const list_t *h)
 {
-	size_t _oops_ = 0;
-	const _lst_ *current_ndd = h;
+	size_t i = 0;
+	const list_t *current_node = h;
 
 	/*use if*/
 	if (!h)
 		/*use return*/
 		return (0);
 	do {
-		print_ndd(current_ndd);
-		current_ndd = current_ndd->_nxt_;
-		_oops_++;
-	} while (current_ndd);
+		print_node(current_node);
+		current_node = current_node->next;
+		i++;
+	} while (current_node);
 
 	/*use return*/
-	return (_oops_);
+	return (i);
 }
 
 /**
- * is_head_null - This function chks if the _ohadd_ of a list is null
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
+ * is_head_null - This function checks if the head of a list is null
+ * @head: This pointer refers to the head of the list
  *
  * Return: 1 (success), 0 (error)
  */
-int is_head_null(_lst_ **_ohadd_)
+int is_head_null(list_t **head)
 {
 	/*use if*/
-	return ((!_ohadd_ || !*_ohadd_) ? 0 : 1);
+	return ((!head || !*head) ? 0 : 1);
 }
 
 /**
- * delete_ndd - This function deletes a _nddee_
- * @_nddee_: This pointer refers to the _nddee_ to be deleted
+ * delete_node - This function deletes a node
+ * @node: This pointer refers to the node to be deleted
  *
  * Return: void
  */
-void delete_ndd(_lst_ **_nddee_)
+void delete_node(list_t **node)
 {
-	free((*_nddee_)->_txt_);
-	free(*_nddee_);
-	*_nddee_ = NULL;
+	free((*node)->str);
+	free(*node);
+	*node = NULL;
 }
 
 /**
- * delete_head_ndd - This function deletes the _ohadd_ _nddee_ of a list
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
+ * delete_head_node - This function deletes the head node of a list
+ * @head: This pointer refers to the head of the list
  *
  * Return: void
  */
-void delete_head_ndd(_lst_ **_ohadd_)
+void delete_head_node(list_t **head)
 {
-	_lst_ *temp_ndd = *_ohadd_;
+	list_t *temp_node = *head;
 
-	*_ohadd_ = (*_ohadd_)->_nxt_;
-	delete_ndd(&temp_ndd);
+	*head = (*head)->next;
+	delete_node(&temp_node);
 }
 
 /**
- * delete_index_ndd - This function deletes a _nddee_ at a specific _indx_
- * @_nddee_: This pointer refers to the _nddee_ to be deleted
- * @prev_ndd: This pointer refers to the previous _nddee_
+ * delete_index_node - This function deletes a node at a specific index
+ * @node: This pointer refers to the node to be deleted
+ * @prev_node: This pointer refers to the previous node
  *
  * Return: void
  */
-void delete_index_ndd(_lst_ **_nddee_, _lst_ *prev_ndd)
+void delete_index_node(list_t **node, list_t *prev_node)
 {
-	prev_ndd->_nxt_ = (*_nddee_)->_nxt_;
-	delete_ndd(_nddee_);
+	prev_node->next = (*node)->next;
+	delete_node(node);
 }
 
 /**
- * iterate_through_ndds - This function iterates through ndds of a list
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
- * @_indx_: This integer is used as the _indx_ for the _nddee_
+ * iterate_through_nodes - This function iterates through nodes of a list
+ * @head: This pointer refers to the head of the list
+ * @index: This integer is used as the index for the node
  *
  * Return: 1 (success), 0 (error)
  */
-int iterate_through_ndds(_lst_ **_ohadd_, unsigned int _indx_)
+int iterate_through_nodes(list_t **head, unsigned int index)
 {
-	_lst_ *current_ndd = *_ohadd_, *prev_ndd = NULL;
+	list_t *current_node = *head, *prev_node = NULL;
 	unsigned int counter = 0;
 
 	/*use if*/
-	if (current_ndd)
+	if (current_node)
 	{
 		/*use loop*/
 		do {
 			/*use if*/
-			if (counter++ == _indx_)
+			if (counter++ == index)
 			{
-				delete_index_ndd(&current_ndd, prev_ndd);
+				delete_index_node(&current_node, prev_node);
 				/*use return*/
 				return (1);
 			}
-			prev_ndd = current_ndd;
-			current_ndd = current_ndd->_nxt_;
-		} while (current_ndd);
+			prev_node = current_node;
+			current_node = current_node->next;
+		} while (current_node);
 	}
 	/*use return*/
 	return (0);
@@ -317,88 +313,86 @@ int iterate_through_ndds(_lst_ **_ohadd_, unsigned int _indx_)
 
 
 /**
- * _dlt_nd_at_ndx - This function deletes a _nddee_ at a specific _indx_
- * @_ohadd_: This pointer refers to the _ohadd_ of the list
- * @_indx_: This integer is used as the _indx_ for the _nddee_
+ * delete_node_at_index - This function deletes a node at a specific index
+ * @head: This pointer refers to the head of the list
+ * @index: This integer is used as the index for the node
  *
  * Return: 1 (success), 0 (error)
  */
-int _dlt_nd_at_ndx(_lst_ **_ohadd_, unsigned int _indx_)
+int delete_node_at_index(list_t **head, unsigned int index)
 {
 	/*use if*/
-	if (!is_head_null(_ohadd_))
+	if (!is_head_null(head))
 		/*use return*/
 		return (0);
 
 	/*use if*/
-	if (_indx_ == 0)
+	if (index == 0)
 	{
-		delete_head_ndd(_ohadd_);
+		delete_head_node(head);
 		/*use return*/
 		return (1);
 	}
 	else
 	{
 		/*use return*/
-		return (iterate_through_ndds(_ohadd_, _indx_));
+		return (iterate_through_nodes(head, index));
 	}
 }
 
 /**
- * annihilate_ndd - This function annihilates a _nddee_
- * @_nddee_: This pointer refers to the _nddee_ to be annihilated
+ * annihilate_node - This function annihilates a node
+ * @node: This pointer refers to the node to be annihilated
  *
  * Return: void
  */
-void annihilate_ndd(_lst_ *_nddee_)
+void annihilate_node(list_t *node)
 {
 	/*use if*/
-	if (_nddee_)
+	if (node)
 	{
-		free(_nddee_->_txt_);
-		free(_nddee_);
+		free(node->str);
+		free(node);
 	}
 }
 
 /**
- * fetch_next_in_line - This function fetches the _nxt_ _nddee_ in line
- * @_nddee_: This pointer refers to the _nddee_ to _sstrtt_ from
+ * fetch_next_in_line - This function fetches the next node in line
+ * @node: This pointer refers to the node to start from
  *
- * Return: _nddee_ (success), NULL (error)
+ * Return: node (success), NULL (error)
  */
-_lst_ *fetch_next_in_line(_lst_ *_nddee_)
+list_t *fetch_next_in_line(list_t *node)
 {
 	/*use if*/
-	return (_nddee_ ? _nddee_->_nxt_ : NULL);
+	return (node ? node->next : NULL);
 }
 
 /**
- * _ree_lst_ - This function frees a list
- * @_hd_ptr_: This pointer refers to the _ohadd_ of the list
+ * free_list - This function frees a list
+ * @head_ptr: This pointer refers to the head of the list
  *
  * Return: void
  */
-void _ree_lst_(_lst_ **_hd_ptr_)
+void free_list(list_t **head_ptr)
 {
-	_lst_ *_nddee_, *next_ndd;
+	list_t *node, *next_node;
 
 	/*use if*/
-	if (!_hd_ptr_)
+	if (!head_ptr)
 		return;
 
-	_nddee_ = *_hd_ptr_;
+	node = *head_ptr;
 	/*use if*/
-	if (_nddee_)
+	if (node)
 	{
 		/*use loop*/
 		do {
-			next_ndd = fetch_next_in_line(_nddee_);
-			annihilate_ndd(_nddee_);
-			_nddee_ = next_ndd;
-		} while (_nddee_);
+			next_node = fetch_next_in_line(node);
+			annihilate_node(node);
+			node = next_node;
+		} while (node);
 	}
 
-	*_hd_ptr_ = NULL;
+	*head_ptr = NULL;
 }
-
-

@@ -1,309 +1,301 @@
-
-
-
-
-
-
 #include "shell.h"
 
 /**
- * reset_buffer - This function resets the _obuf_fer_
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
+ * reset_buffer - This function resets the buffer
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
  *
  * Return: Nothing (void function)
  */
-void reset_buffer(__attribute__((unused)) _info_OK *_data_, char **_bbuuff_)
+void reset_buffer(__attribute__((unused)) info_t *info, char **buf)
 {
     /* Use if statement */
-    if (*_bbuuff_)
+    if (*buf)
     {
-        free(*_bbuuff_);
-        *_bbuuff_ = NULL;
+        free(*buf);
+        *buf = NULL;
     }
-    signal(SIGINT, sgn_Her_);
+    signal(SIGINT, sigintHandler);
 }
 
 /**
  * input_reader - This function reads input
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_len_op_: This pointer refers to the _olent_
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @len_p: This pointer refers to the length
  *
  * Return: Number of bytes read
  */
-ssize_t input_reader(_info_OK *_data_, char **_bbuuff_, size_t *_len_op_)
+ssize_t input_reader(info_t *info, char **buf, size_t *len_p)
 {
-    ssize_t _oorr = 0;
+    ssize_t r = 0;
 
     /* Use conditional compilation */
-#if _USE_GETLINE_
-    _oorr = getline(_bbuuff_, _len_op_, stdin);
+#if USE_GETLINE
+    r = getline(buf, len_p, stdin);
 #else
-    _oorr = _gt_lne_(_data_, _bbuuff_, _len_op_);
+    r = _getline(info, buf, len_p);
 #endif
 
     /* Return the number of bytes read */
-    return (_oorr);
+    return (r);
 }
 
 /**
  * input_processor - This function processes input
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_oorr: This pointer refers to the _olent_
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @r: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
-void input_processor(_info_OK *_data_, char **_bbuuff_, ssize_t *_oorr)
+void input_processor(info_t *info, char **buf, ssize_t *r)
 {
     /* Use if statement */
-    (*_bbuuff_)[*_oorr - 1] == '\n' ? (*_bbuuff_)[--(*_oorr)] = '\0' : 0;
+    (*buf)[*r - 1] == '\n' ? (*buf)[--(*r)] = '\0' : 0;
 
-    _data_->_flag_mycount_ = 1;
-    _rmove_com_(*_bbuuff_);
-    _buld_hstry_lst_(_data_, *_bbuuff_, _data_->_my_tcount_++);
+    info->linecount_flag = 1;
+    remove_comments(*buf);
+    build_history_list(info, *buf, info->histcount++);
 }
 
 /**
- * command_chain_hdlr - This function hdls command chains
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_len_: This pointer refers to the _olent_
- * @_oorr: This pointer refers to the _olent_
+ * command_chain_handler - This function handles command chains
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @len: This pointer refers to the length
+ * @r: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
-void command_chain_hdlr(_info_OK *_data_, char **_bbuuff_, size_t *_len_, ssize_t _oorr)
+void command_chain_handler(info_t *info, char **buf, size_t *len, ssize_t r)
 {
-    *_len_ = _oorr;
-    _data_->_cmdd_buff_ = _bbuuff_;
+    *len = r;
+    info->cmd_buf = buf;
 }
 
 /**
- * input_buf - This function hdls input buffers
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_len_: This pointer refers to the _olent_
+ * input_buf - This function handles input buffers
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @len: This pointer refers to the length
  *
  * Return: Number of bytes read
  */
-ssize_t input_buf(_info_OK *_data_, char **_bbuuff_, size_t *_len_)
+ssize_t input_buf(info_t *info, char **buf, size_t *len)
 {
-    ssize_t _oorr = 0;
-    size_t _len_op_ = 0;
+    ssize_t r = 0;
+    size_t len_p = 0;
 
     /* Use if statement */
-    if (!*_len_)
+    if (!*len)
     {
-        reset_buffer(_data_, _bbuuff_);
-        _oorr = input_reader(_data_, _bbuuff_, &_len_op_);
-        if (_oorr > 0)
+        reset_buffer(info, buf);
+        r = input_reader(info, buf, &len_p);
+        if (r > 0)
         {
-            input_processor(_data_, _bbuuff_, &_oorr);
-            command_chain_hdlr(_data_, _bbuuff_, _len_, _oorr);
+            input_processor(info, buf, &r);
+            command_chain_handler(info, buf, len, r);
         }
     }
     /* Return the number of bytes read */
-    return (_oorr);
+    return (r);
 }
 
 /**
- * hdl_input - This function hdls input
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_len_: This pointer refers to the _olent_
+ * handle_input - This function handles input
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @len: This pointer refers to the length
  *
  * Return: Number of bytes read or -1 if error
  */
-ssize_t hdl_input(_info_OK *_data_, char **_bbuuff_, size_t *_len_)
+ssize_t handle_input(info_t *info, char **buf, size_t *len)
 {
-    ssize_t _oorr;
+    ssize_t r;
 
-    _pputt_char(_BUFFER_FLUSH);
+    _putchar(BUF_FLUSH);
 
-    _oorr = input_buf(_data_, _bbuuff_, _len_);
+    r = input_buf(info, buf, len);
 
     /* Return the number of bytes read or -1 if error */
-    return ((_oorr == -1) ? -1 : _oorr);
+    return ((r == -1) ? -1 : r);
 }
 
 /**
  * init_iterator - This function initializes the iterator
- * @_oops_: This pointer refers to the _osize_
- * @j: This pointer refers to the _osize_
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_oqo_: This pointer refers to the pointer
+ * @i: This pointer refers to the size
+ * @j: This pointer refers to the size
+ * @buf: This pointer refers to the buffer
+ * @p: This pointer refers to the pointer
  *
  * Return: Nothing (void function)
  */
-void init_iterator(size_t *_oops_, size_t *j, char *_bbuuff_, char **_oqo_)
+void init_iterator(size_t *i, size_t *j, char *buf, char **p)
 {
-    *j = *_oops_; /* init _nww_ iterator to current _bbuuff_ position */
-    *_oqo_ = _bbuuff_ + *_oops_; /* get pointer for return */
+    *j = *i; /* init new iterator to current buf position */
+    *p = buf + *i; /* get pointer for return */
 }
 
 /**
- * iterate_to_semicolon_or_end - This function iterates to semicolon or _End
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @j: This pointer refers to the _osize_
- * @_len_: This pointer refers to the _olent_
+ * iterate_to_semicolon_or_end - This function iterates to semicolon or end
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @j: This pointer refers to the size
+ * @len: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
-void iterate_to_semicolon_or_end(_info_OK *_data_, char *_bbuuff_, size_t *j, size_t _len_)
+void iterate_to_semicolon_or_end(info_t *info, char *buf, size_t *j, size_t len)
 {
     /*use loop */
     do {
-        if (_s_chn_(_data_, _bbuuff_, j))
+        if (is_chain(info, buf, j))
             break;
         (*j)++;
-    } while (*j < _len_); /* iterate to semicolon or _End */
+    } while (*j < len); /* iterate to semicolon or end */
 }
 
 /**
- * hdl_chain - This function hdls chains
- * @_data_: This pointer refers to the _data_ struct
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_oops_: This pointer refers to the _osize_
- * @j: This pointer refers to the _osize_
- * @_len_: This pointer refers to the _olent_
- * @_oqo_: This pointer refers to the pointer
+ * handle_chain - This function handles chains
+ * @info: This pointer refers to the info struct
+ * @buf: This pointer refers to the buffer
+ * @i: This pointer refers to the size
+ * @j: This pointer refers to the size
+ * @len: This pointer refers to the length
+ * @p: This pointer refers to the pointer
  *
  * Return: Nothing (void function)
  */
-void hdl_chain(_info_OK *_data_, char *_bbuuff_, size_t *_oops_, size_t *j, size_t _len_, char **_oqo_)
+void handle_chain(info_t *info, char *buf, size_t *i, size_t *j, size_t len, char **p)
 {
-    init_iterator(_oops_, j, _bbuuff_, _oqo_);
-    chk_chain(_data_, _bbuuff_, j, *_oops_, _len_);
-    iterate_to_semicolon_or_end(_data_, _bbuuff_, j, _len_);
+    init_iterator(i, j, buf, p);
+    check_chain(info, buf, j, *i, len);
+    iterate_to_semicolon_or_end(info, buf, j, len);
 }
 
 /**
- * _RESet_BuFFer_ - This function resets the _obuf_fer_
- * @_data_: This pointer refers to the _data_ struct
- * @_oops_: This pointer refers to the _osize_
- * @_len_: This pointer refers to the _olent_
+ * _RESet_BuFFer_ - This function resets the buffer
+ * @info: This pointer refers to the info struct
+ * @i: This pointer refers to the size
+ * @len: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
-void _RESet_BuFFer_(_info_OK *_data_, size_t *_oops_, size_t *_len_)
+void _RESet_BuFFer_(info_t *info, size_t *i, size_t *len)
 {
-    *_oops_ = *_len_ = 0; /* reset position and _olent_ */
-    _data_->_cmdd_buff_shape_ = _CMDD_NORMAL_;
+    *i = *len = 0; /* reset position and length */
+    info->cmd_buf_type = CMD_NORM;
 }
 
 /**
- * gt_userinpt_ - This function gets input
- * @_data_: This pointer refers to the _data_ struct
+ * get_input - This function gets input
+ * @info: This pointer refers to the info struct
  *
- * Return: _olent_ of current command or -1 if error
+ * Return: Length of current command or -1 if error
  */
-ssize_t gt_userinpt_(_info_OK *_data_)
+ssize_t get_input(info_t *info)
 {
-    static char *_bbuuff_; /* the ';' command chain _obuf_fer_ */
-    static size_t _oops_, j, _len_;
-    char **buf_p = &(_data_->_argu_), *_oqo_;
+    static char *buf; /* the ';' command chain buffer */
+    static size_t i, j, len;
+    char **buf_p = &(info->arg), *p;
 
-    ssize_t _oorr = hdl_input(_data_, &_bbuuff_, &_len_);
+    ssize_t r = handle_input(info, &buf, &len);
 
-    if (_oorr == -1)
+    if (r == -1)
 		/* Return -1 if error */
 		return (-1);
 
-    if (_len_)	/* we have commands left in the chain _obuf_fer_ */
+    if (len)	/* we have commands left in the chain buffer */
     {
-        hdl_chain(_data_, _bbuuff_, &_oops_, &j, _len_, &_oqo_);
+        handle_chain(info, buf, &i, &j, len, &p);
 
-        _oops_ = j + 1; /* increment past nulled ';'' */
-        if (_oops_ >= _len_) /* reached _End of _obuf_fer_? */
-            _RESet_BuFFer_(_data_, &_oops_, &_len_);
+        i = j + 1; /* increment past nulled ';'' */
+        if (i >= len) /* reached end of buffer? */
+            _RESet_BuFFer_(info, &i, &len);
 
-        *buf_p = _oqo_;
-		/* pass back pointer to current command position */
+        *buf_p = p; /* pass back pointer to current command position */
 
-        /* Return _olent_ of current command */
-        return (_str_len_(_oqo_)); 
+        /* Return length of current command */
+        return (_strlen(p)); 
     }
 
-    *buf_p = _bbuuff_; /* else not a chain, pass back
-	_obuf_fer_ from _gt_lne_() */
-    /* Return _olent_ of _obuf_fer_ from _gt_lne_() */
-    return (_oorr); 
+    *buf_p = buf; /* else not a chain, pass back buffer from _getline() */
+    /* Return length of buffer from _getline() */
+    return (r); 
 }
 
 /**
- * _red_buff_ - reads a _obuf_fer_
- * @_data_: parameter struct
- * @_bbuuff_: _obuf_fer_
- * @_oops_: _osize_
+ * read_buf - reads a buffer
+ * @info: parameter struct
+ * @buf: buffer
+ * @i: size
  *
- * Return: _oorr
+ * Return: r
  */
-ssize_t read_from_fd(_info_OK *_data_, char *_bbuuff_)
+ssize_t read_from_fd(info_t *info, char *buf)
 {
-	ssize_t _oorr;
+	ssize_t r;
 
-	_oorr = read(_data_->_read_fd_, _bbuuff_, _SIZE_BUFF_READ);
+	r = read(info->readfd, buf, READ_BUF_SIZE);
 	/* Return the number of bytes read or -1 if error */
-	return ((_oorr >= 0) ? _oorr : -1);
+	return ((r >= 0) ? r : -1);
 }
 
-ssize_t _red_buff_(_info_OK *_data_, char *_bbuuff_, size_t *_oops_)
+ssize_t read_buf(info_t *info, char *buf, size_t *i)
 {
-	ssize_t _oorr = 0;
+	ssize_t r = 0;
 
 	/* Use if statement */
-	if (!*_oops_)
+	if (!*i)
 	{
-		_oorr = read_from_fd(_data_, _bbuuff_);
-		*_oops_ = (_oorr >= 0) ? _oorr : 0;
+		r = read_from_fd(info, buf);
+		*i = (r >= 0) ? r : 0;
 	}
 
 	/* Return the number of bytes read or -1 if error */
-	return (_oorr);
+	return (r);
 }
 
 /**
- * _gt_lne_ - gets the _nxt_ line of input from STDIN
- * @_data_: parameter struct
- * @_pttr_: address of pointer to _obuf_fer_, preallocated or NULL
- * @_olent_: _osize_ of preallocated _pttr_ _obuf_fer_ if not NULL
+ * _getline - gets the next line of input from STDIN
+ * @info: parameter struct
+ * @ptr: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated ptr buffer if not NULL
  *
- * Return: _aso_
+ * Return: s
  */
-ssize_t buffer_reader(_info_OK *_data_, char *_bbuuff_, size_t *_len_)
+ssize_t buffer_reader(info_t *info, char *buf, size_t *len)
 {
-	ssize_t _oorr = 0;
+	ssize_t r = 0;
 
 	/* Use if statement */
-	if (!*_len_)
+	if (!*len)
 	{
-		_oorr = read(_data_->_read_fd_, _bbuuff_, _SIZE_BUFF_READ);
-		*_len_ = (_oorr >= 0) ? _oorr : 0;
+		r = read(info->readfd, buf, READ_BUF_SIZE);
+		*len = (r >= 0) ? r : 0;
 	}
 
 	/* Return the number of bytes read or -1 if error */
-	return (_oorr);
+	return (r);
 }
 
-char *locate_newline(char *_bbuuff_, size_t _oops_)
+char *locate_newline(char *buf, size_t i)
 {
 	/* Return the position of the newline character or NULL if not found */
-	return (_str_n_chr(_bbuuff_ + _oops_, '\n'));
+	return (_strchr(buf + i, '\n'));
 }
 
-char *memory_allocator(char *_oqo_, size_t _aso_, size_t _kok_)
+char *memory_allocator(char *p, size_t s, size_t k)
 {
 	char *new_p;
 
-	new_p = _rea_lloc_(_oqo_, _aso_, _aso_ ? _aso_ + _kok_ : _kok_ + 1	);
+	new_p = _realloc(p, s, s ? s + k : k + 1	);
 
 	if (!new_p) /* MALLOC FAILURE! */
 	{
-		if (_oqo_)
-			free(_oqo_);
+		if (p)
+			free(p);
 		/* Return NULL if memory allocation fails */
 		return (NULL);
 	}
@@ -312,81 +304,81 @@ char *memory_allocator(char *_oqo_, size_t _aso_, size_t _kok_)
 }
 
 /**
- * buffer_copier - This function copies the _obuf_fer_
- * @new_p: This pointer refers to the _nww_ _obuf_fer_
- * @_bbuuff_: This pointer refers to the _obuf_fer_
- * @_oops_: This pointer refers to the _osize_
- * @_kok_: This pointer refers to the _osize_
- * @_aso_: This pointer refers to the _osize_
+ * buffer_copier - This function copies the buffer
+ * @new_p: This pointer refers to the new buffer
+ * @buf: This pointer refers to the buffer
+ * @i: This pointer refers to the size
+ * @k: This pointer refers to the size
+ * @s: This pointer refers to the size
  *
  * Return: Nothing (void function)
  */
-void buffer_copier(char *new_p, char *_bbuuff_, size_t _oops_, size_t _kok_, size_t _aso_)
+void buffer_copier(char *new_p, char *buf, size_t i, size_t k, size_t s)
 {
 	/*use if*/
 
-	_aso_ ? _str_n_cat(new_p, _bbuuff_ + _oops_, _kok_ - _oops_) : _strr_ncpy_(new_p, _bbuuff_ + _oops_, _kok_ - _oops_ + 1);
+	s ? _strncat(new_p, buf + i, k - i) : _strncpy(new_p, buf + i, k - i + 1);
 }
 
 /**
- * _gt_lne_ - This function gets the _nxt_ line of input from STDIN
- * @_data_: parameter struct
- * @_pttr_: address of pointer to _obuf_fer_, preallocated or NULL
- * @_olent_: _osize_ of preallocated _pttr_ _obuf_fer_ if not NULL
+ * _getline - This function gets the next line of input from STDIN
+ * @info: parameter struct
+ * @ptr: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated ptr buffer if not NULL
  *
- * Return: _aso_
+ * Return: s
  */
-int _gt_lne_(_info_OK *_data_, char **_pttr_, size_t *_olent_)
+int _getline(info_t *info, char **ptr, size_t *length)
 {
 	/*decleration*/
-	ssize_t _oorr = 0, _aso_ = 0;
-	char *_oqo_ = NULL, *new_p = NULL, *_coco_c;
-	size_t _kok_;
-	static char _bbuuff_[_SIZE_BUFF_READ];
-	static size_t _oops_, _len_;
+	ssize_t r = 0, s = 0;
+	char *p = NULL, *new_p = NULL, *c;
+	size_t k;
+	static char buf[READ_BUF_SIZE];
+	static size_t i, len;
 
-	_oqo_ = *_pttr_;
+	p = *ptr;
 
-	if (_oqo_ && _olent_)
-		_aso_ = *_olent_;
+	if (p && length)
+		s = *length;
 
-	if (_oops_ == _len_)
-		_oops_ = _len_ = 0;
+	if (i == len)
+		i = len = 0;
 
-	_oorr = buffer_reader(_data_, _bbuuff_, &_len_);
-	if (_oorr == -1 || (_oorr == 0 && _len_ == 0))
+	r = buffer_reader(info, buf, &len);
+	if (r == -1 || (r == 0 && len == 0))
 		/* Return -1 if error */
 		return (-1);
 
-	_coco_c = locate_newline(_bbuuff_, _oops_);
-	_kok_ = _coco_c ? 1 + (unsigned int)(_coco_c - _bbuuff_) : _len_;
-	new_p = memory_allocator(_oqo_, _aso_, _kok_);
+	c = locate_newline(buf, i);
+	k = c ? 1 + (unsigned int)(c - buf) : len;
+	new_p = memory_allocator(p, s, k);
 
 	if (!new_p)
 		/* Return -1 if memory allocation fails */
 		return (-1);
 
-	buffer_copier(new_p, _bbuuff_, _oops_, _kok_, _aso_);
+	buffer_copier(new_p, buf, i, k, s);
 
-	_aso_ += _kok_ - _oops_;
-	_oops_ = _kok_;
-	_oqo_ = new_p;
+	s += k - i;
+	i = k;
+	p = new_p;
 
-	if (_olent_)
-		*_olent_ = _aso_;
+	if (length)
+		*length = s;
 
-	*_pttr_ = _oqo_;
-	/* Return the _osize_ of the _nww_ line */
-	return (_aso_);
+	*ptr = p;
+	/* Return the size of the new line */
+	return (s);
 }
 
 /**
- * sgn_Her_ - blocks ctrl-_coco_c
- * @_sig_nmm_: the signal number
+ * sigintHandler - blocks ctrl-C
+ * @sig_num: the signal number
  *
  * Return: void
  */
-void sgn_Her_(__attribute__((unused))int _sig_nmm_)
+void sigintHandler(__attribute__((unused))int sig_num)
 {
 	/*decleration*/
 	char *output = "\n$ ";
@@ -394,11 +386,9 @@ void sgn_Her_(__attribute__((unused))int _sig_nmm_)
 	if (output)
 	{
 		do {
-			_pputt_char(*output == '\n' ? '\n' : *output == '$' ? '$' : ' ');
+			_putchar(*output == '\n' ? '\n' : *output == '$' ? '$' : ' ');
 			output++;
 		} while (*output);
 	}
-	_pputt_char(_BUFFER_FLUSH);
+	_putchar(BUF_FLUSH);
 }
-
-

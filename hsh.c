@@ -1,321 +1,306 @@
-
-
-
-
-
-
 #include "shell.h"
 
 /**
- * ask_user - This function prompts the user for input
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * prompt_user - This function prompts the user for input
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void ask_user(_info_OK *_data_)
+void prompt_user(info_t *info)
 {
-	if (_inter_active(_data_)) /*use if */
-		_put_ss_("$ ");
-	_e_put_char_(_BUFFER_FLUSH);
+	if (interactive(info)) /*use if */
+		_puts("$ ");
+	_eputchar(BUF_FLUSH);
 }
 
 /**
- * _hdl_iinput_ - This function hdls user input
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @_aav_: This pointer refers to Argument
- * @_oorr: This pointer refers to read _vlle_
- * @_bltin_rt_: This pointer refers to crafty_builtin return _vlle_
+ * _handle_with_input_ - This function handles user input
+ * @info: This pointer refers to parameter and Info Struct
+ * @av: This pointer refers to Argument
+ * @r: This pointer refers to read value
+ * @builtin_ret: This pointer refers to builtin return value
  *
  * Return: void
  */
-void _hdl_iinput_(_info_OK *_data_, char **_aav_, ssize_t *_oorr, int *_bltin_rt_)
+void _handle_with_input_(info_t *info, char **av, ssize_t *r, int *builtin_ret)
 {
-	_clr_inf_(_data_);
-	ask_user(_data_);
-	*_oorr = gt_userinpt_(_data_);
-	if (*_oorr != -1) /*use if */
+	clear_info(info);
+	prompt_user(info);
+	*r = get_input(info);
+	if (*r != -1) /*use if */
 	{
-		_st_nf_(_data_, _aav_);
-		*_bltin_rt_ = find_operation(_data_);
-		if (*_bltin_rt_ == -1) /*use if */
-			_find_cmmd_(_data_);
+		set_info(info, av);
+		*builtin_ret = find_builtin(info);
+		if (*builtin_ret == -1) /*use if */
+			find_cmd(info);
 	}
 	else
-		_pputt_char(_inter_active(_data_) ? '\n' : ' ');
-	_fr_nf_(_data_, 0);
+		_putchar(interactive(info) ? '\n' : ' ');
+	free_info(info, 0);
 }
 
 /**
- * hdl_exit - This function hdls exit scenarios
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @_bltin_rt_: This is the return _vlle_ of the crafty_builtin function
+ * handle_exit - This function handles exit scenarios
+ * @info: This pointer refers to parameter and Info Struct
+ * @builtin_ret: This is the return value of the builtin function
  *
  * Return: void
  */
-void hdl_exit(_info_OK *_data_, int _bltin_rt_)
+void handle_exit(info_t *info, int builtin_ret)
 {
-	if (_bltin_rt_ == -2) 
+	if (builtin_ret == -2) /*use if */
 	{
-        /*use if */
-		exit(_data_->_num_error_ == -1 ? _data_->_cmdd_status_ : _data_->_num_error_);
+		exit(info->err_num == -1 ? info->status : info->err_num);
 	}
-	if (!_inter_active(_data_) && _data_->_cmdd_status_) /*use if */
-		exit(_data_->_cmdd_status_);
+	if (!interactive(info) && info->status) /*use if */
+		exit(info->status);
 }
 
 /**
- * cleanup_clever_ - This function cleans up the _data_ struct
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * cleanup - This function cleans up the info struct
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void cleanup_clever_(_info_OK *_data_)
+void cleanup(info_t *info)
 {
-	_fr_nf_(_data_, 1);
-	_wrt_hstry_(_data_);
+	free_info(info, 1);
+	write_history(info);
 }
 
 /**
  * hsh - This function is the main shell loop
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @_aav_: This pointer refers to Argument
+ * @info: This pointer refers to parameter and Info Struct
+ * @av: This pointer refers to Argument
  *
- * Return: _bltin_rt_ (success or error code)
+ * Return: builtin_ret (success or error code)
  */
-int hsh(_info_OK *_data_, char **_aav_)
+int hsh(info_t *info, char **av)
 {
-	ssize_t _oorr = 0;
-	int _bltin_rt_ = 0;
+	ssize_t r = 0;
+	int builtin_ret = 0;
 
 	do { /*use loop */
-		_hdl_iinput_(_data_, _aav_, &_oorr, &_bltin_rt_);
-	} while (_oorr != -1 && _bltin_rt_ != -2);
+		_handle_with_input_(info, av, &r, &builtin_ret);
+	} while (r != -1 && builtin_ret != -2);
 
-	hdl_exit(_data_, _bltin_rt_);
-	cleanup_clever_(_data_);
+	handle_exit(info, builtin_ret);
+	cleanup(info);
 
-	return (_bltin_rt_);
-    /* Returns the return _vlle_ of the crafty_builtin function */
+	return (builtin_ret); /* Returns the return value of the builtin function */
 }
 
 /**
- * initialize_builtin_table - This function initializes
- * the crafty_builtin table
+ * initialize_builtin_table - This function initializes the builtin table
  *
- * Return: builtintbl (pointer to the crafty_builtin table)
+ * Return: builtintbl (pointer to the builtin table)
  */
-_cunning_table *initialize_builtin_table(void)
+builtin_table *initialize_builtin_table(void)
 {
-	static _cunning_table builtintbl[] = {
-		{"exit", _you_ext_},
-		{"_my_env", _mEnv},
-		{"help", _you_hlp_},
-		{"_my_hty", _you_hstry_},
-		{"setenv", _mSetenv},
-		{"unsetenv", _mUnsetenv},
-		{"cd", _you_cdd_},
-		{"_alias_nd_", _you_als_},
+	static builtin_table builtintbl[] = {
+		{"exit", _myexit},
+		{"env", _myenv},
+		{"help", _myhelp},
+		{"history", _myhistory},
+		{"setenv", _mysetenv},
+		{"unsetenv", _myunsetenv},
+		{"cd", _mycd},
+		{"alias", _myalias},
 		{NULL, NULL}
 	};
-	return (builtintbl);
-    /* Returns a pointer to the crafty_builtin table */
+	return (builtintbl); /* Returns a pointer to the builtin table */
 }
 
 /**
- * _execute_operation - This function executes a crafty_builtin command
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @builtintbl: This pointer refers to the crafty_builtin table
- * @_oops_: This is the _indx_ of the crafty_builtin command in the table
+ * execute_builtin - This function executes a builtin command
+ * @info: This pointer refers to parameter and Info Struct
+ * @builtintbl: This pointer refers to the builtin table
+ * @i: This is the index of the builtin command in the table
  *
- * Return: builtintbl[_oops_]._operat_(_data_) (success or error code)
+ * Return: builtintbl[i].func(info) (success or error code)
  */
-int _execute_operation(_info_OK *_data_, _cunning_table *builtintbl, int _oops_)
+int execute_builtin(info_t *info, builtin_table *builtintbl, int i)
 {
-	_data_->_my_line_count++;
-	return (builtintbl[_oops_]._operat_(_data_));
-    /* Returns the return _vlle_ of the crafty_builtin function */
+	info->line_count++;
+	return (builtintbl[i].func(info)); /* Returns the return value of the builtin function */
 }
 
 /**
- * find_operation - This function finds a crafty_builtin command
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * find_builtin - This function finds a builtin command
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: built_in_ret (success or error code)
  */
-int find_operation(_info_OK *_data_)
+int find_builtin(info_t *info)
 {
-	int _oops_ = 0;
+	int i = 0;
 	int built_in_ret = -1;
-	_cunning_table *builtintbl = initialize_builtin_table();
+	builtin_table *builtintbl = initialize_builtin_table();
 
-	while (builtintbl[_oops_]._style && built_in_ret == -1) /*use loop */
+	while (builtintbl[i].type && built_in_ret == -1) /*use loop */
 	{
-		built_in_ret = (_str_cmpp_(_data_->_arguv_[0],
-					builtintbl[_oops_]._style) == 0) ?
-			_execute_operation(_data_, builtintbl, _oops_) : -1;
-		_oops_++;
+		built_in_ret = (_strcmp(info->argv[0],
+					builtintbl[i].type) == 0) ?
+			execute_builtin(info, builtintbl, i) : -1;
+		i++;
 	}
-	return (built_in_ret);
-    /* Returns the return _vlle_ of the crafty_builtin function */
+	return (built_in_ret); /* Returns the return value of the builtin function */
 }
 
 
 /**
- * increment_line_count - This function increments the line _ocntt_
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * increment_line_count - This function increments the line count
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void increment_line_count(_info_OK *_data_)
+void increment_line_count(info_t *info)
 {
-	_data_->_flag_mycount_ == 1 ? (_data_->_my_line_count++,
-			_data_->_flag_mycount_ = 0) : 0;
+	info->linecount_flag == 1 ? (info->line_count++,
+			info->linecount_flag = 0) : 0;
 }
 
 /**
  * count_non_delim - This function counts non-delimiter characters
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @_kok_: This pointer refers to the _ocntt_ of non-delimiter characters
+ * @info: This pointer refers to parameter and Info Struct
+ * @k: This pointer refers to the count of non-delimiter characters
  *
  * Return: void
  */
-void count_non_delim(_info_OK *_data_, int *_kok_)
+void count_non_delim(info_t *info, int *k)
 {
-	int _oops_ = 0;
+	int i = 0;
 
-	while (_data_->_argu_[_oops_]) /*use loop */
+	while (info->arg[i]) /*use loop */
 	{
-		if (!_my_delm(_data_->_argu_[_oops_], " \t\n")) /*use if */
-			*_kok_ += 1;
-		_oops_++;
+		if (!is_delim(info->arg[i], " \t\n")) /*use if */
+			*k += 1;
+		i++;
 	}
 }
 
 /**
- * hdl_pth_found - This function hdls the scenario when a _my_pth_ is found
- * @_data_: This pointer refers to parameter and _data_ Struct
- * @_my_pth_: This pointer refers to the found _my_pth_
+ * handle_path_found - This function handles the scenario when a path is found
+ * @info: This pointer refers to parameter and Info Struct
+ * @path: This pointer refers to the found path
  *
  * Return: void
  */
-void hdl_pth_found(_info_OK *_data_, char *_my_pth_)
+void handle_path_found(info_t *info, char *path)
 {
-	if (_my_pth_) /*use if */
+	if (path) /*use if */
 	{
-		_data_->_my_pth_ = _my_pth_;
-		_forkK_comm_(_data_);
+		info->path = path;
+		fork_cmd(info);
 	}
 }
 
 /**
- * hdl_pth_not_found - This function hdls the scenario when a _my_pth_ is not found
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * handle_path_not_found - This function handles the scenario when a path is not found
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void hdl_pth_not_found(_info_OK *_data_)
+void handle_path_not_found(info_t *info)
 {
 	/*usef if*/
-	if ((_inter_active(_data_) || _get_env_(_data_, "_my_pth_=")
-				|| _data_->_arguv_[0][0] == '/') && _my_i_cmdd_(_data_, _data_->_arguv_[0])) /*use if */
-		_forkK_comm_(_data_);
-	else if (*(_data_->_argu_) != '\n') /*use if */
+	if ((interactive(info) || _getenv(info, "PATH=")
+				|| info->argv[0][0] == '/') && is_cmd(info, info->argv[0])) /*use if */
+		fork_cmd(info);
+	else if (*(info->arg) != '\n') /*use if */
 	{
-		_data_->_cmdd_status_ = 127;
-		print_error(_data_, "the command is not found\n");
+		info->status = 127;
+		print_error(info, "the command is not found\n");
 	}
 }
 
 /**
- * _find_cmmd_ - This function finds a command in _my_pth_
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * find_cmd - This function finds a command in PATH
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void _find_cmmd_(_info_OK *_data_)
+void find_cmd(info_t *info)
 {
-	char *_my_pth_ = NULL;
-	int _kok_ = 0, _oops_ = 0;
+	char *path = NULL;
+	int k = 0, i = 0;
 
-	_data_->_my_pth_ = _data_->_arguv_[0];
-	increment_line_count(_data_);
-	count_non_delim(_data_, &_kok_);
-	if (!_kok_) /*use if */
+	info->path = info->argv[0];
+	increment_line_count(info);
+	count_non_delim(info, &k);
+	if (!k) /*use if */
 		return;
 
 	do { /*use loop */
-		_my_pth_ = _fnd_pth_(_data_, _get_env_(_data_, "_my_pth_="), _data_->_arguv_[0]);
-		_oops_++;
-	} while (!_my_pth_ && _oops_ < 2); /*use loop */
+		path = find_path(info, _getenv(info, "PATH="), info->argv[0]);
+		i++;
+	} while (!path && i < 2); /*use loop */
 
-	_my_pth_ ? hdl_pth_found(_data_, _my_pth_) : hdl_pth_not_found(_data_);
+	path ? handle_path_found(info, path) : handle_path_not_found(info);
 }
 
 /**
- * hdl_fork_error - This function hdls fork errors
- * @_child_pidd_: This is the process ID of the child process
+ * handle_fork_error - This function handles fork errors
+ * @child_pid: This is the process ID of the child process
  *
  * Return: void
  */
-void hdl_fork_error(pid_t _child_pidd_)
+void handle_fork_error(pid_t child_pid)
 {
-	_child_pidd_ == -1 ? (perror("Error:"), exit(1)) : (void)_child_pidd_;
+	child_pid == -1 ? (perror("Error:"), exit(1)) : (void)child_pid;
 }
 
 /**
- * hdl_exec_error - This function hdls exec errors
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * handle_exec_error - This function handles exec errors
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void hdl_exec_error(_info_OK *_data_)
+void handle_exec_error(info_t *info)
 {
-	execve(_data_->_my_pth_, _data_->_arguv_, _gtt_envrnn_(_data_)) == -1 ?
-		(_fr_nf_(_data_, 1), errno == EACCES ?
-		exit(126) : exit(1)) : (void)_data_;
+	execve(info->path, info->argv, get_environ(info)) == -1 ?
+		(free_info(info, 1), errno == EACCES ?
+		exit(126) : exit(1)) : (void)info;
 }
 
 /**
- * hdl_child_process - This function hdls child process scenarios
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * handle_child_process - This function handles child process scenarios
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void hdl_child_process(_info_OK *_data_)
+void handle_child_process(info_t *info)
 {
-	hdl_exec_error(_data_);
+	handle_exec_error(info);
 }
 
 /**
- * hdl_parent_process - This function hdls parent process scenarios
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * handle_parent_process - This function handles parent process scenarios
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void hdl_parent_process(_info_OK *_data_)
+void handle_parent_process(info_t *info)
 {
 	do { /*use loop */
-		wait(&(_data_->_cmdd_status_));
-	} while (!WIFEXITED(_data_->_cmdd_status_));
+		wait(&(info->status));
+	} while (!WIFEXITED(info->status));
 
-	_data_->_cmdd_status_ = WEXITSTATUS(_data_->_cmdd_status_);
-	_data_->_cmdd_status_ == 126 ? print_error(_data_, "Permission denied\n") : (void)_data_;
+	info->status = WEXITSTATUS(info->status);
+	info->status == 126 ? print_error(info, "Permission denied\n") : (void)info;
 }
 
 /**
- * _forkK_comm_ - This function forks a an exec thread to run _ccmmdd_
- * @_data_: This pointer refers to parameter and _data_ Struct
+ * fork_cmd - This function forks a an exec thread to run cmd
+ * @info: This pointer refers to parameter and Info Struct
  *
  * Return: void
  */
-void _forkK_comm_(_info_OK *_data_)
+void fork_cmd(info_t *info)
 {
 	/*decleration*/
-	pid_t _child_pidd_ = fork();
+	pid_t child_pid = fork();
 
-	hdl_fork_error(_child_pidd_);
-	_child_pidd_ == 0 ? hdl_child_process(_data_) : hdl_parent_process(_data_);
+	handle_fork_error(child_pid);
+	child_pid == 0 ? handle_child_process(info) : handle_parent_process(info);
 }
-
-
-

@@ -1,71 +1,67 @@
-
-
-
-
 #include "shell.h"
 
 /**
  * fillMemory - Fills memory with a constant byte.
- * @_aso_: The pointer to the memory area.
- * @_abo_: The byte to fill *_aso_ with.
+ * @s: The pointer to the memory area.
+ * @b: The byte to fill *s with.
  * @n: The amount of bytes to be filled.
- * @_oops_: The _indx_ variable used for iteration.
+ * @i: The index variable used for iteration.
  *
- * Return: A pointer to the memory area _aso_.
+ * Return: A pointer to the memory area s.
  */
-void fillMemory(char *_aso_, char _abo_, unsigned int n, unsigned int _oops_)
+void fillMemory(char *s, char b, unsigned int n, unsigned int i)
 {
     do {
-        _aso_[_oops_] = _abo_;
-        _oops_++;
-    } while (_oops_ < n);
+        s[i] = b;
+        i++;
+    } while (i < n);
     /* use loop */
 }
 
 /**
- * _mem_sett_ - Fills memory with a constant byte.
- * @_aso_: The pointer to the memory area.
- * @_abo_: The byte to fill *_aso_ with.
+ * _memset - Fills memory with a constant byte.
+ * @s: The pointer to the memory area.
+ * @b: The byte to fill *s with.
  * @n: The amount of bytes to be filled.
  *
- * Return: A pointer to the memory area _aso_.
+ * Return: A pointer to the memory area s.
  */
-char *_mem_sett_(char *_aso_, char _abo_, unsigned int n)
+char *_memset(char *s, char b, unsigned int n)
 {
-    unsigned int _oops_ = 0;
+    unsigned int i = 0;
 
     if (n > 0)
-        fillMemory(_aso_, _abo_, n, _oops_);
+        fillMemory(s, b, n, i);
 
-    return _aso_;
+    return s;
     /* use if */
 }
 
 /**
  * freeArray - Frees a string of strings.
- * @apopo_: String of strings.
- * @_oops_: The _indx_ variable used for iteration.
+ * @pp: String of strings.
+ * @i: The index variable used for iteration.
  */
-void freeArray(char **apopo_, int _oops_)
+void freeArray(char **pp, int i)
 {
-    for (; apopo_[_oops_] != NULL; _oops_++)
-        free(apopo_[_oops_]);
+    for (; pp[i] != NULL; i++)
+        free(pp[i]);
     /* use loop */
 }
 
 /**
- * _fun_free_ - Frees a string of strings.
- * @apopo_: String of strings.
+ * ffree - Frees a string of strings.
+ * @pp: String of strings.
  */
-void _fun_free_(char **apopo_)
+void ffree(char **pp)
 {
-    char **a = apopo_;
-    int _oops_ = 0;
+    char **a = pp;
+    int i = 0;
 
-    if (apopo_ == NULL)
+    if (pp == NULL)
         return;
 
-    freeArray(apopo_, _oops_);
+    freeArray(pp, i);
 
     free(a);
     a = NULL;
@@ -74,67 +70,66 @@ void _fun_free_(char **apopo_)
 
 /**
  * allocate_memory - Allocates a block of memory.
- * @_osize_: The _osize_ of the memory block to allocate.
+ * @size: The size of the memory block to allocate.
  *
  * Return: A pointer to the allocated memory block.
  */
-void *allocate_memory(unsigned int _osize_)
+void *allocate_memory(unsigned int size)
 {
-    char *_oqo_ = malloc(_osize_);
+    char *p = malloc(size);
 
-    return ((!_oqo_) ? NULL : _oqo_);
+    return ((!p) ? NULL : p);
     /* use if */
 }
 
 /**
  * copy_memory - Copies memory from one location to another.
- * @_pttr_: Pointer to the source memory location.
- * @_oqo_: Pointer to the destination memory location.
- * @_osize_: The _osize_ of the memory block to copy.
+ * @ptr: Pointer to the source memory location.
+ * @p: Pointer to the destination memory location.
+ * @size: The size of the memory block to copy.
  */
-void copy_memory(void *_pttr_, char *_oqo_, unsigned int _osize_)
+void copy_memory(void *ptr, char *p, unsigned int size)
 {
     do {
-        _osize_--;
-        _oqo_[_osize_] = ((char *)_pttr_)[_osize_];
-    } while (_osize_ > 0);
-    free(_pttr_);
+        size--;
+        p[size] = ((char *)ptr)[size];
+    } while (size > 0);
+    free(ptr);
     /* use loop */
 }
 
 /**
- * _rea_lloc_ - Reallocates a block of memory.
- * @_pttr_: Pointer to the previous malloc'ated block.
- * @old_size: Byte _osize_ of the previous block.
- * @new_size: Byte _osize_ of the _nww_ block.
+ * _realloc - Reallocates a block of memory.
+ * @ptr: Pointer to the previous malloc'ated block.
+ * @old_size: Byte size of the previous block.
+ * @new_size: Byte size of the new block.
  *
  * Return: Pointer to the reallocated memory block.
  */
-void *_rea_lloc_(void *_pttr_, unsigned int old_size, unsigned int new_size)
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-    char *_oqo_;
+    char *p;
 
     /* use switch */
     switch (new_size)
     {
         case 0:
-            free(_pttr_);
+            free(ptr);
             return NULL;
         default:
-            if (!_pttr_)
+            if (!ptr)
                 return allocate_memory(new_size);
 
             if (new_size == old_size)
-                return _pttr_;
+                return ptr;
 
-            _oqo_ = allocate_memory(new_size);
-            if (!_oqo_)
+            p = allocate_memory(new_size);
+            if (!p)
                 return NULL;
 
-            copy_memory(_pttr_, _oqo_, (old_size < new_size) ? old_size : new_size);
-            return _oqo_;
+            copy_memory(ptr, p, (old_size < new_size) ? old_size : new_size);
+            return p;
     }
 }
-
 
 

@@ -1,191 +1,184 @@
-
-
 #include "shell.h"
 
 /**
- * _ck_pth - This function chks if a _my_pth_ is valid
- * @_my_pth_: This pointer refers to the _my_pth_ to be chked
- * @_qst_: This pointer refers to the stat struct
+ * check_path - This function checks if a path is valid
+ * @path: This pointer refers to the path to be checked
+ * @st: This pointer refers to the stat struct
  *
- * Return: 1 if the _my_pth_ is valid, 0 otherwise
+ * Return: 1 if the path is valid, 0 otherwise
  */
-int _ck_pth(char *_my_pth_, struct stat *_qst_)
+int check_path(char *path, struct stat *st)
 {
-    int _rultt_ = (!_my_pth_ || stat(_my_pth_, _qst_)) ? 0 : 1;
-    /* This function returns the _rultt_ of the _my_pth_ chk */
-    return (_rultt_);
+    int result = (!path || stat(path, st)) ? 0 : 1;
+    /* This function returns the result of the path check */
+    return (result);
 }
 
 /**
- * chk_file_mode - This function chks if a file is regular
- * @_qst_: This pointer refers to the stat struct
+ * check_file_mode - This function checks if a file is regular
+ * @st: This pointer refers to the stat struct
  *
  * Return: 1 if the file is regular, 0 otherwise
  */
-int chk_file_mode(struct stat *_qst_)
+int check_file_mode(struct stat *st)
 {
-    int _rultt_;
+    int result;
 
     /* use if */
-    if (_qst_->st_mode & S_IFREG)
-        _rultt_ = 1;
+    if (st->st_mode & S_IFREG)
+        result = 1;
     else
-        _rultt_ = 0;
+        result = 0;
 
-    /* This function returns the _rultt_ of the file mode chk */
-    return (_rultt_);
+    /* This function returns the result of the file mode check */
+    return (result);
 }
 
 /**
- * _my_i_cmdd_ - This function chks if a _my_pth_ is a command
- * @_data_: This pointer refers to the _data_ struct
- * @_my_pth_: This pointer refers to the _my_pth_ to be chked
+ * is_cmd - This function checks if a path is a command
+ * @info: This pointer refers to the info struct
+ * @path: This pointer refers to the path to be checked
  *
- * Return: 1 if the _my_pth_ is a command, 0 otherwise
+ * Return: 1 if the path is a command, 0 otherwise
  */
-int _my_i_cmdd_(_info_OK *_data_, char *_my_pth_)
+int is_cmd(info_t *info, char *path)
 {
-    struct stat _qst_;
-    int pth_chk, mode_chk;
+    struct stat st;
+    int path_check, mode_check;
 
-    (void)_data_;
-    pth_chk = _ck_pth(_my_pth_, &_qst_);
+    (void)info;
+    path_check = check_path(path, &st);
     /* use if */
-    if (pth_chk == 0)
-        mode_chk = 0;
+    if (path_check == 0)
+        mode_check = 0;
     else
-        mode_chk = chk_file_mode(&_qst_);
+        mode_check = check_file_mode(&st);
 
-    /* This function returns the _rultt_ of the command chk */
-    return (mode_chk);
+    /* This function returns the result of the command check */
+    return (mode_check);
 }
 
 /**
- * _COpYY_cHaRS_ - This function copies characters from one
- * string to another
- * @pthstr: This pointer refers to the source string
- * @_sstrtt_: This variable is the starting _indx_ for copying
- * @_sososo: This variable is the stopping _indx_ for copying
- * @_bbuuff_: This pointer refers to the destination string
+ * _COpYY_cHaRS_ - This function copies characters from one string to another
+ * @pathstr: This pointer refers to the source string
+ * @start: This variable is the starting index for copying
+ * @stop: This variable is the stopping index for copying
+ * @buf: This pointer refers to the destination string
  *
  * Return: Pointer to the destination string
  */
-char *_COpYY_cHaRS_(char *pthstr, int _sstrtt_, int _sososo, char *_bbuuff_)
+char *_COpYY_cHaRS_(char *pathstr, int start, int stop, char *buf)
 {
-    int _indx_ = _sstrtt_, buffer_index = 0;
+    int index = start, buffer_index = 0;
 
     /* use loop */
     do {
         /* use if */
-        if (pthstr[_indx_] != ':') {
-            _bbuuff_[buffer_index] = pthstr[_indx_];
+        if (pathstr[index] != ':') {
+            buf[buffer_index] = pathstr[index];
             buffer_index++;
         }
-        _indx_++;
-    } while (_indx_ < _sososo);
+        index++;
+    } while (index < stop);
 
-    _bbuuff_[buffer_index] = '\0';
+    buf[buffer_index] = '\0';
     /* This function returns a pointer to the destination string */
-    return (_bbuuff_);
+    return (buf);
 }
 
 /**
- * _dupp_chart_ - This function duplicates characters from
- * one string to another
- * @pthstr: This pointer refers to the source string
- * @_sstrtt_: This variable is the starting _indx_ for copying
- * @_sososo: This variable is the stopping _indx_ for copying
+ * dup_chars - This function duplicates characters from one string to another
+ * @pathstr: This pointer refers to the source string
+ * @start: This variable is the starting index for copying
+ * @stop: This variable is the stopping index for copying
  *
  * Return: Pointer to the destination string
  */
-char *_dupp_chart_(char *pthstr, int _sstrtt_, int _sososo)
+char *dup_chars(char *pathstr, int start, int stop)
 {
-    static char _obuf_fer_[1024];
+    static char buffer[1024];
 
     /* This function returns a pointer to the destination string */
-    return (_COpYY_cHaRS_(pthstr, _sstrtt_, _sososo, _obuf_fer_));
+    return (_COpYY_cHaRS_(pathstr, start, stop, buffer));
 }
 
 /**
- * chk_cmd - This function chks if a command is valid
- * @_data_: This pointer refers to the _data_ struct
- * @_ccmmdd_: This pointer refers to the command to be chked
+ * check_cmd - This function checks if a command is valid
+ * @info: This pointer refers to the info struct
+ * @cmd: This pointer refers to the command to be checked
  *
  * Return: Pointer to the command if it is valid, NULL otherwise
  */
-char *chk_cmd(_info_OK *_data_, char *_ccmmdd_)
+char *check_cmd(info_t *info, char *cmd)
 {
     /* This function returns a pointer to the command if it is valid */
-    return (((_str_len_(_ccmmdd_) > 2) && _start_wh_(_ccmmdd_, "./") && _my_i_cmdd_(_data_, _ccmmdd_)) ? _ccmmdd_ : NULL);
+    return (((_strlen(cmd) > 2) && starts_with(cmd, "./") && is_cmd(info, cmd)) ? cmd : NULL);
 }
 
 /**
- * build_pth - This function builds a _my_pth_ from a base
- * my_pth_ and a command
- * @_my_pth_: This pointer refers to the base _my_pth_
- * @_ccmmdd_: This pointer refers to the command
+ * build_path - This function builds a path from a base path and a command
+ * @path: This pointer refers to the base path
+ * @cmd: This pointer refers to the command
  *
- * Return: Pointer to the built _my_pth_
+ * Return: Pointer to the built path
  */
-char *build_pth(char *_my_pth_, char *_ccmmdd_)
+char *build_path(char *path, char *cmd)
 {
     /* use if */
-    if (!*_my_pth_)
-        _str_catt_(_my_pth_, _ccmmdd_);
+    if (!*path)
+        _strcat(path, cmd);
     else {
-        _str_catt_(_my_pth_, "/");
-        _str_catt_(_my_pth_, _ccmmdd_);
+        _strcat(path, "/");
+        _strcat(path, cmd);
     }
-    /* This function returns a pointer to the built _my_pth_ */
-    return (_my_pth_);
+    /* This function returns a pointer to the built path */
+    return (path);
 }
 
 /**
- * find_cmd_in_pth - This function finds a command in a _my_pth_
- * @_data_: This pointer refers to the _data_ struct
- * @pthstr: This pointer refers to the _my_pth_ string
- * @_ccmmdd_: This pointer refers to the command to be found
- * @_oops_: This variable is the current _indx_ in the _my_pth_ string
- * @curr_pos: This variable is the current position in the _my_pth_ string
+ * find_cmd_in_path - This function finds a command in a path
+ * @info: This pointer refers to the info struct
+ * @pathstr: This pointer refers to the path string
+ * @cmd: This pointer refers to the command to be found
+ * @i: This variable is the current index in the path string
+ * @curr_pos: This variable is the current position in the path string
  *
  * Return: Pointer to the command if it is found, NULL otherwise
  */
-char *find_cmd_in_pth(_info_OK *_data_, char *pthstr, char *_ccmmdd_, int _oops_, int curr_pos)
+char *find_cmd_in_path(info_t *info, char *pathstr, char *cmd, int i, int curr_pos)
 {
-    char *_my_pth_;
+    char *path;
 
     /* use loop */
     do {
         /* use if */
-        if (!pthstr[_oops_] || pthstr[_oops_] == ':') {
-            _my_pth_ = _dupp_chart_(pthstr, curr_pos, _oops_);
-            _my_pth_ = build_pth(_my_pth_, _ccmmdd_);
-            if (_my_i_cmdd_(_data_, _my_pth_))
-                /* This function returns a pointer to thecommand if it is found */
-                return (_my_pth_);
-            curr_pos = _oops_;
+        if (!pathstr[i] || pathstr[i] == ':') {
+            path = dup_chars(pathstr, curr_pos, i);
+            path = build_path(path, cmd);
+            if (is_cmd(info, path))
+                /* This function returns a pointer to the command if it is found */
+                return (path);
+            curr_pos = i;
         }
-        _oops_++;
-    } while (pthstr[_oops_]);
+        i++;
+    } while (pathstr[i]);
     /* This function returns NULL if the command is not found */
     return (NULL);
 }
 
 /**
- * _fnd_pth_ - This function finds a _my_pth_ for a command
- * @_data_: This pointer refers to the _data_ struct
- * @pthstr: This pointer refers to the _my_pth_ string
- * @_ccmmdd_: This pointer refers to the command to find the _my_pth_ for
+ * find_path - This function finds a path for a command
+ * @info: This pointer refers to the info struct
+ * @pathstr: This pointer refers to the path string
+ * @cmd: This pointer refers to the command to find the path for
  *
- * Return: Pointer to the _my_pth_ if it is found, NULL otherwise
+ * Return: Pointer to the path if it is found, NULL otherwise
  */
-char *_fnd_pth_(_info_OK *_data_, char *pthstr, char *_ccmmdd_)
+char *find_path(info_t *info, char *pathstr, char *cmd)
 {
-    int _oops_ = 0, curr_pos = 0;
-    char *_my_pth_ = chk_cmd(_data_, _ccmmdd_);
+    int i = 0, curr_pos = 0;
+    char *path = check_cmd(info, cmd);
 
-    /* This function returns a pointer to the _my_pth_ if it is found */
-    return ((_my_pth_) ? _my_pth_ : (pthstr ? find_cmd_in_pth(_data_, pthstr, _ccmmdd_, _oops_, curr_pos) : NULL));
+    /* This function returns a pointer to the path if it is found */
+    return ((path) ? path : (pathstr ? find_cmd_in_path(info, pathstr, cmd, i, curr_pos) : NULL));
 }
-
-
