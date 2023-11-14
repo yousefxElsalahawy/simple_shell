@@ -30,11 +30,12 @@ int validate_inputs(info_t *_data_)
 int prnt_env(info_t *_data_)
 {
 	int _rslt_ = prnt_list_str(_data_->env);
+
 	if (_rslt_ != 0)
 	{
 		puts("Error: Failed to prnt Environment Variables.");
 	}
-	return _rslt_; /* Return the _rslt_ of the prnt operation */
+	return (_rslt_); /* Return the _rslt_ of the prnt operation */
 }
 
 /**
@@ -50,12 +51,13 @@ int _mEnv(info_t *_data_)
 
 	if (validationResult != 0)
 	{
-		return validationResult;
+		return (validationResult);
 		/* Return the _rslt_ of the validation */
 	}
 
 
-	return (prntResult == 0 ? 0 : 1); /* Return the _rslt_ of the prnt operation */
+	return (prntResult == 0 ? 0 : 1);
+	/* Return the _rslt_ of the prnt operation */
 }
 
 
@@ -66,20 +68,24 @@ int _mEnv(info_t *_data_)
  * @current_nd: This pointer refers to the current _nde_ in the list
  * @name: This variable is used to specify the name to chk
  *
- * Return: pointer to the start of the string if it starts with the name, NULL otherwise
+ * Return: pointer to the start of the string if
+ * t starts with the name, NULL otherwise
  */
-char *strange_starts(_lst_ *current_nd, const char *name)
+char *strange_starts(_lst_ *current_nd,
+		const char *name)
 {
 	char *_oops_ = _start_wh_(current_nd->_txt_, name);
 
 	return ((_oops_ && *_oops_) ? _oops_ : NULL);
-	/* Return pointer to the start of the string if it starts with the name, NULL otherwise */
+	/* Return  if it starts with the name, NULL otherwise */
 }
 
 /**
- * innovative_search - This function performs a search in the list
+ * innovative_search - This function performs
+ * search in the list
  * @_nde_: This pointer refers to the _nde_ in the list
- * @name: This variable is used to specify the name to search for
+ * @name: This variable is used to spe
+ * ify the name to search for
  *
  * Return: pointer to the found element, NULL if not found
  */
@@ -97,20 +103,24 @@ char *innovative_search(_lst_ *_nde_, const char *name)
 		current_nd = current_nd->_nxt_;
 	}
 
-	return _oops_; /* Return pointer to the found element, NULL if not found */
+	return (_oops_);
+	/* Return pointer to the found element, NULL if not found */
 }
 
 /**
  * _get_envv_ - This function gets the environment variable
  * @_data_: This pointer refers to the _data_ Struct
- * @name: This variable is used to specify the name of the environment variable
+ * @name: This variable is used
+ * to specify the name of the environment variable
  *
- * Return: pointer to the environment variable, NULL if not found
+ * Return: pointer to the environment variable
+ * NULL if not found
  */
 char *_get_envv_(info_t *_data_, const char *name)
 {
 	return ((_data_ != NULL && name != NULL) ?
-			innovative_search(_data_->env, name) : NULL); /* Return pointer to the environment variable, NULL if not found */
+			innovative_search(_data_->env, name) : NULL);
+	/* Return pointer to the able, NULL if not found */
 }
 
 
@@ -127,11 +137,13 @@ int validate_args(info_t *_data_)
 	const int expected_argc = 3;
 
 	return ((_data_->argc != expected_argc) ?
-			(_ee_put_("This is Wrong Number of Arguments\n"), 1) : 0); /* Return 0 if the number of arguments is correct, 1 otherwise */
+			(_ee_put_("This is Wrong Number of Arguments\n"), 1) : 0);
+	/* Return 0 if the number of arguments is correct, 1 otherwise */
 }
 
 /**
- * _my_Set_env_ - This function sets the environment variable
+ * _my_Set_env_ - This function sets the envi
+ * onment variable
  * @_data_: This pointer refers to the _data_ Struct
  *
  * Return: 0 (success), 1 (error)
@@ -143,7 +155,8 @@ int _my_Set_env_(info_t *_data_)
 	if (validation)
 		return (validation); /* Return the _rslt_ of the validation */
 
-	return ((_set_ev_(_data_, _data_->argv[1], _data_->argv[2]) == 0) ? 0 : 1); /* Return 0 if the environment variable is set successfully, 1 otherwise */
+	return ((_set_ev_(_data_, _data_->argv[1], _data_->argv[2]) == 0) ? 0 : 1);
+	/* Return 0 if the environment variable is set successfully, 1 otherwise */
 }
 
 /**
@@ -154,7 +167,8 @@ int _my_Set_env_(info_t *_data_)
  */
 int chk_argc(info_t *_data_)
 {
-	return ((_data_->argc == 1) ? (_ee_put_("Too few arguments.\n"), 1) : 0); /* Return 0 if the number of arguments is correct, 1 otherwise */
+	return ((_data_->argc == 1) ? (_ee_put_("Too few arguments.\n"), 1) : 0);
+	/* Return 0 if the number of arguments is correct, 1 otherwise */
 }
 
 
@@ -171,16 +185,17 @@ int _mUnsetenv(info_t *_data_)
 	int _OK_;
 
 	if (validation)
-		return (validation); /* Return the _rslt_ of the validation */
+		return (validation);
+	/* Return the _rslt_ of the validation */
 
 	_OK_ = 1;
 	do {
 		_Un_Set_env_(_data_, _data_->argv[_OK_]);
 		_OK_++;
-	} while (_OK_ <= _data_->argc);
+	} while (_data_->argc <= _OK_);
 
 	return (0);
-	/* Return 0 if the environment variable is unset successfully */
+	/* Return 0 if the envi unset successfully */
 }
 
 /**

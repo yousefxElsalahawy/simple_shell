@@ -81,7 +81,8 @@ int reset_environment(info_t *_data_, size_t *_OK_, _lst_ **_nde_)
  * @_data_: This pointer refers to the _data_ Struct
  * @_Var_: This variable is used for some specific purpose
  *
- * Return: reset_environment(_data_, &_OK_, &_nde_) or _data_->env_changed (success)
+ * Return: reset_environment(_data_, &_OK_, &_nde_)
+ * or _data_->env_changed (success)
  */
 int _Un_Set_env_(info_t *_data_, char *_Var_)
 {

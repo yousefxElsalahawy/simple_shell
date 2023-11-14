@@ -127,7 +127,8 @@ _cunning_table *initialize_blt_in_table(void)
 int exec_blt_in(info_t *_data_, _cunning_table *blt_intbl, int _OK_)
 {
 	_data_->line_count++;
-	return (blt_intbl[_OK_]._operat_(_data_)); /* Returns the return _vle_ of the crafty_blt_in function */
+	return (blt_intbl[_OK_]._operat_(_data_));
+	/* Returns the return _vle_ of the crafty_blt_in function */
 }
 
 /**
@@ -149,7 +150,8 @@ int find_blt_in(info_t *_data_)
 			exec_blt_in(_data_, blt_intbl, _OK_) : -1;
 		_OK_++;
 	}
-	return (built_in_ret); /* Returns the return _vle_ of the crafty_blt_in function */
+	return (built_in_ret);
+	/* Returns the return _vle_ of the crafty_blt_in function */
 }
 
 
@@ -209,8 +211,10 @@ void hdl_pth_found(info_t *_data_, char *pth)
 void hdl_pth_not_found(info_t *_data_)
 {
 	/*usef if*/
-	if ((_inter_active(_data_) || _get_envv_(_data_, "PATH=")
-				|| _data_->argv[0][0] == '/') && _my_i_cmdd_(_data_, _data_->argv[0])) /*use if */
+	if ((_inter_active(_data_) || _get_envv_(_data_,
+	"PATH=")
+				|| _data_->argv[0][0] == '/')
+				&& _my_i_cmdd_(_data_, _data_->argv[0])) /*use if */
 		_forkK_comm_(_data_);
 	else if (*(_data_->arg) != '\n') /*use if */
 	{
@@ -292,7 +296,8 @@ void hdl_parent_process(info_t *_data_)
 	} while (!WIFEXITED(_data_->status));
 
 	_data_->status = WEXITSTATUS(_data_->status);
-	_data_->status == 126 ? _prnt_err_(_data_, "Permission denied\n") : (void)_data_;
+	_data_->status == 126 ?
+		_prnt_err_(_data_, "Permission denied\n") : (void)_data_;
 }
 
 /**
@@ -309,5 +314,6 @@ void _forkK_comm_(info_t *_data_)
 	hdl_fork_error(child_pid);
 	child_pid == 0 ? hdl_child_process(_data_) : hdl_parent_process(_data_);
 }
+
 
 

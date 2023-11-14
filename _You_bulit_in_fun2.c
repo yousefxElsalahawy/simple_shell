@@ -49,7 +49,8 @@ int _del_alias_ndd(info_t *_data_, char *_txt_)
 {
 	/*decleration*/
 
-	int _indx_ = _gt_nde_indx_(_data_->alias, node_starts_with(_data_->alias, _txt_, -1));
+	int _indx_ = _gt_nde_indx_(_data_->alias,
+			node_starts_with(_data_->alias, _txt_, -1));
 
 	return (_indx_ >= 0 ? _dlt_nd_at_ndx(&(_data_->alias), _indx_) : 1);
 }
@@ -215,7 +216,7 @@ int _you_als_(info_t *_data_)
 	switch (_data_->argc)
 	{
 		/**
-		 * case 1: This function prnts all aliases if there'_letter_ only one argument
+		 * case 1: aliases if there'_letter_ only one argument
 		 */
 		case 1:
 			prnt_all_aliases(_data_);

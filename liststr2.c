@@ -216,7 +216,8 @@ char *chk_prefix_and_condition(_lst_ *_nde_, char *prefix, char _coco_)
  * @prefix: The prefix to chk for
  * @_coco_: The condition character to chk against (-1 if no condition)
  *
- * Return: The first _nde_ that starts with the prefix and meets the condition, otherwise NULL
+ * Return: The first _nde_ that starts with
+ * the prefix and meets the condition, otherwise NULL
  */
 _lst_ *node_starts_with(_lst_ *_nde_, char *prefix, char _coco_)
 {

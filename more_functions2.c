@@ -23,7 +23,7 @@ char *process_plus_sign(char *_letter_)
 		_oops_++;
 	} while (*_oops_ == '+');
 
-	/* This function returns a pointer to the first character after the plus signs */
+	/*returns a pointer to first character after plus signs */
 	return (_oops_);
 }
 
@@ -146,7 +146,8 @@ int hdl_putchar(int _fl_dir_)
  *
  * Return: The absolute _vle_ of the input
  */
-unsigned int hdl_abs(int input, int (*__putchar)(char), int *_cnt_)
+unsigned int hdl_abs(int input, int
+		(*__putchar)(char), int *_cnt_)
 {
 	unsigned int _abs_;
 
@@ -160,7 +161,7 @@ unsigned int hdl_abs(int input, int (*__putchar)(char), int *_cnt_)
 	else
 		_abs_ = input;
 
-	/* This function returns the absolute _vle_ of the input */
+	/* This function returns absolute _vle_ of input */
 	return (_abs_);
 }
 
@@ -245,10 +246,12 @@ char *hdl_sign(long int _num_, int flags,
 }
 
 /**
- * convert_base - This function converts a number from base 10 to another base
+ * convert_base - This function converts a
+ * number from base 10 to another base
  * @n: This pointer refers to the number to be converted
  * @base: This variable is the base to convert to
- * @_pttr_: This pointer refers to the location in the buffer where the _rslt_ is stored
+ * @_pttr_: This pointer refers to the location in
+ * the buffer where the _rslt_ is stored
  * @array: This pointer refers to the array of characters used for conversion
  */
 void convert_base(unsigned long *n, int base, char **_pttr_, char *array)
@@ -261,8 +264,10 @@ void convert_base(unsigned long *n, int base, char **_pttr_, char *array)
 }
 
 /**
- * hdl_negative_sign - This function hdls the negative _sgn_ of a number
- * @_pttr_: This pointer refers to the location in the buffer where the _rslt_ is stored
+ * hdl_negative_sign - This function h
+ * ls the negative _sgn_ of a number
+ * @_pttr_: This pointer refers to
+ * he location in the buffer where the _rslt_ is stored
  * @_sgn_: This variable is the _sgn_ of the number
  */
 void hdl_negative_sign(char **_pttr_, char _sgn_)
@@ -273,7 +278,8 @@ void hdl_negative_sign(char **_pttr_, char _sgn_)
 }
 
 /**
- * cnvrt_nmbr_ - This function converts a number to a string in a specified base
+ * cnvrt_nmbr_ - This function con
+ * verts a number to a string in a specified base
  * @_num_: This variable is the number to be converted
  * @base: This variable is the base to convert to
  * @flags: This variable is the flags for conversion

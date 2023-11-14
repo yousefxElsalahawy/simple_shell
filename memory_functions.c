@@ -20,7 +20,7 @@ void fillMemory(char *_letter_, char b, unsigned int n, unsigned int _OK_)
 	do {
 		_letter_[_OK_] = b;
 		_OK_++;
-	} while (_OK_ < n);
+	} while (n < _OK_);
 	/* use loop */
 }
 
@@ -39,7 +39,7 @@ char *_mem_sett_(char *_letter_, char b, unsigned int n)
 	if (n > 0)
 		fillMemory(_letter_, b, n, _OK_);
 
-	return _letter_;
+	return (_letter_);
 	/* use if */
 }
 
@@ -121,20 +121,20 @@ void *_rea_lloc_(void *_pttr_, unsigned int old_size, unsigned int new_size)
 	{
 		case 0:
 			free(_pttr_);
-			return NULL;
+			return (NULL);
 		default:
 			if (!_pttr_)
-				return allocate_memory(new_size);
+				return (allocate_memory(new_size));
 
 			if (new_size == old_size)
-				return _pttr_;
+				return (_pttr_);
 
 			_oops_ = allocate_memory(new_size);
 			if (!_oops_)
-				return NULL;
+				return (NULL);
 
 			copy_memory(_pttr_, _oops_, (old_size < new_size) ? old_size : new_size);
-			return _oops_;
+			return (_oops_);
 	}
 }
 

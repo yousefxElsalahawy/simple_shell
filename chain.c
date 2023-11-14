@@ -56,7 +56,8 @@ int chk_operator(info_t *_data_, char *_buff_, size_t *_go_)
 }
 
 /**
- * _s_chn_ - Checks if the position has changed, indicating an operator was found
+ * _s_chn_ - Checks if the position has changed,
+ * indicating an operator was found
  * @_data_: This pointer refers to the parameter struct
  * @_buff_: This pointer refers to the char buffer
  * @_oops_: This variable refers to the current position in _buff_
@@ -74,7 +75,8 @@ int _s_chn_(info_t *_data_, char *_buff_, size_t *_oops_)
 	*_oops_ = _go_ + chk_operator(_data_, _buff_, &_go_);
 
 	/* Use if */
-	return ((*_oops_ > _go_) ? 1 : 0); /* Returns 1 if position has changed, 0 otherwise */
+	return ((*_oops_ > _go_) ? 1 : 0);
+	/* Returns 1 if position has changed, 0 otherwise */
 }
 
 /**
@@ -86,11 +88,13 @@ int _s_chn_(info_t *_data_, char *_buff_, size_t *_oops_)
 int chk_condition(info_t *_data_)
 {
 	return ((_data_->cmd_buf_type == CMD_AND && _data_->status) ||
-			(_data_->cmd_buf_type == CMD_OR && !_data_->status)); /* Returns 1 if condition is met, 0 otherwise */
+			(_data_->cmd_buf_type == CMD_OR && !_data_->status));
+	/* Returns 1 if condition is met, 0 otherwise */
 }
 
 /**
- * update_buffer_and_index - Updates the buffer and _indx_ based on the condition
+ * update_buffer_and_index - Updates the
+ * buffer and _indx_ based on the condition
  * @_data_: This pointer refers to the parameter struct
  * @_buff_: This pointer refers to the char buffer
  * @_indx_: This variable refers to the current position in _buff_
@@ -147,7 +151,6 @@ void chk_chain(info_t *_data_, char *_buff_,
 
 
 
-/*****************************************/
 /**
  * _gett_ndd_ - Retrieves a _nde_ from the alias list
  * @_data_: This pointer refers to the parameter struct
@@ -160,7 +163,8 @@ _lst_ *_gett_ndd_(info_t *_data_)
 	if (!_data_)
 		return (NULL);
 
-	return (node_starts_with(_data_->alias, _data_->argv[0], '=')); /* Returns _nde_ if found, NULL otherwise */
+	return (node_starts_with(_data_->alias, _data_->argv[0], '='));
+	/* Returns _nde_ if found, NULL otherwise */
 }
 
 /**
@@ -180,11 +184,13 @@ char *get_new_p(_lst_ *_nde_)
 
 	_oops_ = _str_n_chr(_nde_->_txt_, '=');
 
-	return (_oops_ ? _str_dupp_(_oops_ + 1) : NULL); /* Returns new pointer if found, NULL otherwise */
+	return (_oops_ ? _str_dupp_(_oops_ + 1) : NULL);
+	/* Returns new pointer if found, NULL otherwise */
 }
 
 /**
- * replace_alias - Replaces the alias in the argv[0] with the _vle_ from the alias list
+ * replace_alias - Replaces the alias
+ * in the argv[0] with the _vle_ from the alias list
  * @_data_: This pointer refers to the parameter struct
  *
  * Return: 1 if alias is replaced, 0 otherwise
@@ -218,27 +224,31 @@ int replace_alias(info_t *_data_)
 		_OK_++;
 	} while (_OK_ < 10 && _data_->argv[0] == NULL);
 
-	return (_data_->argv[0] != NULL); /* Returns 1 if alias is replaced, 0 otherwise */
+	return (_data_->argv[0] != NULL);
+	/* Returns 1 if alias is replaced, 0 otherwise */
 }
 
 /**
- * chk_variable_type - Checks the _style of the variable in argv[_OK_]
+ * chk_variable_type - Checks the _style of
+ * the variable in argv[_OK_]
  * @_data_: This pointer refers to the parameter struct
  * @_OK_: This variable refers to the _indx_ of argv
  *
- * Return: 0 if not a variable, 1 if status variable, 2 if PID variable, 3 otherwise
+ * Return: 0 if not a variable,
+ * 1 if status variable, 2 if PID variable, 3 otherwise
  */
 int chk_variable_type(info_t *_data_, int _OK_)
 {
 	/* Use if */
 	if (_data_->argv[_OK_][0] != '$' || !_data_->argv[_OK_][1])
-		return 0;
+		return (0);
 	else if (!_str_cmpp_(_data_->argv[_OK_], "$?"))
-		return 1;
+		return (1);
 	else if (!_str_cmpp_(_data_->argv[_OK_], "$$"))
-		return 2;
+		return (2);
 	else
-		return 3; /* Returns 0 if not a variable, 1 if status variable, 2 if PID variable, 3 otherwise */
+		return (3);
+	/* Returns 0 if not a variable, 1, 2 , 3  */
 }
 
 /**
@@ -263,11 +273,14 @@ void replace_string_with_value(info_t *_data_, int _OK_, int _vle_)
  */
 _lst_ *_get_ndd_(info_t *_data_, int _OK_)
 {
-	return node_starts_with(_data_->env, &_data_->argv[_OK_][1], '='); /* Returns _nde_ if found, NULL otherwise */
+	return (node_starts_with(_data_->env,
+			&_data_->argv[_OK_][1], '='));
+			/* Returns _nde_ if found, NULL otherwise */
 }
 
 /**
- * replace_with_nd_value - Replaces the string in argv[_OK_] with the _vle_ from the _nde_
+ * replace_with_nd_value - Replaces the string in
+ * argv[_OK_] with the _vle_ from the _nde_
  * @_data_: This pointer refers to the parameter struct
  * @_OK_: This variable refers to the _indx_ of argv
  * @_nde_: This pointer refers to the _nde_
@@ -276,11 +289,13 @@ _lst_ *_get_ndd_(info_t *_data_, int _OK_)
  */
 void replace_with_nd_value(info_t *_data_, int _OK_, _lst_ *_nde_)
 {
-	_rplce_str_(&(_data_->argv[_OK_]), _str_dupp_(_str_n_chr(_nde_->_txt_, '=') + 1));
+	_rplce_str_(&(_data_->argv[_OK_]),
+			_str_dupp_(_str_n_chr(_nde_->_txt_, '=') + 1));
 }
 
 /**
- * replace_with_empty_string - Replaces the string in argv[_OK_] with an empty string
+ * replace_with_empty_string - Replaces the
+ * string in argv[_OK_] with an empty string
  * @_data_: This pointer refers to the parameter struct
  * @_OK_: This variable refers to the _indx_ of argv
  *

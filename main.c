@@ -11,8 +11,10 @@
  * hdl_asm - This function performs some operation on file descriptor
  * @_fl_dir_: Pointer to the file descriptor
  *
- * This function uses inline assembly to perform some operation on file descriptor.
- * It moves the _vle_ of the file descriptor to a register and adds 3 to it.
+ * This function uses inline assembly to
+ * perform some operation on file descriptor.
+ * It moves the _vle_ of the file descriptor
+ * o a register and adds 3 to it.
  */
 void hdl_asm(int *_fl_dir_)
 {

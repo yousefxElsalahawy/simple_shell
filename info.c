@@ -18,7 +18,8 @@ void clear_info_arg(info_t *_data_)
 }
 
 /**
- * clear_info_pth_argc - This function clears the pth and argument _cnt_ in the _data_ struct
+ * clear_info_pth_argc - This function clear
+ * the pth and argument _cnt_ in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
@@ -51,11 +52,13 @@ void _clr_inf_(info_t *_data_)
 void set_fname(info_t *_data_, char **_av)
 {
 	char *filename = _av[0];
+
 	_data_->fname = filename;
 }
 
 /**
- * allocate_argv - This function allocates memory for arguments in the _data_ struct
+ * allocate_argv - This function allocates
+ * memory for arguments in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
@@ -103,7 +106,8 @@ void set_argv(info_t *_data_)
 }
 
 /**
- * _rplce_nf_ - This function replaces aliases and variables in the _data_ struct
+ * _rplce_nf_ - This function replaces
+ * aliases and variables in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
@@ -153,7 +157,8 @@ void annihilate_pth(info_t *_data_)
 }
 
 /**
- * exterminate_cmd_buf_and_arg - This function frees the command buffer and argument in the _data_ struct
+ * exterminate_cmd_buf_and_arg - This function
+ * frees the command buffer and argument in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
@@ -191,7 +196,8 @@ void decimate_lists(info_t *_data_)
 	}
 }
 /**
- * eradicate_environ_and_cmd_buf - This function frees the environment and command buffer in the _data_ struct
+ * eradicate_environ_and_cmd_buf -
+ * This function frees the environment and command buffer in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
@@ -226,5 +232,6 @@ void _fr_nf_(info_t *_data_, int all)
 	}
 	/* The function returns here */
 }
+
 
 

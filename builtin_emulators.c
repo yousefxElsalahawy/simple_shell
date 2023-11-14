@@ -38,7 +38,8 @@ int galactic_chker(info_t *_data_)
 {
 	int exitchk = alien_translator(_data_->argv[1]);
 
-	return ((exitchk == -1) ? (interstellar_communicator(_data_, "Illegal number: "), 1) : exitchk);
+	return ((exitchk == -1) ?
+			(interstellar_communicator(_data_, "Illegal number: "), 1) : exitchk);
 }
 
 /**
@@ -196,7 +197,8 @@ void _upd_env_vrs_(info_t *_data_, char *buffer, int chdir_ret)
 	}
 	else
 	{
-		_set_ev_(_data_, "this is the OLDPWD", _get_envv_(_data_, "this is the PWD="));
+		_set_ev_(_data_, "this is the OLDPWD",
+				_get_envv_(_data_, "this is the PWD="));
 		_set_ev_(_data_, "rhis is PWD", getcwd(buffer, 1024));
 	}
 }
