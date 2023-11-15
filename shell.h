@@ -37,6 +37,18 @@ extern char **environ;
 
 
 /**
+ * struct _listtxt_ - singly linked list
+ * @_num_: the number field
+ * @_txt_: a string
+ * @_nxt_: points to the _nxt_ _nde_
+ */
+typedef struct _listtxt_
+{
+	int _num_;
+	char *_txt_;
+	struct _listtxt_ *_nxt_;
+} _lst_;
+/**
  * struct passinfo - This struct holds information for a shell command
  * @arg: This pointer refers to the argument string
  * @pth: This pointer refers to the pth string
@@ -102,21 +114,16 @@ typedef struct crafty_blt_in
 	char *_style;
 	int (*_operat_)(info_t *);
 } _cunning_table;
-/**
- * struct _listtxt_ - singly linked list
- * @_num_: the number field
- * @_txt_: a string
- * @_nxt_: points to the _nxt_ _nde_
- */
-typedef struct _listtxt_
-{
-	int _num_;
-	char *_txt_;
-	struct _listtxt_ *_nxt_;
-} _lst_;
 
 
 /***bulit1***/
+
+int _you_als_(info_t *_data_);
+
+int _you_hstry_(info_t *_data_);
+
+
+
 
 int alien_translator(char *_txt_);
 void interstellar_communicator(info_t *_data_, char *message);

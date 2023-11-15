@@ -1,8 +1,6 @@
+
+
 #include "shell.h"
-
-
-
-
 
 /**
  * hdl_input - This function hdls input
@@ -91,6 +89,15 @@ void _RESet_BuFFer_(info_t *_data_, size_t *_OK_, size_t *_long_)
 	*_OK_ = *_long_ = 0; /* reset position and length */
 	_data_->cmd_buf_type = CMD_NORM;
 }
+
+
+
+
+
+
+
+
+
 
 
 

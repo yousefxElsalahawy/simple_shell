@@ -1,6 +1,8 @@
 
 
 
+
+
 #include "shell.h"
 
 /**
@@ -121,6 +123,16 @@ char *locate_newline(char *_buff_, size_t _OK_)
 	/* Return the position of the newline character or NULL if not found */
 	return (_str_n_chr(_buff_ + _OK_, '\n'));
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
