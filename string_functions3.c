@@ -33,7 +33,8 @@ char *_copy_chars_(char *_desst, char *_srcc, int n)
 }
 
 /**
- * fill_remaining_with_null - This function fills the remaining characters of a string with null
+ * fill_remaining_with_null - This function fills
+ * the remaining characters of a string with null
  * @_desst: This pointer refers to the string to fill
  * @start: This variable is the starting _indx_ to fill
  * @n: This variable is the maximum number of characters to fill
@@ -51,7 +52,7 @@ char *fill_remaining_with_null(char *_desst, int start, int n)
 	} while (_go_ < n);
 
 	/* This function returns a pointer to the filled string */
-	return _desst;
+	return (_desst);
 }
 
 /**
@@ -71,7 +72,8 @@ char *_strr_ncpy_(char *_desst, char *_srcc, int n)
 
 	Q = _str_len_(_letter_);
 
-	_letter_ = (Q < n) ? fill_remaining_with_null(_letter_, Q, n) : _letter_;
+	_letter_ = (n < Q) ?
+		fill_remaining_with_null(_letter_, Q, n) : _letter_;
 	/* This function returns a pointer to the destination string */
 	return (_letter_);
 }
@@ -135,7 +137,8 @@ void cpy_chars(char *_desst, char *_srcc, int start, int n)
  * @_letter_: This pointer refers to the character to chk
  * @_coco_: This variable is the character to compare with
  *
- * Return: Pointer to the character if it is equal to the other character, NULL otherwise
+ * Return: Pointer to the character if it is
+ * equal to the other character, NULL otherwise
  */
 char *chk_char(char *_letter_, char _coco_)
 {
@@ -144,7 +147,8 @@ char *chk_char(char *_letter_, char _coco_)
 }
 
 /**
- * _str_n_chr - This function finds the first occurrence of a character in a string
+ * _str_n_chr - This function finds the first
+ * occurrence of a character in a string
  * @_letter_: This pointer refers to the string to search
  * @_coco_: This variable is the character to find
  *
@@ -161,7 +165,7 @@ char *_str_n_chr(char *_letter_, char _coco_)
 
 		/* use if */
 		if (_rslt_ != NULL)
-			/* This function returns a pointer to the first occurrence of the character */
+			/* This functionence of the character */
 			return (_rslt_);
 
 	} while (*_letter_++ != '\0');

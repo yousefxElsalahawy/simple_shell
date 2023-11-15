@@ -7,7 +7,8 @@
 #include "shell.h"
 
 /**
- * _increment_while_not_null - This function increments a counter while a string is not null
+ * _increment_while_not_null - Th
+ * s function increments a counter while a string is not null
  * @_letter_: This pointer refers to the string to be chked
  * @_OK_: This pointer refers to the counter to be incremented
  *
@@ -128,7 +129,10 @@ char *find_end(char *_txt_)
 	char *end = _txt_;
 
 	/* use loop */
-	for (; *end; ++end);
+	for (; *end; ++end)
+	{
+		/*empty*/
+	};
 	/* This function returns a pointer to the end of the string */
 	return (end);
 }

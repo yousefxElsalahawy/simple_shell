@@ -80,7 +80,8 @@ char *_COpYY_cHaRS_(char *pthstr, int start, int stop, char *_buff_)
 	/* use loop */
 	do {
 		/* use if */
-		if (pthstr[_indx_] != ':') {
+		if (pthstr[_indx_] != ':')
+		{
 			_buff_[buffer_index] = pthstr[_indx_];
 			buffer_index++;
 		}
@@ -93,7 +94,8 @@ char *_COpYY_cHaRS_(char *pthstr, int start, int stop, char *_buff_)
 }
 
 /**
- * _dupp_chart_ - This function duplicates characters from one string to another
+ * _dupp_chart_ - This function duplicates charact
+ * rs from one string to another
  * @pthstr: This pointer refers to the source string
  * @start: This variable is the starting _indx_ for copying
  * @stop: This variable is the stopping _indx_ for copying
@@ -118,7 +120,8 @@ char *_dupp_chart_(char *pthstr, int start, int stop)
 char *chk_cmd(info_t *_data_, char *_Cmd)
 {
 	/* This function returns a pointer to the command if it is valid */
-	return (((_str_len_(_Cmd) > 2) && _start_wh_(_Cmd, "./") && _my_i_cmdd_(_data_, _Cmd)) ? _Cmd : NULL);
+	return (((_str_len_(_Cmd) > 2) && _start_wh_
+				(_Cmd, "./") && _my_i_cmdd_(_data_, _Cmd)) ? _Cmd : NULL);
 }
 
 /**
@@ -133,7 +136,8 @@ char *build_pth(char *pth, char *_Cmd)
 	/* use if */
 	if (!*pth)
 		_str_catt_(pth, _Cmd);
-	else {
+	else
+	{
 		_str_catt_(pth, "/");
 		_str_catt_(pth, _Cmd);
 	}
@@ -151,19 +155,23 @@ char *build_pth(char *pth, char *_Cmd)
  *
  * Return: Pointer to the command if it is found, NULL otherwise
  */
-char *find_cmd_in_pth(info_t *_data_, char *pthstr, char *_Cmd, int _OK_, int curr_pos)
+char *find_cmd_in_pth(info_t *_data_,
+		char *pthstr, char *_Cmd, int _OK_, int curr_pos)
 {
 	char *pth;
 
 	/* use loop */
 	do {
 		/* use if */
-		if (!pthstr[_OK_] || pthstr[_OK_] == ':') {
+		if (!pthstr[_OK_] || pthstr[_OK_] == ':')
+		{
 			pth = _dupp_chart_(pthstr, curr_pos, _OK_);
 			pth = build_pth(pth, _Cmd);
 			if (_my_i_cmdd_(_data_, pth))
+			{
 				/* This function returns a pointer to the command if it is found */
 				return (pth);
+			}
 			curr_pos = _OK_;
 		}
 		_OK_++;
@@ -186,7 +194,8 @@ char *find_pth(info_t *_data_, char *pthstr, char *_Cmd)
 	char *pth = chk_cmd(_data_, _Cmd);
 
 	/* This function returns a pointer to the pth if it is found */
-	return ((pth) ? pth : (pthstr ? find_cmd_in_pth(_data_, pthstr, _Cmd, _OK_, curr_pos) : NULL));
+	return ((pth) ? pth : (pthstr ?
+				find_cmd_in_pth(_data_, pthstr, _Cmd, _OK_, curr_pos) : NULL));
 }
 
 

@@ -77,28 +77,27 @@ typedef struct _listtxt_
  */
 typedef struct passinfo
 {
-    char *arg;
-    char *pth;
-    char *fname;
-    char **argv;
-    char **environ;
-    char **cmd_buf;
-    _lst_ *env;
-    _lst_ *history;
-    _lst_ *alias;
-    size_t arg_pos;
-    size_t arg_len;
-    unsigned int line_count;
-    int argc;
-    int err_num;
-    int linecount_flag;
-    int env_changed;
-    int status;
-    int cmd_buf_type;
-    int readfd;
-    int histcount;
+	char *arg;
+	char *pth;
+	char *fname;
+	char **argv;
+	char **environ;
+	char **cmd_buf;
+	_lst_ *env;
+	_lst_ *history;
+	_lst_ *alias;
+	size_t arg_pos;
+	size_t arg_len;
+	unsigned int line_count;
+	int argc;
+	int err_num;
+	int linecount_flag;
+	int env_changed;
+	int status;
+	int cmd_buf_type;
+	int readfd;
+	int histcount;
 } info_t;
-
 /**
  * INFO_INIT - This macro initializes an info_t struct
  * All pointer fields are initialized to NULL
@@ -218,7 +217,8 @@ int bypass_separators(char *_txt_, char _do_, int _OK_);
 int determine_lexeme_extent(char *_txt_, char _do_, int _OK_);
 char *reserve_lexeme(int _koK_);
 void relinquish_memory(char **_letter_, int _go_);
-void replicate_lexeme(char **_letter_, char *_txt_, int _go_, int _koK_, int *_OK_);
+void replicate_lexeme(char **_letter_,
+char *_txt_, int _go_, int _koK_, int *_OK_);
 char **_str_foo2_(char *_txt_, char _do_);
 /* memory_functions */
 
@@ -279,9 +279,11 @@ int _you_als_(info_t *);
 
 /* getline._coco_ module */
 void reset_buffer(info_t *_data_, char **_buff_);
-ssize_t input_reader(info_t *_data_, char **_buff_, size_t *len_p);
+ssize_t input_reader(info_t *_data_, char **_buff_,
+size_t *len_p);
 void input_processor(info_t *_data_, char **_buff_, ssize_t *r);
-void command_chain_hdlr(info_t *_data_, char **_buff_, size_t *_long_, ssize_t r);
+void command_chain_hdlr(info_t *_data_,
+char **_buff_, size_t *_long_, ssize_t r);
 ssize_t input_buf(info_t *_data_, char **_buff_, size_t *_long_);
 ssize_t read_from_fd(info_t *_data_, char *_buff_);
 
@@ -299,7 +301,8 @@ ssize_t _rd_buff_(info_t *_data_, char *_buff_, size_t *_OK_);
 ssize_t buffer_reader(info_t *_data_, char *_buff_, size_t *_long_);
 char *locate_newline(char *_buff_, size_t _OK_);
 char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_);
-void buffer_copier(char *new_p, char *_buff_, size_t _OK_, size_t _koK_, size_t _letter_);
+void buffer_copier(char *new_p, char *_buff_,
+size_t _OK_, size_t _koK_, size_t _letter_);
 int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length);
 void sgn_Her_(int sig_num);
 
@@ -331,7 +334,8 @@ char *get_starting_string(_lst_ *_nde_, char *_Var_);
 int reset_environment(info_t *_data_, size_t *_OK_, _lst_ **_nde_);
 int _Un_Set_env_(info_t *_data_, char *_Var_);
 char *create_buf(char *_Var_, char *_vle_);
-_lst_ *find_var_in_env(_lst_ *_nde_, char *_Var_, char *_buff_, info_t *_data_);
+_lst_ *find_var_in_env(_lst_ *_nde_, char *_Var_,
+char *_buff_, info_t *_data_);
 void add_nd_and_free_buf(_lst_ **env, char *_buff_, info_t *_data_);
 int _set_ev_(info_t *_data_, char *_Var_, char *_vle_);
 
@@ -354,7 +358,8 @@ char *get_file(info_t *_data_);
 
 ssize_t open_and_read_file(char *filename, char **_buff_, struct stat *st);
 
-void process_buffer(info_t *_data_, char *_buff_, ssize_t fsize, int *_line_cnt_);
+void process_buffer(info_t *_data_, char *_buff_,
+ssize_t fsize, int *_line_cnt_);
 
 void update_history(info_t *_data_, int _line_cnt_);
 
@@ -445,4 +450,5 @@ int _stt_alass_(info_t *_data_, char *_txt_);
 int hdl_unset_alias(info_t *_data_, char *_txt_, char *_oops_);
 
 #endif
+
 

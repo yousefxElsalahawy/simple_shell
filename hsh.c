@@ -212,9 +212,9 @@ void hdl_pth_not_found(info_t *_data_)
 {
 	/*usef if*/
 	if ((_inter_active(_data_) || _get_envv_(_data_,
-	"PATH=")
+					"PATH=")
 				|| _data_->argv[0][0] == '/')
-				&& _my_i_cmdd_(_data_, _data_->argv[0])) /*use if */
+			&& _my_i_cmdd_(_data_, _data_->argv[0])) /*use if */
 		_forkK_comm_(_data_);
 	else if (*(_data_->arg) != '\n') /*use if */
 	{

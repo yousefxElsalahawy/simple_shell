@@ -65,7 +65,8 @@ int _you_ext_(info_t *_data_)
 	if (_data_->argv[1])  /* If there is an exit argument */
 	{
 		exitchk = galactic_chker(_data_);
-		switch (exitchk) {
+		switch (exitchk)
+		{
 			case 1:
 				return (1);
 			default:

@@ -75,7 +75,7 @@ void input_processor(info_t *_data_, char **_buff_, ssize_t *r)
  * Return: Nothing (void function)
  */
 void command_chain_hdlr(info_t *_data_, char **_buff_,
-	size_t *_long_, ssize_t r)
+		size_t *_long_, ssize_t r)
 {
 	*_long_ = r;
 	_data_->cmd_buf = _buff_;
@@ -154,7 +154,7 @@ void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_)
  * Return: Nothing (void function)
  */
 void iterate_to_semicolon_or_end(info_t *_data_,
-	char *_buff_, size_t *_go_, size_t _long_)
+		char *_buff_, size_t *_go_, size_t _long_)
 {
 	/*use loop */
 	do {
@@ -176,7 +176,7 @@ void iterate_to_semicolon_or_end(info_t *_data_,
  * Return: Nothing (void function)
  */
 void hdl_chain(info_t *_data_, char *_buff_,
-size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
+		size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
 {
 	init_iterator(_OK_, _go_, _buff_, _oops_);
 	chk_chain(_data_, _buff_, _go_, *_OK_, _long_);
@@ -205,10 +205,10 @@ void _RESet_BuFFer_(info_t *_data_, size_t *_OK_, size_t *_long_)
  */
 ssize_t gt_userinpt_(info_t *_data_)
 {
-	ssize_t r = hdl_input(_data_, &_buff_, &_long_);
-	char **buf_p = &(_data_->arg), *_oops_;
 	static char *_buff_; /* the ';' command chain buffer */
+	char **buf_p = &(_data_->arg), *_oops_;
 	static size_t _OK_, _go_, _long_;
+	ssize_t r = hdl_input(_data_, &_buff_, &_long_);
 
 
 	if (r == -1)
@@ -216,19 +216,20 @@ ssize_t gt_userinpt_(info_t *_data_)
 		/* Return -1 if error */
 		return (-1);
 	}
-
-	if (_long_)	/* we have commands left in the chain buffer */
+	if (_long_)
 	{
+		/* we have commands left in the chain buffer */
 		hdl_chain(_data_, _buff_, &_OK_, &_go_, _long_, &_oops_);
 
-		_OK_ = _go_ + 1; /* increment past nulled ';'' */
-
+		_OK_ = _go_ + 1;
+		/* increment past nulled ';'' */
 		if (_long_ >= _OK_)
 		{
 			/* reached end of buffer? */
 			_RESet_BuFFer_(_data_, &_OK_, &_long_);
 		}
-		*buf_p = _oops_; /* pass back pointer to current command position */
+		*buf_p = _oops_;
+		/* pass back pointer to current command position */
 
 		/* Return length of current command */
 		return (_str_len_(_oops_));
@@ -238,12 +239,14 @@ ssize_t gt_userinpt_(info_t *_data_)
 	/* Return length of buffer from _gt_lne_() */
 	return (r);
 }
+
 /**
- * read_from_fd - This function reads from a file descriptor
- * @_data_: This pointer refers to the info struct
- * @_buff_: This pointer refers to the buffer
+ * _rd_buff_ - reads a buffer
+ * @_data_: parameter struct
+ * @_buff_: buffer
+ * @_OK_: size
  *
- * Return: Number of bytes read or -1 if error
+ * Return: r
  */
 ssize_t read_from_fd(info_t *_data_, char *_buff_)
 {
@@ -253,14 +256,6 @@ ssize_t read_from_fd(info_t *_data_, char *_buff_)
 	/* Return the number of bytes read or -1 if error */
 	return ((r >= 0) ? r : -1);
 }
-/**
- * _rd_buff_ - reads a buffer
- * @_data_: parameter struct
- * @_buff_: buffer
- * @_OK_: size
- *
- * Return: r
- */
 
 ssize_t _rd_buff_(info_t *_data_, char *_buff_, size_t *_OK_)
 {
@@ -278,12 +273,12 @@ ssize_t _rd_buff_(info_t *_data_, char *_buff_, size_t *_OK_)
 }
 
 /**
- * buffer_reader - This function reads from a buffer
- * @_data_: This pointer refers to the info struct
- * @_buff_: This pointer refers to the buffer
- * @_long_: This pointer refers to the length of the buffer
+ * _gt_lne_ - gets the _nxt_ line of input from STDIN
+ * @_data_: parameter struct
+ * @_pttr_: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated _pttr_ buffer if not NULL
  *
- * Return: Number of bytes read or -1 if error
+ * Return: _letter_
  */
 ssize_t buffer_reader(info_t *_data_, char *_buff_, size_t *_long_)
 {
@@ -299,34 +294,21 @@ ssize_t buffer_reader(info_t *_data_, char *_buff_, size_t *_long_)
 	/* Return the number of bytes read or -1 if error */
 	return (r);
 }
-/**
- * locate_newline - This function locates the newline character in a buffer
- * @_buff_: This pointer refers to the buffer
- * @_OK_: This variable is used to offset the buffer
- *
- * Return: Position of the newline character or NULL if not found
- */
+
 char *locate_newline(char *_buff_, size_t _OK_)
 {
 	/* Return the position of the newline character or NULL if not found */
 	return (_str_n_chr(_buff_ + _OK_, '\n'));
 }
-/**
- * memory_allocator - This function allocates memory
- * @_oops_: This pointer refers to the old memory block
- * @_letter_: This variable is used to specify the old size
- * @_koK_: This variable is used to specify the new size
- *
- * Return: Newly allocated memory or NULL if memory allocation fails
- */
+
 char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
 {
-	char *_nw_opp_;
+	char *new_p;
 
-	_nw_opp = _rea_lloc_(_oops_, _letter_, _letter_ ?
+	new_p = _rea_lloc_(_oops_, _letter_, _letter_ ?
 			_letter_ + _koK_ : _koK_ + 1);
 
-	if (!_nw_opp) /* MALLOC FAILURE! */
+	if (!new_p) /* MALLOC FAILURE! */
 	{
 		if (_oops_)
 			free(_oops_);
@@ -334,11 +316,12 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
 		return (NULL);
 	}
 	/* Return the newly allocated memory */
-	return (_nw_opp);
+	return (new_p);
 }
+
 /**
  * buffer_copier - This function copies the buffer
- * @_nw_opp: This pointer refers to the new buffer
+ * @new_p: This pointer refers to the new buffer
  * @_buff_: This pointer refers to the buffer
  * @_OK_: This pointer refers to the size
  * @_koK_: This pointer refers to the size
@@ -346,13 +329,13 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
  *
  * Return: Nothing (void function)
  */
-void buffer_copier(char *_nw_opp, char *_buff_,
-	size_t _OK_, size_t _koK_, size_t _letter_)
+void buffer_copier(char *new_p, char *_buff_,
+		size_t _OK_, size_t _koK_, size_t _letter_)
 {
 	/*use if*/
 
-	_letter_ ? _str_n_cat(_nw_opp, _buff_ + _OK_,
-		_koK_ - _OK_) : _strr_ncpy_(_nw_opp, _buff_ + _OK_, _koK_ - _OK_ + 1);
+	_letter_ ? _str_n_cat(new_p, _buff_ + _OK_, _koK_ - _OK_) :
+		_strr_ncpy_(new_p, _buff_ + _OK_, _koK_ - _OK_ + 1);
 }
 
 /**
@@ -366,11 +349,11 @@ void buffer_copier(char *_nw_opp, char *_buff_,
 int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length)
 {
 	/*decleration*/
-	ssize_t r = 0, _letter_ = 0;
-	char *_oops_ = NULL, *_nw_opp = NULL, *_coco_;
 	size_t _koK_;
-	static char _buff_[READ_BUF_SIZE];
 	static size_t _OK_, _long_;
+	ssize_t r = 0, _letter_ = 0;
+	char *_oops_ = NULL, *new_p = NULL, *_coco_;
+	static char _buff_[READ_BUF_SIZE];
 
 	_oops_ = *_pttr_;
 
@@ -387,17 +370,17 @@ int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length)
 
 	_coco_ = locate_newline(_buff_, _OK_);
 	_koK_ = _coco_ ? 1 + (unsigned int)(_coco_ - _buff_) : _long_;
-	_nw_opp = memory_allocator(_oops_, _letter_, _koK_);
+	new_p = memory_allocator(_oops_, _letter_, _koK_);
 
-	if (!_nw_opp)
+	if (!new_p)
 		/* Return -1 if memory allocation fails */
 		return (-1);
 
-	buffer_copier(_nw_opp, _buff_, _OK_, _koK_, _letter_);
+	buffer_copier(new_p, _buff_, _OK_, _koK_, _letter_);
 
 	_letter_ += _koK_ - _OK_;
 	_OK_ = _koK_;
-	_oops_ = _nw_opp;
+	_oops_ = new_p;
 
 	if (length)
 		*length = _letter_;

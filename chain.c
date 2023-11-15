@@ -274,8 +274,8 @@ void replace_string_with_value(info_t *_data_, int _OK_, int _vle_)
 _lst_ *_get_ndd_(info_t *_data_, int _OK_)
 {
 	return (node_starts_with(_data_->env,
-			&_data_->argv[_OK_][1], '='));
-			/* Returns _nde_ if found, NULL otherwise */
+				&_data_->argv[_OK_][1], '='));
+	/* Returns _nde_ if found, NULL otherwise */
 }
 
 /**

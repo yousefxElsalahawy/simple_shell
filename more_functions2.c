@@ -164,11 +164,13 @@ unsigned int hdl_abs(int input, int
 	/* This function returns absolute _vle_ of input */
 	return (_abs_);
 }
-
 /**
- * @abs_: This variable is the absolute _vle_ of the input
+ * hdl_current - This function handles the current value
+ * @_abs_: This variable is the absolute value of the input
+ * @__putchar: This pointer refers to a function that puts a character
+ * @_cnt_: This pointer refers to the count
  *
- * Return: The current _vle_
+ * Return: The current value
  */
 int hdl_current(unsigned int _abs_, int (*__putchar)(char), int *_cnt_)
 {
@@ -186,10 +188,9 @@ int hdl_current(unsigned int _abs_, int (*__putchar)(char), int *_cnt_)
 		current %= _OK_;
 		_OK_ /= 10;
 	} while (_OK_ > 1);
-	/* This function returns the current _vle_ */
+	/* This function returns the current value */
 	return (current);
 }
-
 /**
  * hdl_last_digit - This function hdls the last digit of the current _vle_
  * @current: This variable is the current _vle_
@@ -228,12 +229,14 @@ int _prnt_dir_(int input, int _fl_dir_)
 }
 
 /**
- * cnvrt_nmbr_ - converter function, a clone of itoa
- * @_num_: number
- * @base: base
- * @flags: argument flags
+ * hdl_sign - This function handles the sign of
+ * a number and returns a string of digits in the specified base
+ * @_num_: This variable is the number to handle
+ * @flags: This variable is used to determine the base of the returned string
+ * @n: This pointer refers to the absolute value of the number
+ * @_sgn_: This pointer refers to the sign of the number
  *
- * Return: string
+ * Return: A string of digits in the specified base
  */
 char *hdl_sign(long int _num_, int flags,
 		unsigned long *n, char *_sgn_)

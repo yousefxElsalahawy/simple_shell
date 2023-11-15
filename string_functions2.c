@@ -21,7 +21,7 @@ char *_copy(char *dest, char *src, int _OK_)
 	if (src[_OK_])
 	{
 		dest[_OK_] = src[_OK_];
-		return _copy(dest, src, _OK_ + 1);
+		return (_copy(dest, src, _OK_ + 1));
 	}
 	dest[_OK_] = 0;
 	/* This function returns a pointer to the destination string */

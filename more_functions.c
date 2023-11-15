@@ -52,7 +52,8 @@ int _CHEcK_chARs_(char _coco_, char *_tmp_)
  */
 int _my_delm(char _coco_, char *_dlm_)
 {
-	return (_CHEcK_chARs_(_coco_, _dlm_)); /* Returns 1 if is delimiter, 0 if not */
+	return (_CHEcK_chARs_(_coco_, _dlm_));
+	/* Returns 1 if is delimiter, 0 if not */
 }
 
 /**
