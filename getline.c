@@ -74,8 +74,7 @@ void input_processor(info_t *_data_, char **_buff_, ssize_t *r)
  *
  * Return: Nothing (void function)
  */
-void command_chain_hdlr(info_t *_data_, char **_buff_,
-		size_t *_long_, ssize_t r)
+void command_chain_hdlr(info_t *_data_, char **_buff_, size_t *_long_, ssize_t r)
 {
 	*_long_ = r;
 	_data_->cmd_buf = _buff_;
@@ -153,8 +152,7 @@ void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_)
  *
  * Return: Nothing (void function)
  */
-void iterate_to_semicolon_or_end(info_t *_data_,
-		char *_buff_, size_t *_go_, size_t _long_)
+void iterate_to_semicolon_or_end(info_t *_data_, char *_buff_, size_t *_go_, size_t _long_)
 {
 	/*use loop */
 	do {
@@ -175,8 +173,7 @@ void iterate_to_semicolon_or_end(info_t *_data_,
  *
  * Return: Nothing (void function)
  */
-void hdl_chain(info_t *_data_, char *_buff_,
-		size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
+void hdl_chain(info_t *_data_, char *_buff_, size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
 {
 	init_iterator(_OK_, _go_, _buff_, _oops_);
 	chk_chain(_data_, _buff_, _go_, *_OK_, _long_);
@@ -206,30 +203,24 @@ void _RESet_BuFFer_(info_t *_data_, size_t *_OK_, size_t *_long_)
 ssize_t gt_userinpt_(info_t *_data_)
 {
 	static char *_buff_; /* the ';' command chain buffer */
-	char **buf_p = &(_data_->arg), *_oops_;
 	static size_t _OK_, _go_, _long_;
+	char **buf_p = &(_data_->arg), *_oops_;
+
 	ssize_t r = hdl_input(_data_, &_buff_, &_long_);
 
-
 	if (r == -1)
-	{
 		/* Return -1 if error */
 		return (-1);
-	}
-	if (_long_)
+
+	if (_long_)	/* we have commands left in the chain buffer */
 	{
-		/* we have commands left in the chain buffer */
 		hdl_chain(_data_, _buff_, &_OK_, &_go_, _long_, &_oops_);
 
-		_OK_ = _go_ + 1;
-		/* increment past nulled ';'' */
-		if (_long_ >= _OK_)
-		{
-			/* reached end of buffer? */
+		_OK_ = _go_ + 1; /* increment past nulled ';'' */
+		if (_OK_ >= _long_) /* reached end of buffer? */
 			_RESet_BuFFer_(_data_, &_OK_, &_long_);
-		}
-		*buf_p = _oops_;
-		/* pass back pointer to current command position */
+
+		*buf_p = _oops_; /* pass back pointer to current command position */
 
 		/* Return length of current command */
 		return (_str_len_(_oops_));
@@ -303,12 +294,11 @@ char *locate_newline(char *_buff_, size_t _OK_)
 
 char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
 {
-	char *new_p;
+	char *_onw_oop;
 
-	new_p = _rea_lloc_(_oops_, _letter_, _letter_ ?
-			_letter_ + _koK_ : _koK_ + 1);
+	_onw_oop = _rea_lloc_(_oops_, _letter_, _letter_ ? _letter_ + _koK_ : _koK_ + 1	);
 
-	if (!new_p) /* MALLOC FAILURE! */
+	if (!_onw_oop) /* MALLOC FAILURE! */
 	{
 		if (_oops_)
 			free(_oops_);
@@ -316,12 +306,12 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
 		return (NULL);
 	}
 	/* Return the newly allocated memory */
-	return (new_p);
+	return (_onw_oop);
 }
 
 /**
  * buffer_copier - This function copies the buffer
- * @new_p: This pointer refers to the new buffer
+ * @_onw_oop: This pointer refers to the new buffer
  * @_buff_: This pointer refers to the buffer
  * @_OK_: This pointer refers to the size
  * @_koK_: This pointer refers to the size
@@ -329,13 +319,11 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
  *
  * Return: Nothing (void function)
  */
-void buffer_copier(char *new_p, char *_buff_,
-		size_t _OK_, size_t _koK_, size_t _letter_)
+void buffer_copier(char *_onw_oop, char *_buff_, size_t _OK_, size_t _koK_, size_t _letter_)
 {
 	/*use if*/
 
-	_letter_ ? _str_n_cat(new_p, _buff_ + _OK_, _koK_ - _OK_) :
-		_strr_ncpy_(new_p, _buff_ + _OK_, _koK_ - _OK_ + 1);
+	_letter_ ? _str_n_cat(_onw_oop, _buff_ + _OK_, _koK_ - _OK_) : _strr_ncpy_(_onw_oop, _buff_ + _OK_, _koK_ - _OK_ + 1);
 }
 
 /**
@@ -349,18 +337,18 @@ void buffer_copier(char *new_p, char *_buff_,
 int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length)
 {
 	/*decleration*/
+	char *_oops_ = NULL, *_onw_oop = NULL, *_coco_;
 	size_t _koK_;
+	static char _buff_[READ_BUF_SIZE];
 	static size_t _OK_, _long_;
 	ssize_t r = 0, _letter_ = 0;
-	char *_oops_ = NULL, *new_p = NULL, *_coco_;
-	static char _buff_[READ_BUF_SIZE];
 
 	_oops_ = *_pttr_;
 
 	if (_oops_ && length)
 		_letter_ = *length;
 
-	if (_long_ == _OK_)
+	if (_OK_ == _long_)
 		_OK_ = _long_ = 0;
 
 	r = buffer_reader(_data_, _buff_, &_long_);
@@ -370,17 +358,17 @@ int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length)
 
 	_coco_ = locate_newline(_buff_, _OK_);
 	_koK_ = _coco_ ? 1 + (unsigned int)(_coco_ - _buff_) : _long_;
-	new_p = memory_allocator(_oops_, _letter_, _koK_);
+	_onw_oop = memory_allocator(_oops_, _letter_, _koK_);
 
-	if (!new_p)
+	if (!_onw_oop)
 		/* Return -1 if memory allocation fails */
 		return (-1);
 
-	buffer_copier(new_p, _buff_, _OK_, _koK_, _letter_);
+	buffer_copier(_onw_oop, _buff_, _OK_, _koK_, _letter_);
 
 	_letter_ += _koK_ - _OK_;
 	_OK_ = _koK_;
-	_oops_ = new_p;
+	_oops_ = _onw_oop;
 
 	if (length)
 		*length = _letter_;
