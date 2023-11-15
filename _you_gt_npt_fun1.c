@@ -74,7 +74,8 @@ void input_processor(info_t *_data_, char **_buff_, ssize_t *r)
  *
  * Return: Nothing (void function)
  */
-void command_chain_hdlr(info_t *_data_, char **_buff_, size_t *_long_, ssize_t r)
+void command_chain_hdlr(info_t *_data_,
+		char **_buff_, size_t *_long_, ssize_t r)
 {
 	*_long_ = r;
 	_data_->cmd_buf = _buff_;

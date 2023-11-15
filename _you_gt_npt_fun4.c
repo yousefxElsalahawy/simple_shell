@@ -17,7 +17,8 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
 {
 	char *_onw_oop;
 
-	_onw_oop = _rea_lloc_(_oops_, _letter_, _letter_ ? _letter_ + _koK_ : _koK_ + 1	);
+	_onw_oop = _rea_lloc_(_oops_, _letter_, _letter_ ?
+			_letter_ + _koK_ : _koK_ + 1);
 
 	if (!_onw_oop) /* MALLOC FAILURE! */
 	{
@@ -39,11 +40,13 @@ char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_)
  *
  * Return: Nothing (void function)
  */
-void buffer_copier(char *_onw_oop, char *_buff_, size_t _OK_, size_t _koK_, size_t _letter_)
+void buffer_copier(char *_onw_oop, char *_buff_,
+		size_t _OK_, size_t _koK_, size_t _letter_)
 {
 	/*use if*/
 
-	_letter_ ? _str_n_cat(_onw_oop, _buff_ + _OK_, _koK_ - _OK_) : _strr_ncpy_(_onw_oop, _buff_ + _OK_, _koK_ - _OK_ + 1);
+	_letter_ ? _str_n_cat(_onw_oop, _buff_ + _OK_, _koK_ - _OK_) :
+		_strr_ncpy_(_onw_oop, _buff_ + _OK_, _koK_ - _OK_ + 1);
 }
 
 /**
@@ -68,7 +71,7 @@ int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length)
 	if (_oops_ && length)
 		_letter_ = *length;
 
-	if (_OK_ == _long_)
+	if (_long_ == _OK_)
 		_OK_ = _long_ = 0;
 
 	r = buffer_reader(_data_, _buff_, &_long_);

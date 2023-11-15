@@ -25,7 +25,7 @@ ssize_t gt_userinpt_(info_t *_data_)
 		hdl_chain(_data_, _buff_, &_OK_, &_go_, _long_, &_oops_);
 
 		_OK_ = _go_ + 1; /* increment past nulled ';'' */
-		if (_OK_ >= _long_) /* reached end of buffer? */
+		if (_long_ >= _OK_) /* reached end of buffer? */
 			_RESet_BuFFer_(_data_, &_OK_, &_long_);
 
 		*buf_p = _oops_; /* pass back pointer to current command position */
@@ -102,7 +102,8 @@ ssize_t buffer_reader(info_t *_data_, char *_buff_, size_t *_long_)
 }
 
 /**
- * locate_newline - This function returns the position of the newline character or NULL if not found
+ * locate_newline - This function returns the
+ * position of the newline character or NULL if not found
  * @_buff_: This pointer refers to buffer
  * @_OK_: This variable is used to check if size is not zero
  *

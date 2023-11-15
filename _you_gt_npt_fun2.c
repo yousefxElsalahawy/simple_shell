@@ -47,7 +47,8 @@ void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_)
  *
  * Return: Nothing (void function)
  */
-void iterate_to_semicolon_or_end(info_t *_data_, char *_buff_, size_t *_go_, size_t _long_)
+void iterate_to_semicolon_or_end(info_t *_data_,
+		char *_buff_, size_t *_go_, size_t _long_)
 {
 	/*use loop */
 	do {
@@ -68,7 +69,8 @@ void iterate_to_semicolon_or_end(info_t *_data_, char *_buff_, size_t *_go_, siz
  *
  * Return: Nothing (void function)
  */
-void hdl_chain(info_t *_data_, char *_buff_, size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
+void hdl_chain(info_t *_data_, char *_buff_,
+		size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
 {
 	init_iterator(_OK_, _go_, _buff_, _oops_);
 	chk_chain(_data_, _buff_, _go_, *_OK_, _long_);
