@@ -142,8 +142,10 @@ int _you_cdd_(info_t *_data_);
 int chk_operator(info_t *_data_, char *_buff_, size_t *_go_);
 int _s_chn_(info_t *_data_, char *_buff_, size_t *_oops_);
 int chk_condition(info_t *_data_);
-void update_buffer_and_index(info_t *_data_, char *_buff_, size_t *_indx_, size_t _long_);
-void chk_chain(info_t *_data_, char *_buff_, size_t *_oops_, __attribute__((unused)) size_t _OK_, size_t _long_);
+void update_buffer_and_index(info_t *_data_,
+		char *_buff_, size_t *_indx_, size_t _long_);
+void chk_chain(info_t *_data_, char *_buff_, size_t *_oops_,
+		__attribute__((unused)) size_t _OK_, size_t _long_);
 _lst_ *_gett_ndd_(info_t *_data_);
 char *get_new_p(_lst_ *_nde_);
 int replace_alias(info_t *_data_);
@@ -164,7 +166,8 @@ char *get_starting_string(_lst_ *_nde_, char *_Var_);
 int reset_environment(info_t *_data_, size_t *_OK_, _lst_ **_nde_);
 int _Un_Set_env_(info_t *_data_, char *_Var_);
 char *create_buf(char *_Var_, char *_vle_);
-_lst_ *find_var_in_env(_lst_ *_nde_, char *_Var_, char *_buff_, info_t *_data_);
+_lst_ *find_var_in_env(_lst_ *_nde_, char *_Var_,
+		char *_buff_, info_t *_data_);
 void add_nd_and_free_buf(_lst_ **env, char *_buff_, info_t *_data_);
 int _set_ev_(info_t *_data_, char *_Var_, char *_vle_);
 
@@ -207,7 +210,8 @@ void write_to_file(_lst_ *_nde_, ssize_t _fl_dir_);
 int _wrt_hstry_(info_t *_data_);
 char *get_file(info_t *_data_);
 ssize_t open_and_read_file(char *filename, char **_buff_, struct stat *st);
-void process_buffer(info_t *_data_, char *_buff_, ssize_t fsize, int *_line_cnt_);
+void process_buffer(info_t *_data_, char *_buff_,
+		ssize_t fsize, int *_line_cnt_);
 void update_history(info_t *_data_, int _line_cnt_);
 int _rd_hstory_(info_t *_data_);
 int update_nd_numbers(_lst_ **_nde_);
@@ -221,12 +225,15 @@ int _buld_hstry_lst_(info_t *_data_, char *_buff_, int _line_cnt_);
 void reset_buffer(info_t *_data_, char **_buff_);
 ssize_t input_reader(info_t *_data_, char **_buff_, size_t *len_p);
 void input_processor(info_t *_data_, char **_buff_, ssize_t *r);
-void command_chain_hdlr(info_t *_data_, char **_buff_, size_t *_long_, ssize_t r);
+void command_chain_hdlr(info_t *_data_,
+		char **_buff_, size_t *_long_, ssize_t r);
 ssize_t input_buf(info_t *_data_, char **_buff_, size_t *_long_);
 ssize_t hdl_input(info_t *_data_, char **_buff_, size_t *_long_);
 void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_);
-void iterate_to_semicolon_or_end(info_t *_data_, char *_buff_, size_t *_go_, size_t _long_);
-void hdl_chain(info_t *_data_, char *_buff_, size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_);
+void iterate_to_semicolon_or_end(info_t *_data_,
+		char *_buff_, size_t *_go_, size_t _long_);
+void hdl_chain(info_t *_data_, char *_buff_,
+		size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_);
 void _RESet_BuFFer_(info_t *_data_, size_t *_OK_, size_t *_long_);
 ssize_t gt_userinpt_(info_t *_data_);
 ssize_t read_from_fd(info_t *_data_, char *_buff_);
@@ -234,7 +241,8 @@ ssize_t _rd_buff_(info_t *_data_, char *_buff_, size_t *_OK_);
 ssize_t buffer_reader(info_t *_data_, char *_buff_, size_t *_long_);
 char *locate_newline(char *_buff_, size_t _OK_);
 char *memory_allocator(char *_oops_, size_t _letter_, size_t _koK_);
-void buffer_copier(char *_onw_oop, char *_buff_, size_t _OK_, size_t _koK_, size_t _letter_);
+void buffer_copier(char *_onw_oop, char *_buff_,
+		size_t _OK_, size_t _koK_, size_t _letter_);
 int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length);
 void sgn_Her_(int sig_num);
 
@@ -411,7 +419,8 @@ char *_COpYY_cHaRS_(char *pthstr, int start, int stop, char *_buff_);
 char *_dupp_chart_(char *pthstr, int start, int stop);
 char *chk_cmd(info_t *_data_, char *_Cmd);
 char *build_pth(char *pth, char *_Cmd);
-char *find_cmd_in_pth(info_t *_data_, char *pthstr, char *_Cmd, int _OK_, int curr_pos);
+char *find_cmd_in_pth(info_t *_data_,
+		char *pthstr, char *_Cmd, int _OK_, int curr_pos);
 char *find_pth(info_t *_data_, char *pthstr, char *_Cmd);
 
 
@@ -472,7 +481,8 @@ int bypass_separators(char *_txt_, char _do_, int _OK_);
 int determine_lexeme_extent(char *_txt_, char _do_, int _OK_);
 char *reserve_lexeme(int _koK_);
 void relinquish_memory(char **_letter_, int _go_);
-void replicate_lexeme(char **_letter_, char *_txt_, int _go_, int _koK_, int *_OK_);
+void replicate_lexeme(char **_letter_, char *_txt_,
+		int _go_, int _koK_, int *_OK_);
 char **_str_foo2_(char *_txt_, char _do_);
 
 
@@ -481,6 +491,11 @@ char **_str_foo2_(char *_txt_, char _do_);
 
 
 
+char *find_equal_sign_in_nd(_lst_ *_nde_);
+int _unstt_alas_(info_t *_data_, char *_txt_);
+int _stt_alass_(info_t *_data_, char *_txt_);
+int prnt_alias(_lst_ *_nde_);
+void prnt_all_aliases(info_t *_data_);
 
 #endif
 

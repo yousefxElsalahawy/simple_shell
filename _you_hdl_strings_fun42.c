@@ -64,8 +64,8 @@ int input_checker(char **_txt_, char **_do_, int *numwords)
 }
 
 /**
- * memory_allocator_and_word_copier -
- * This function allocates memory and copies words
+ * memory_allocator_and_word_copier -This function allocates
+ * memory and copies words
  * @_txt_: This pointer refers to the input text
  * @_do_: This pointer refers to the delimiter
  * @numwords: This variable is used to store the number

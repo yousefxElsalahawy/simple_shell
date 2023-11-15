@@ -44,8 +44,8 @@ void decimate_lists(info_t *_data_)
 	}
 }
 /**
- * eradicate_environ_and_cmd_buf -
- * This function frees the environment and command buffer in the _data_ struct
+ * eradicate_environ_and_cmd_buf - This function frees
+ * the environment and command buffer in the _data_ struct
  * @_data_: This pointer refers to the _data_ Struct
  *
  * No return _vle_ (void function)
