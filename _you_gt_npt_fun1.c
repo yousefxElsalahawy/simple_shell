@@ -8,13 +8,15 @@
 
 /**
  * reset_buffer - This function resets the buffer
- * @_data_: This pointer refers to the _data_ struct
  * @_buff_: This pointer refers to the buffer
  *
  * Return: Nothing (void function)
  */
-void reset_buffer(__attribute__((unused)) info_t *_data_, char **_buff_)
+void reset_buffer(char **_buff_)
 {
+	/* Use if statement */
+	if (!_buff_ || !*_buff_)
+		return;
 	/* Use if statement */
 	if (*_buff_)
 	{
@@ -34,35 +36,35 @@ void reset_buffer(__attribute__((unused)) info_t *_data_, char **_buff_)
  */
 ssize_t input_reader(info_t *_data_, char **_buff_, size_t *len_p)
 {
-	ssize_t r = 0;
+	ssize_t _fpp_ = 0;
 
 	/* Use conditional compilation */
 #if USE_GETLINE
-	r = getline(_buff_, len_p, stdin);
+	_fpp_ = getline(_buff_, len_p, stdin);
 #else
-	r = _gt_lne_(_data_, _buff_, len_p);
+	_fpp_ = _gt_lne_(_data_, _buff_, len_p);
 #endif
-
 	/* Return the number of bytes read */
-	return (r);
+	return (_fpp_);
 }
 
 /**
  * input_processor - This function processes input
- * @_data_: This pointer refers to the _data_ struct
  * @_buff_: This pointer refers to the buffer
- * @r: This pointer refers to the length
+ * @_fpp_: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
-void input_processor(info_t *_data_, char **_buff_, ssize_t *r)
+void input_processor(char **_buff_, ssize_t *_fpp_)
 {
 	/* Use if statement */
-	(*_buff_)[*r - 1] == '\n' ? (*_buff_)[--(*r)] = '\0' : 0;
+	if (!_buff_ || !*_buff_ || !_fpp_)
+		return;
 
-	_data_->linecount_flag = 1;
-	_rmove_com_(*_buff_);
-	_buld_hstry_lst_(_data_, *_buff_, _data_->histcount++);
+	do {
+		(*_buff_)[*_fpp_ - 1] = '\0';
+		(*_fpp_)--;
+	} while (*_fpp_ > 0 && (*_buff_)[*_fpp_ - 1] == '\n');
 }
 
 /**
@@ -70,15 +72,27 @@ void input_processor(info_t *_data_, char **_buff_, ssize_t *r)
  * @_data_: This pointer refers to the _data_ struct
  * @_buff_: This pointer refers to the buffer
  * @_long_: This pointer refers to the length
- * @r: This pointer refers to the length
+ * @_fpp_: This pointer refers to the length
  *
  * Return: Nothing (void function)
  */
 void command_chain_hdlr(info_t *_data_,
-		char **_buff_, size_t *_long_, ssize_t r)
+		char **_buff_, size_t *_long_, ssize_t _fpp_)
 {
-	*_long_ = r;
-	_data_->cmd_buf = _buff_;
+	/* Use if statement */
+	if (!_data_ || !_buff_ || !*_buff_ || !_long_)
+		return;
+
+	/* Use do statement */
+	do {
+		_data_->linecount_flag = 1;
+		_rmove_com_(*_buff_);
+
+		_buld_hstry_lst_(_data_, *_buff_, _data_->histcount++);
+		*_long_ = _fpp_;
+
+		_data_->cmd_buf = _buff_;
+	} while (_data_->linecount_flag == 0);
 }
 
 /**
@@ -91,23 +105,26 @@ void command_chain_hdlr(info_t *_data_,
  */
 ssize_t input_buf(info_t *_data_, char **_buff_, size_t *_long_)
 {
-	ssize_t r = 0;
+	ssize_t _fpp_ = 0;
 	size_t len_p = 0;
 
 	/* Use if statement */
 	if (!*_long_)
 	{
-		reset_buffer(_data_, _buff_);
-		r = input_reader(_data_, _buff_, &len_p);
-		if (r > 0)
+		reset_buffer(_buff_);
+		_fpp_ = input_reader(_data_, _buff_, &len_p);
+
+		if (_fpp_ > 0)
 		{
-			input_processor(_data_, _buff_, &r);
-			command_chain_hdlr(_data_, _buff_, _long_, r);
+			/*use if */
+			input_processor(_buff_, &_fpp_);
+			command_chain_hdlr(_data_, _buff_, _long_, _fpp_);
 		}
 	}
 	/* Return the number of bytes read */
-	return (r);
+	return (_fpp_);
 }
+
 
 
 

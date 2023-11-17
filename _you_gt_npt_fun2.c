@@ -1,7 +1,21 @@
-
-
-
 #include "shell.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * hdl_input - This function hdls input
@@ -22,6 +36,11 @@ ssize_t hdl_input(info_t *_data_, char **_buff_, size_t *_long_)
 	/* Return the number of bytes read or -1 if error */
 	return ((r == -1) ? -1 : r);
 }
+
+
+
+
+
 
 /**
  * init_iterator - This function initializes the iterator
@@ -47,13 +66,17 @@ void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_)
  *
  * Return: Nothing (void function)
  */
-void iterate_to_semicolon_or_end(info_t *_data_,
-		char *_buff_, size_t *_go_, size_t _long_)
+void iterate_to_semicolon_or_end(info_t *_data_, char *_buff_,
+		size_t *_go_, size_t _long_)
 {
 	/*use loop */
 	do {
 		if (_s_chn_(_data_, _buff_, _go_))
+		{
+			/*use if*/
 			break;
+		}
+
 		(*_go_)++;
 	} while (*_go_ < _long_); /* iterate to semicolon or end */
 }
@@ -69,8 +92,8 @@ void iterate_to_semicolon_or_end(info_t *_data_,
  *
  * Return: Nothing (void function)
  */
-void hdl_chain(info_t *_data_, char *_buff_,
-		size_t *_OK_, size_t *_go_, size_t _long_, char **_oops_)
+void hdl_chain(info_t *_data_, char *_buff_, size_t *_OK_,
+		size_t *_go_, size_t _long_, char **_oops_)
 {
 	init_iterator(_OK_, _go_, _buff_, _oops_);
 	chk_chain(_data_, _buff_, _go_, *_OK_, _long_);
@@ -90,26 +113,4 @@ void _RESet_BuFFer_(info_t *_data_, size_t *_OK_, size_t *_long_)
 	*_OK_ = *_long_ = 0; /* reset position and length */
 	_data_->cmd_buf_type = CMD_NORM;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

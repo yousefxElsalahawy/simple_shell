@@ -2,50 +2,57 @@
 #define SHELL_H
 
 
+
+
+
 #include <stdbool.h>
-
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <limits.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
-#define HIST_FILE	".simple_shell_history"
-#define HIST_MAX	4096
+#include <limits.h>
+#include <stdio.h>
+#include <sys/wait.h>
 
-#define CMD_CHAIN	3
-#define CMD_NORM	0
-
-#define CONVERT_UNSIGNED	2
-
-#define CONVERT_LOWERCASE	1
-#define USE_GETLINE 0
-#define CMD_OR		1
-#define CMD_AND		2
-#define USE_STRTOK 0
-
-extern char **environ;
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#define READ_BUF_SIZE 1024
 
 #define BUF_FLUSH -1
+#define HIST_MAX	4096
+#define USE_STRTOK 0
+
+#define CMD_NORM	0
+#define CONVERT_UNSIGNED	2
+
+#define CMD_OR		1
+
+#define CONVERT_LOWERCASE	1
 #define WRITE_BUF_SIZE 1024
-#define READ_BUF_SIZE 1024
+#define USE_GETLINE 0
+
+#define CMD_CHAIN	3
+#define CMD_AND		2
+
+extern char **environ;
+#define HIST_FILE	".simple_shell_history"
+
 
 
 /**
  * struct _listtxt_ - singly linked list
- * @_num_: the number field
- * @_txt_: a string
  * @_nxt_: points to the _nxt_ _nde_
+ * @_txt_: a string
+ * @_num_: the number field
  */
 typedef struct _listtxt_
 {
 	int _num_;
+
 	char *_txt_;
+
 	struct _listtxt_ *_nxt_;
 } _lst_;
 /**
@@ -54,18 +61,22 @@ typedef struct _listtxt_
  * @pth: This pointer refers to the pth string
  * @fname: This pointer refers to the file name string
  * @argv: This pointer refers to the argument vector
+ *
  * @environ: This pointer refers to the environment array
  * @cmd_buf: This pointer refers to the command buffer
  * @env: This pointer refers to the environment list
+ *
  * @history: This pointer refers to the history list
  * @alias: This pointer refers to the alias list
  * @arg_pos: This variable holds the argument position
  * @arg_len: This variable holds the argument length
  * @line_count: This variable holds the line _cnt_
+ *
  * @argc: This variable holds the argument _cnt_
  * @err_num: This variable holds the error number
  * @linecount_flag: This variable holds the line _cnt_ _flg_
  * @env_changed: This variable holds the environment changed _flg_
+ *
  * @status: This variable holds the status
  * @cmd_buf_type: This variable holds the command buffer _style
  * @readfd: This variable holds the read file descriptor
@@ -79,16 +90,21 @@ typedef struct passinfo
 	char **argv;
 	char **environ;
 	char **cmd_buf;
+
 	_lst_ *env;
 	_lst_ *history;
 	_lst_ *alias;
+
 	size_t arg_pos;
 	size_t arg_len;
+
 	unsigned int line_count;
+
 	int argc;
 	int err_num;
 	int linecount_flag;
 	int env_changed;
+
 	int status;
 	int cmd_buf_type;
 	int readfd;
@@ -112,6 +128,7 @@ typedef struct passinfo
 typedef struct crafty_blt_in
 {
 	char *_style;
+
 	int (*_operat_)(info_t *);
 } _cunning_table;
 
@@ -222,11 +239,11 @@ int _buld_hstry_lst_(info_t *_data_, char *_buff_, int _line_cnt_);
 
 /***getline***/
 
-void reset_buffer(info_t *_data_, char **_buff_);
+void reset_buffer(char **_buff_);
 ssize_t input_reader(info_t *_data_, char **_buff_, size_t *len_p);
-void input_processor(info_t *_data_, char **_buff_, ssize_t *r);
+void input_processor(char **_buff_, ssize_t *_fpp_);
 void command_chain_hdlr(info_t *_data_,
-		char **_buff_, size_t *_long_, ssize_t r);
+		char **_buff_, size_t *_long_, ssize_t _fpp_);
 ssize_t input_buf(info_t *_data_, char **_buff_, size_t *_long_);
 ssize_t hdl_input(info_t *_data_, char **_buff_, size_t *_long_);
 void init_iterator(size_t *_OK_, size_t *_go_, char *_buff_, char **_oops_);
@@ -489,14 +506,49 @@ char **_str_foo2_(char *_txt_, char _do_);
 
 
 
-
-
 char *find_equal_sign_in_nd(_lst_ *_nde_);
 int _unstt_alas_(info_t *_data_, char *_txt_);
 int _stt_alass_(info_t *_data_, char *_txt_);
 int prnt_alias(_lst_ *_nde_);
 void prnt_all_aliases(info_t *_data_);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void init_vars_xyz(char **_pttr_, size_t *length, char **_oops_,
+		size_t *_letter_, size_t *_OK_, size_t *_long_);
+int buff_read_abc(info_t *_data_, char *_buff_, size_t *_long_);
+int finalize_jkl(char **_pttr_, char *_oops_, size_t *length, size_t _letter_);
+int _gt_lne_(info_t *_data_, char **_pttr_, size_t *length);
+int locate_alloc_def(char *_buff_, size_t *_koK_, char **_oops_,
+		size_t *_letter_, char **_onw_oop, size_t _OK_, size_t *_long_);
+
+void copy_update_ghi(char *_onw_oop, char *_buff_, size_t _OK_,
+		 size_t _koK_, size_t *_letter_, char **_oops_);
 #endif
 
 
